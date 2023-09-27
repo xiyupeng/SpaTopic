@@ -1,45 +1,47 @@
 #library(sp)
+#library(sf)
 
-GetCoords <- function(tissue) {
-  coords <- as.data.frame(cbind(tissue$X,tissue$Y))
-  colnames(coords) <- c("X", "Y")
-  return(coords)
+GetCoords <- function(tissue,axis = "2D") {
+  if(axis == "3D"){
+    coords <- as.data.frame(cbind(tissue$X,tissue$Y,tissue$Y2))
+    colnames(coords) <- c("X", "Y","Y2")
+    return(coords)
+  }else{
+    coords <- as.data.frame(cbind(tissue$X,tissue$Y))
+    colnames(coords) <- c("X", "Y")
+    return(coords)
+  }
 }
 
-### need to rewrite it in C function
-stratified_sampling_idx <- function(points, num_samples_per_stratum = 10, 
-                                    num_x_strata = 5, num_y_strata =5) {
-  # Convert points to a SpatialPointsDataFrame
-  rownames(points)<-1:nrow(points)
-  points_sp <- SpatialPoints(points)
+
+stratified_sampling_idx_sf <- function(points, cellsize = c(600,600),num_samples_per_stratum = 1) {
   
-  # Create vectors of stratum IDs based on X and Y coordinates
-  x_strata <- cut(points[, "X"], breaks = num_x_strata, labels = FALSE)
-  y_strata <- cut(points[, "Y"], breaks = num_y_strata, labels = FALSE)
+  # Convert points to an sf object
+  points_sf <- st_as_sf(points, coords = c("X", "Y"))
   
-  # Create an empty array to hold the indices of the sampled points
+  # Create grid cells for stratification using cellsize
+  grid_sf <- st_make_grid(points_sf, 
+                          cellsize = cellsize, 
+                          crs = st_crs(points_sf))
+  grid_sf <- st_geometry(grid_sf)
+  grid_sf <- st_cast(grid_sf, "POLYGON")
+  
+  # List to store sampled points' indices
   sampled_point_idx <- list()
   
-  # Sample points from each stratum
-  for (i in 1:num_x_strata) {
-    for (j in 1:num_y_strata) {
-      stratum_points <- points_sp[x_strata == i & y_strata == j, ]
-      num_points_in_stratum <- nrow(stratum_points@coords)
-      if (num_points_in_stratum == 0) {
-        next
-      }
-      if (num_points_in_stratum < num_samples_per_stratum) {
-        warning(paste0("Stratum (", i, ",", j, ") has only ",
-                       num_points_in_stratum, " points."))
-        sampled_point_idx[[paste0(i,j)]] <- as.numeric(row.names(stratum_points))
-      } else {
-        sampled_point_idx[[paste0(i,j)]] <- as.numeric(sample(row.names(stratum_points),
-                                               size = num_samples_per_stratum))
-      }
-    }
-  }
+  points_in_cells<-t(st_within(points_sf, grid_sf))
+  points_in_cells
   
-  # Return the indices of the sampled points
-  return(unlist(sampled_point_idx))
+  for(i in 1:length(grid_sf)){
+    
+    sampled_point_idx[[i]] <- ifelse(length(points_in_cells[[i]])==0, NA, 
+                                   ifelse(length(points_in_cells[[i]]) < num_samples_per_stratum+1, points_in_cells[[i]], 
+                                          sample(points_in_cells[[i]], num_samples_per_stratum)))
+  }
+  selected_points<- unlist(sampled_point_idx)
+  selected_points <- selected_points[!is.na(selected_points)]
+  
+  return(selected_points)
 }
+
 

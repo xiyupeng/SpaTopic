@@ -1,41 +1,5 @@
-#library(ggplot2)
-#library(RANN)
-#library(Rcpp)
-#library(RcppArmadillo)
-#library(RcppProgress)
-#library(sp)
-#library(foreach)
-#library(scales)
-
-#sourceCpp('src/Gibbs.cpp')
-#source("R/spatial_func.R")
-
-## Rewrite this in Rcpp
-perplexity_spaLDA<-function(theta_dk, beta_wk, C, neigh_dists, sigma,
-                            neigh_centers, n.doc, alpha, beta){
-  
-  n.cells<-length(C)
-  Gaus<-exp(-neigh_dists/sigma)
-  Gaus_sum<-apply(Gaus,1,sum)
-  eta<-sweep(Gaus,1,Gaus_sum, FUN = "/")
-  eta_reformat<-matrix(0, n.cells, n.doc)
-  
-  plug<-function(target, id, data){
-    target[id+1]<-data
-    return(target)
-  }
-  
-  eta_reformat<-mapply(plug, split(eta_reformat, row(eta_reformat)), 
-             split(neigh_centers, row(neigh_centers)), 
-             split(eta, row(eta)), SIMPLIFY = FALSE)
-  eta_reformat<-do.call(rbind,eta_reformat)
-  
-  p_wk <- eta_reformat %*% theta_dk * beta_wk[C+1,]
-  p_w <- apply(p_wk, 1, FUN = sum)
-  log_pw <- log(p_w)
-  res <- exp(-sum(log_pw)/n.cells)
-  return(res)
-}
+## Gibbs_sampler.R
+## Gibbs sampling algorithm for SpaTopic
 
 
 theta_est<-function(Ndk, alpha){
@@ -58,7 +22,7 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
                                      trace = 0, compute_loglike = 0, seed = 123, thin = 20, burnin = 1000,
                                      niter = 200, save_image = 0, save_data = 0, display_progress = 1,
                                      output_path = "test/",fig.width = 30, fig.height = 30,
-                                     do.parallel = 1, n.cores = 1){
+                                     do.parallel = 1, n.cores = 1,axis = "2D"){
   
   set.seed(seed)
   
@@ -68,6 +32,8 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   itr_df<-do.call(rbind, tissue)
   itr_df$X<-as.numeric(itr_df$X)
   itr_df$Y<-as.numeric(itr_df$Y)
+  if(axis == "3D")
+    itr_df$Y2<-as.numeric(itr_df$Y2)
   itr_df$type<-as.factor(itr_df$type) 
   itr_df$image<-as.factor(itr_df$image)
 
@@ -78,7 +44,7 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   print(ncells)
   
   ### for coords for each sample
-  coords<-lapply(tissue,GetCoords)
+  coords<-lapply(tissue,GetCoords,axis = axis)
 
   print("Initialization....")
   
@@ -95,94 +61,73 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   for (ini in 1:ninit){ ### should chose the best one among random sample points
     
   
-  if(do.parallel){
+    if(do.parallel){
+      
+      ### register cores for parallel computing 
+      require(doParallel)
+      registerDoParallel(n.cores)
     
-    ### register cores for parallel computing 
-    require(doParallel)
-    registerDoParallel(n.cores)
-  
-    results<-foreach(i = 1:length(tissue),.packages=c('sp','RANN')) %dopar% {
+      results<-foreach(i = 1:length(tissue),.packages=c('sf','RANN')) %dopar% {
+        
+        source("scripts/spatial_func.R")
+        
+        ## set seed for each core in parallel computing
+        set.seed(seed+i)
+        
+        ## get coords
+        coords_selected<-coords[[i]]
+       
+        ## Strategy 2 with library(sf)
+        center_idx<-stratified_sampling_idx_sf(coords_selected, cellsize = c(region_radius*2,region_radius*2),
+                                               npoints_selected)
+          
+        
+        ncenters<-length(center_idx)
+        
+        ### visualize selected centers
+        coords_centers<-coords_selected[center_idx,]
+        
+        ### Find Knearest centers
+        ##  Compute the kneigh nearest neighbors of each point in A with respect to B
+        k_neighbor_centers <- nn2(coords_centers, coords_selected, k=kneigh, treetype = "kd",
+                                  searchtype = "priority")
+        neigh_centers<-k_neighbor_centers$nn.idx
+        neigh_dists<-k_neighbor_centers$nn.dists
+        
+        return(list(neigh_centers = neigh_centers, neigh_dists = neigh_dists, 
+                    coords_centers = coords_centers))
+      }
+    }else{
       
-      source("scripts/spatial_func.R")
-      
-      ## set seed for each core in parallel computing
-      set.seed(seed+i)
-      
-      ## get coords
-      coords_selected<-coords[[i]]
-      coords_selected$X<-as.numeric(coords_selected$X)
-      coords_selected$Y<-as.numeric(coords_selected$Y)
-      
-      ##spatial stratified sampling
-      ## parameters need to be further selected 
-      num_x_strata<-(max(coords_selected$X)-min(coords_selected$X))/(region_radius*2)
-      num_y_strata<-(max(coords_selected$Y)-min(coords_selected$Y))/(region_radius*2)
-      num_x_strata<-round(num_x_strata)
-      num_y_strata<-round(num_y_strata)
-      #print("Selected X, Y strata:\n")
-      #print(num_x_strata)
-      #print(num_y_strata)
-      
-      
-      ### need a C function for efficiently spatial sampling (maybe rejective sampling)
-      center_idx<-stratified_sampling_idx(coords_selected,npoints_selected,num_x_strata,num_y_strata)
-      ncenters<-length(center_idx)
-      
-      ### visualize selected centers
-      coords_centers<-coords_selected[center_idx,]
-      
-      ### Find Knearest centers
-      ##  Compute the kneigh nearest neighbors of each point in A with respect to B
-      k_neighbor_centers <- nn2(coords_centers, coords_selected, k=kneigh, treetype = "kd",
-                                searchtype = "priority")
-      neigh_centers<-k_neighbor_centers$nn.idx
-      neigh_dists<-k_neighbor_centers$nn.dists
-      
-      return(list(neigh_centers = neigh_centers, neigh_dists = neigh_dists, 
-                  coords_centers = coords_centers))
-    }
-  }else{
+      results<-foreach(i = 1:length(tissue),.packages=c('RANN','sf')) %do% {
+        
+        ## get coords
+        coords_selected<-coords[[i]]
     
-    results<-foreach(i = 1:length(tissue),.packages=c('sp','RANN')) %do% {
+        ## Strategy 2 with library(sf)
+        center_idx<-stratified_sampling_idx_sf(coords_selected, cellsize = c(region_radius*2,region_radius*2),
+                                               npoints_selected)
+        
+        ncenters<-length(center_idx)
+        #print("number of centers selected:\n")
+        #print(ncenters)
+        
+        ### visualize selected centers
+        coords_centers<-coords_selected[center_idx,]
+        
+        ### Find Knearest centers
+        ##  Compute the kneigh nearest neighbors of each point in A with respect to B
+        k_neighbor_centers <- nn2(coords_centers, coords_selected, k=kneigh, treetype = "kd",
+                                  searchtype = "priority")
+        neigh_centers<-k_neighbor_centers$nn.idx
+        neigh_dists<-k_neighbor_centers$nn.dists
+        
+        return(list(neigh_centers = neigh_centers, neigh_dists = neigh_dists, 
+                    coords_centers = coords_centers))
+      }
       
-      ## get coords
-      coords_selected<-coords[[i]]
-      coords_selected$X<-as.numeric(coords_selected$X)
-      coords_selected$Y<-as.numeric(coords_selected$Y)
-      
-      ##spatial stratified sampling
-      ## parameters need to be further selected 
-      num_x_strata<-(max(coords_selected$X)-min(coords_selected$X))/(region_radius*2)
-      num_y_strata<-(max(coords_selected$Y)-min(coords_selected$Y))/(region_radius*2)
-      num_x_strata<-round(num_x_strata)
-      num_y_strata<-round(num_y_strata)
-      #print("Selected X, Y strata:\n")
-      #print(num_x_strata)
-      #print(num_y_strata)
-      
-      
-      ### need a C function for efficiently spatial sampling (maybe rejective sampling)
-      center_idx<-stratified_sampling_idx(coords_selected,npoints_selected,num_x_strata,num_y_strata)
-      ncenters<-length(center_idx)
-      #print("number of centers selected:\n")
-      #print(ncenters)
-      
-      ### visualize selected centers
-      coords_centers<-coords_selected[center_idx,]
-      
-      ### Find Knearest centers
-      ##  Compute the kneigh nearest neighbors of each point in A with respect to B
-      k_neighbor_centers <- nn2(coords_centers, coords_selected, k=kneigh, treetype = "kd",
-                                searchtype = "priority")
-      neigh_centers<-k_neighbor_centers$nn.idx
-      neigh_dists<-k_neighbor_centers$nn.dists
-      
-      return(list(neigh_centers = neigh_centers, neigh_dists = neigh_dists, 
-                  coords_centers = coords_centers))
     }
     
-  }
-  
   
   ## number of selected centers per image
   ncenters<-unlist(lapply(results, function(x) nrow(x$coords_centers)))
@@ -241,23 +186,13 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
     Nd <- table_1d_fast(D, M) ## number of cells in each region (image specific)
     
     
-    ### initialization with LDA
+    ### initialization (warm start)
     if(ini_LDA){
-      #system.time(gibbs.res <- gibbs_lda_c(
-      #  docs,
-      #  Ndk, Nwk, Nk, Z, D,
-      #  doc_list,
-      #  word_list,
-      #  K, niter_init, beta,alpha))
-      #perplexity<- perplexity(Ndk, Nwk, Nd, Nk, docs[,2], D, K, V, alpha = alpha, beta = beta)
-      #print(perplexity)
+    
       system.time(gibbs.res <-gibbs_sampler_c(docs, Ndk, Nwk, Nk, Nd, Z, D, neigh_dists, 
                                           neigh_centers, doc_list, word_list, 
                                           K, beta, alpha, sigma, thin, niter_init, 0,
                                           0, 0, 0))
-      #perplexity<-perplexity_spaLDA(gibbs.res$Theta, gibbs.res$Beta, C, neigh_dists, sigma,
-      #                                      neigh_centers, M, alpha, beta)
-      #print(perplexity)
       perplexity<-gibbs.res$Perplexity
     }else{
       perplexity<-0
@@ -290,13 +225,9 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   
   
   if(ninit > 1){ ## need update only when several initialization
-      #K<-as.integer(ntopics)
-      ## number of celltypes
-      #V<-length(unique((C)))
+     
       ## number of regions
-      M<-length(table(D))  ## M might be changed since D changed
-      ## number of words
-      #N<-length(C)
+    M<-length(table(D))  ## M might be changed since D changed
     
     Ndk <- table_2d_fast(D, Z, M, K) ## number of cells per topic per region (image specific)
     Nwk <- table_2d_fast(C, Z, V, K) ## number of cells per topic per celltype
@@ -323,7 +254,7 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
                                           trace, display_progress, compute_loglike))
   
   
-  ## calculate perplexity based on current document assignment
+  ## [TODO] compute perpelxity across multiple posterior samples
   #gibbs.res$perx<-perplexity(Ndk, Nwk, Nd, Nk, docs[,2], D, K, V, alpha = alpha, beta = beta)
   ##gibbs.res$perx<-perplexity_spaLDA(gibbs.res$Theta, gibbs.res$Beta, C, neigh_dists, sigma,
   ##                                            neigh_centers, M, alpha, beta)
@@ -331,31 +262,32 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   print(gibbs.res$Perplexity)
   
   
-  if(save_image){
-    ## assign cell with the max prob
-    prob<-as.matrix(gibbs.res$Z.trace)
-    itr_df$Z_max<-as.factor(apply(prob,1,which.max))
-    
-    for(image in levels(itr_df$image)){
-      
-      ggplot(itr_df[itr_df$image == image, ],aes(X,Y,color = Z_max))+geom_point(size = 0.8)+
-        scale_color_manual(limits = levels(itr_df$Z_max),values = hue_pal()(ntopics))
-    
-      ggsave(paste0(output_path,"test_K",K,"_sigma",sigma, "_radius",region_radius,"_center",
-                  npoints_selected,"_kneigh",kneigh, "_iter",niter*thin,"_burn", burnin, 
-                  "_initLDA",ini_LDA,"_",image,"_max_prob.png"),width = fig.width,height = fig.height,units = "in")
-    }
-  }
+  # if(save_image){
+  #   ## assign cell with the max prob
+  #   prob<-as.matrix(gibbs.res$Z.trace)
+  #   itr_df$Z_max<-as.factor(apply(prob,1,which.max))
+  #   
+  #   for(image in levels(itr_df$image)){
+  #     
+  #     ggplot(itr_df[itr_df$image == image, ],aes(X,Y,color = Z_max))+geom_point(size = 0.8)+
+  #       scale_color_manual(limits = levels(itr_df$Z_max),values = hue_pal()(ntopics))
+  #   
+  #     ggsave(paste0(output_path,"test_K",K,"_sigma",sigma, "_radius",region_radius,"_center",
+  #                 npoints_selected,"_kneigh",kneigh, "_iter",niter*thin,"_burn", burnin, 
+  #                 "_initLDA",ini_LDA,"_",image,"_max_prob.png"),width = fig.width,height = fig.height,units = "in")
+  #   }
+  # }
+  # 
+  # if(save_data){
+  #   save(docs, Ndk, Nwk, Nk, Nd,
+  #        Z,D, neigh_dists, neigh_centers,
+  #        doc_list, word_list,
+  #        K, sigma, gibbs.res,
+  #        file = paste0(output_path,"test_K",K,"_sigma",sigma, "_radius",region_radius,"_center",
+  #                      npoints_selected,"_kneigh",kneigh,"_iter",niter*thin,"_burn",
+  #                      burnin, "_initLDA",ini_LDA,"_max_prob.rdata"))
+  # }
   
-  if(save_data){
-    save(docs, Ndk, Nwk, Nk, Nd,
-         Z,D, neigh_dists, neigh_centers,
-         doc_list, word_list,
-         K, sigma, gibbs.res,
-         file = paste0(output_path,"test_K",K,"_sigma",sigma, "_radius",region_radius,"_center",
-                       npoints_selected,"_kneigh",kneigh,"_iter",niter*thin,"_burn",
-                       burnin, "_initLDA",ini_LDA,"_max_prob.rdata"))
-  }
   return(gibbs.res)
   
 }
