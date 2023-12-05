@@ -1,20 +1,4 @@
 //#include <Rcpp.h>
-//using namespace Rcpp;
-
-// This is a simple example of exporting a C++ function to R. You can
-// source this function into an R session using the Rcpp::sourceCpp 
-// function (or via the Source button on the editor toolbar). Learn
-// more about Rcpp at:
-//
-//   http://www.rcpp.org/
-//   http://adv-r.had.co.nz/Rcpp.html
-//   http://gallery.rcpp.org/
-//
-
-// You can include R code blocks in C++ files processed with sourceCpp
-// (useful for testing and development). The R code will be automatically 
-// run after the compilation.
-//
 
 
 #include <cstdlib>
@@ -247,7 +231,7 @@ int gibbs_spaTopic_dev(IntegerMatrix docs, arma::imat& m_Ndk, arma::imat& m_Nwk,
   //arma::imat m_Nwk = &m_Nwk;
   //arma::icolvec m_Nk = &m_Nk;
   //arma::icolvec m_Nd = &m_Nd;
-  
+ 
   
   Pz = new double[K];
   Pd = new double[n_neighbor];
@@ -257,6 +241,9 @@ int gibbs_spaTopic_dev(IntegerMatrix docs, arma::imat& m_Ndk, arma::imat& m_Nwk,
   // double sigma_2 = sigma * sigma;
   
   for (i = 0; i < niter; i++) {
+
+    Rcpp::checkUserInterrupt();
+    
     for (j = 0; j < n_pairs; j++) {
       
     
@@ -336,7 +323,7 @@ int gibbs_spaTopic_dev(IntegerMatrix docs, arma::imat& m_Ndk, arma::imat& m_Nwk,
 Rcpp::List gibbs_sampler_c(IntegerMatrix docs, IntegerMatrix Ndk, IntegerMatrix Nwk, IntegerVector Nk, IntegerVector Nd, 
   IntegerVector Z, IntegerVector D, NumericMatrix dists,  IntegerMatrix neighbors, IntegerVector doc_list, IntegerVector word_list, 
   size_t K, double beta = .05, double alpha = .01, double sigma = 50, size_t thin = 20, size_t burnin = 1000, size_t niter = 200, 
-  bool trace = false,bool display_progress =true, bool compute_ll = false){
+  bool trace = false,bool display_progress =true){
 
     size_t i,j,k,nc;
     size_t word_id,doc_id;
@@ -409,15 +396,16 @@ Rcpp::List gibbs_sampler_c(IntegerMatrix docs, IntegerMatrix Ndk, IntegerMatrix 
     // Gibbs sampling after burn-in
     for (i = 0; i < niter; i++) {
 
-      // Calculate current Beta and Theta 
-      for (k = 0; k < K; k++) {
-        for (word_id = 0; word_id < n_words; word_id++)
-          Beta(word_id,k) = (m_Nwk(word_id, k) + beta) / (m_Nk(k) + beta*n_words);
-        for (doc_id = 0; doc_id < M; doc_id++)  
-          Theta(doc_id,k) = (m_Ndk(doc_id, k) + alpha)/(m_Nd(doc_id)+ alpha*K); 
-      }
-        if(trace)
-          loglike(i) = compute_loglike(Theta, Beta, docs, neighbors, Kernel, M, n_words, K, beta, alpha, sigma);
+      // Calculate current Beta and Theta
+        if(trace){
+          for (k = 0; k < K; k++) {
+            for (word_id = 0; word_id < n_words; word_id++)
+              Beta(word_id,k) = (m_Nwk(word_id, k) + beta) / (m_Nk(k) + beta*n_words);
+            for (doc_id = 0; doc_id < M; doc_id++)  
+              Theta(doc_id,k) = (m_Ndk(doc_id, k) + alpha)/(m_Nd(doc_id)+ alpha*K); 
+          }
+          loglike(i) = compute_loglike(Theta, Beta, docs, neighbors, Kernel, M, n_words, K, beta, alpha, sigma);  
+        }
 
         //Rprintf("niter %ld; \n",i);
         p.increment(); // update progress
@@ -438,7 +426,6 @@ Rcpp::List gibbs_sampler_c(IntegerMatrix docs, IntegerMatrix Ndk, IntegerMatrix 
     }
 
     // Calculate Beta and Theta from the final sample
-    // [TODO] If trace, consider estimate theta and beta from all posterior samples
       for (k = 0; k < K; k++) {
         for (word_id = 0; word_id < n_words; word_id++)
           Beta(word_id,k) = (m_Nwk(word_id, k) + beta) / (m_Nk(k) + beta*n_words);
@@ -446,20 +433,20 @@ Rcpp::List gibbs_sampler_c(IntegerMatrix docs, IntegerMatrix Ndk, IntegerMatrix 
           Theta(doc_id,k) = (m_Ndk(doc_id, k) + alpha)/(m_Nd(doc_id)+ alpha*K); 
       }
 
-    // calculate the model predictive log likelihood
+    // calculate the final model predictive log likelihood
     loglike(niter) = compute_loglike(Theta, Beta, docs, neighbors, Kernel, M, n_words, K, beta, alpha, sigma);
 
-    // calculate the model perplexity
+    // calculate the model perplexity and deviance
     double perplexity = exp(-loglike(niter)/n_pairs);
-
+    double deviance = -2*loglike(niter);
     // [TODO] calculate the convergence criterior of MCMC chain.
-
 
     PutRNGstate();
 
     delete [] Pz;
     
     return Rcpp::List::create(Rcpp::Named("Perplexity") =  perplexity,
+                              Rcpp::Named("Deviance") =  deviance,
                               Rcpp::Named("loglikelihood") =  loglike(niter),
                               Rcpp::Named("loglike.trace") = loglike,
                               Rcpp::Named("Beta")  = Beta,

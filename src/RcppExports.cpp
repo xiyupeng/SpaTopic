@@ -81,8 +81,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gibbs_sampler_c
-Rcpp::List gibbs_sampler_c(IntegerMatrix docs, IntegerMatrix Ndk, IntegerMatrix Nwk, IntegerVector Nk, IntegerVector Nd, IntegerVector Z, IntegerVector D, NumericMatrix dists, IntegerMatrix neighbors, IntegerVector doc_list, IntegerVector word_list, size_t K, double beta, double alpha, double sigma, size_t thin, size_t burnin, size_t niter, bool trace, bool display_progress, bool compute_ll);
-RcppExport SEXP _SpaTopic_gibbs_sampler_c(SEXP docsSEXP, SEXP NdkSEXP, SEXP NwkSEXP, SEXP NkSEXP, SEXP NdSEXP, SEXP ZSEXP, SEXP DSEXP, SEXP distsSEXP, SEXP neighborsSEXP, SEXP doc_listSEXP, SEXP word_listSEXP, SEXP KSEXP, SEXP betaSEXP, SEXP alphaSEXP, SEXP sigmaSEXP, SEXP thinSEXP, SEXP burninSEXP, SEXP niterSEXP, SEXP traceSEXP, SEXP display_progressSEXP, SEXP compute_llSEXP) {
+Rcpp::List gibbs_sampler_c(IntegerMatrix docs, IntegerMatrix Ndk, IntegerMatrix Nwk, IntegerVector Nk, IntegerVector Nd, IntegerVector Z, IntegerVector D, NumericMatrix dists, IntegerMatrix neighbors, IntegerVector doc_list, IntegerVector word_list, size_t K, double beta, double alpha, double sigma, size_t thin, size_t burnin, size_t niter, bool trace, bool display_progress);
+RcppExport SEXP _SpaTopic_gibbs_sampler_c(SEXP docsSEXP, SEXP NdkSEXP, SEXP NwkSEXP, SEXP NkSEXP, SEXP NdSEXP, SEXP ZSEXP, SEXP DSEXP, SEXP distsSEXP, SEXP neighborsSEXP, SEXP doc_listSEXP, SEXP word_listSEXP, SEXP KSEXP, SEXP betaSEXP, SEXP alphaSEXP, SEXP sigmaSEXP, SEXP thinSEXP, SEXP burninSEXP, SEXP niterSEXP, SEXP traceSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -106,51 +106,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< size_t >::type niter(niterSEXP);
     Rcpp::traits::input_parameter< bool >::type trace(traceSEXP);
     Rcpp::traits::input_parameter< bool >::type display_progress(display_progressSEXP);
-    Rcpp::traits::input_parameter< bool >::type compute_ll(compute_llSEXP);
-    rcpp_result_gen = Rcpp::wrap(gibbs_sampler_c(docs, Ndk, Nwk, Nk, Nd, Z, D, dists, neighbors, doc_list, word_list, K, beta, alpha, sigma, thin, burnin, niter, trace, display_progress, compute_ll));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcpparma_hello_world
-arma::mat rcpparma_hello_world();
-RcppExport SEXP _SpaTopic_rcpparma_hello_world() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpparma_hello_world());
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcpparma_outerproduct
-arma::mat rcpparma_outerproduct(const arma::colvec& x);
-RcppExport SEXP _SpaTopic_rcpparma_outerproduct(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_outerproduct(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcpparma_innerproduct
-double rcpparma_innerproduct(const arma::colvec& x);
-RcppExport SEXP _SpaTopic_rcpparma_innerproduct(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_innerproduct(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcpparma_bothproducts
-Rcpp::List rcpparma_bothproducts(const arma::colvec& x);
-RcppExport SEXP _SpaTopic_rcpparma_bothproducts(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_bothproducts(x));
+    rcpp_result_gen = Rcpp::wrap(gibbs_sampler_c(docs, Ndk, Nwk, Nk, Nd, Z, D, dists, neighbors, doc_list, word_list, K, beta, alpha, sigma, thin, burnin, niter, trace, display_progress));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -160,11 +116,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SpaTopic_table_2d_fast", (DL_FUNC) &_SpaTopic_table_2d_fast, 4},
     {"_SpaTopic_compute_loglike", (DL_FUNC) &_SpaTopic_compute_loglike, 11},
     {"_SpaTopic_gibbs_lda_c", (DL_FUNC) &_SpaTopic_gibbs_lda_c, 12},
-    {"_SpaTopic_gibbs_sampler_c", (DL_FUNC) &_SpaTopic_gibbs_sampler_c, 21},
-    {"_SpaTopic_rcpparma_hello_world", (DL_FUNC) &_SpaTopic_rcpparma_hello_world, 0},
-    {"_SpaTopic_rcpparma_outerproduct", (DL_FUNC) &_SpaTopic_rcpparma_outerproduct, 1},
-    {"_SpaTopic_rcpparma_innerproduct", (DL_FUNC) &_SpaTopic_rcpparma_innerproduct, 1},
-    {"_SpaTopic_rcpparma_bothproducts", (DL_FUNC) &_SpaTopic_rcpparma_bothproducts, 1},
+    {"_SpaTopic_gibbs_sampler_c", (DL_FUNC) &_SpaTopic_gibbs_sampler_c, 20},
     {NULL, NULL, 0}
 };
 
