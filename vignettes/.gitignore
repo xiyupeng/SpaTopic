@@ -1,0 +1,41 @@
+# ignore R data files
+.Rproj.user
+.Rhistory
+*.RData
+*.rds
+.Ruserdata
+.Rapp.history
+.Rhistory.RData
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# ignore other types of data files
+*.xlsx
+*.xls
+*.csv
+*.dta
+*.sas7bdat
+*.sav
+*.txt
+
+# ignore data folder
+data
+secure_data.lnk
+secure_data
+ext_data
+tmp
+env.json
+
+# ignore misc files
+~*.docx
+~*.xlsx
+~*.pptx
+~*.tmp
+~*.rtf
+~*.tmp
+Thumbs.db
+.DS_Store
+*.swp
+
