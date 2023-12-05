@@ -6,7 +6,7 @@
 src/*.o
 src/*.so
 src/*.dll
-inst/doc
+
 
 # ignore R data files
 .Rproj.user
@@ -32,6 +32,7 @@ inst/doc
 
 # ignore data folder
 data
+test
 .Rproj.user
 
 # ignore misc files
