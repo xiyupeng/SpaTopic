@@ -1,6 +1,4 @@
-## Gibbs_sampler.R
 ## Gibbs sampling algorithm for SpaTopic
-
 
 theta_est<-function(Ndk, alpha){
   Nd<-apply(Ndk,1,sum)
@@ -14,37 +12,145 @@ beta_est<-function(Nwk, beta){
   apply(Nwk + beta, 1, '/', Nk + n.words * beta)
 }
 
+#'@export
+gibbs_spatial_LDA_multiple<-function(...){
+  SpaTopic_inference(...)
+}
 
-## Let tissues is a list of data frames (X, Y, type)
-gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, kneigh,
-                                     npoints_selected = 1, ini_LDA = 0, ninit = 1, 
+
+#' SpaTopic: fast topic inference to identify tissue architecture in multiplexed images 
+#' 
+#' @description 
+#' This is the main function of SpaTopic, implementing a Collapsed Gibbs
+#' Sampling algorithm to learn topics, which referred to different tissue microenvironments, 
+#' across multiple multiplexed tissue images. 
+#' The function takes as input cell labels and coordinates on tissue images 
+#' and returns the inferred topic labels and topic contents, a distribution
+#' over celltypes.
+#' The function recovers spatial tissue architectures across images, 
+#' as well as cell-cell interactions.
+#' 
+#' @param tissue (Required). A data frame or a list of data frames. One for each image. 
+#' Each row represent a cell with its image ID, X, Y coordinates on the image, celltype,
+#' with column names (image, X, Y, type), respectively. You may add another column 
+#' Y2 for 3D tissue image.
+#' 
+#' @param ntopics (Required). Number of topics. Topics will be obtained as a distribution 
+#' of 
+#' 
+#' @param sigma Default is 50. The lengthscale of the Nearest-neighbor Exponential Kernel.
+#' Sigma controls the strength of decay of correlation with distance in the kernel function.
+#' Please check the paper for more information. 
+#' Need to be adjusted based on the image resolution
+#' 
+#' @param region_radius Default is 400. The radius for each grid square when
+#' sampling region centers for each image. 
+#' Need to be adjusted based on the resolution and the complexity in images.
+#' 
+#' @param npoints_selected Default is 1. Number of points sampled for each grid square 
+#' when sampling region centers for each image. Used with \code{region_radius}.
+#' 
+#' @param kneigh Default is 5. Only consider the top 5 closest region centers for each cell.
+#' 
+#' @param ini_LDA Default is TRUE. Use warm start strategy for initialization and choose the best one
+#' to continue. If 0, it simply just uses the first initialization.
+#' 
+#' @param ninit Default is 10. Number of initialization. 
+#' Only retain the initialization with the highest log likelihood (perplexity).
+#' 
+#' @param niter_init Default is 100. Warm start with 100 iterations in the Gibbs sampling 
+#' during initialization.
+#' 
+#' @param beta Default is 0.05. A hyperparameter to control the sparsity of topic content
+#' (topic-celltype) matrix \code{Beta}. A smaller value introduces more sparse in \code{Beta}.
+#' 
+#' @param alpha Default is 0.01. A hyperparameter to control the sparsity of document (region) content
+#' (region-topic) matrix \code{Theta}. For our application, we keep it 
+#' very small for the sparsity in \code{Theta}.
+#' 
+#' @param trace Default is FALSE. Compute and save log likelihood, \code{Ndk}, \code{Nwk} 
+#' for every posterior samples. Useful when you want to use DIC to select number of 
+#' topics, but it is time consuming to compute the likelihood for every posterior samples.
+#' 
+#' @param seed Default is 123. Random seed.
+#' 
+#' @param thin Default is 20. Key parameter in Gibbs sampling. 
+#'  Collect a posterior sample for every 20 iterations.
+#' 
+#' @param burnin Default is 1000. Key parameter in Gibbs sampling.
+#'  Start to collect posterior samples after 1000 iterations. You may increase
+#'  the number of iterations for burn-in for highly complex tissue images.
+#' 
+#' @param niter Default is 200. Key parameter in Gibbs sampling. 
+#' Number of posterior samples collected for the inference.
+#' 
+#' @param display_progress Default is TRUE. Display the progress bar. 
+#' 
+#' @param do.parallel Default is FALSE. Use parallel computing through R package \code{foreach}.
+#' 
+#' @param n.cores Default is 1. Number of cores used in parallel computing. 
+#' 
+#' @param axis Default is "2D". You may switch to "3D" for 3D tissue images. 
+#' However, the model inference for 3D tissue is still under test. 
+#' 
+#' @return Return a \code{\link{gibbs.res-class}} object. A list of outputs from Gibbs sampling. 
+#' 
+#' @seealso \code{\link{gibbs.res-class}}
+#' 
+#' @importFrom RANN nn2
+#' 
+#' @examples 
+#' 
+#' ## tissue is a data frame containing cellular information from one image or
+#' ## multiple data frames from multiple images.
+#' gibbs.res<-SpaTopic_inference(tissue, ntopics = 7, sigma = 50, region_radius = 400) 
+#' ## for multiple images
+#' gibbs.res<-SpaTopic_inference(list(A = tissue1, B = tissue2), ntopics = 7, sigma = 50, region_radius = 400) 
+#' 
+#' @export
+#' 
+SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, kneigh = 5,
+                                     npoints_selected = 1, ini_LDA = TRUE, ninit = 10, 
                                      niter_init = 100, beta = .05, alpha = .01,
-                                     trace = 0, compute_loglike = 0, seed = 123, thin = 20, burnin = 1000,
-                                     niter = 200, save_image = 0, save_data = 0, display_progress = 1,
-                                     output_path = "test/",fig.width = 30, fig.height = 30,
-                                     do.parallel = 1, n.cores = 1,axis = "2D"){
+                                     trace = FALSE, seed = 123, thin = 20, burnin = 1000,
+                                     niter = 200, display_progress = TRUE,
+                                     do.parallel = FALSE, n.cores = 1,axis = "2D",...){
   
   set.seed(seed)
   
-  if(length(tissue) == 1) do.parallel<- 0 ## no need parallel computing if only one image
+  if(is.data.frame(tissue)) tissue<-list(tissue)
+  num_images<-length(tissue)
+  
+  if(num_images == 1) do.parallel<- 0 ## no need parallel computing if only one image
   
   ### combine multiple image into a single data frame
   itr_df<-do.call(rbind, tissue)
+  
+  ## check the colnames of the data frame
+  if(!all(c("image","X","Y","type") %in% colnames(itr_df))){
+    warning("Please make sure you have image, X, Y, type in the colnames of tissue!")
+    return(NULL)
+  }
+  
   itr_df$X<-as.numeric(itr_df$X)
   itr_df$Y<-as.numeric(itr_df$Y)
-  if(axis == "3D")
-    itr_df$Y2<-as.numeric(itr_df$Y2)
   itr_df$type<-as.factor(itr_df$type) 
   itr_df$image<-as.factor(itr_df$image)
+  
+  if(axis == "3D" & "Y2" %in% colnames(itr_df)){
+    itr_df$Y2<-as.numeric(itr_df$Y2)
+  }else{
+    axis = "2D"
+  }
 
   ## number of cells per image
   ncells<-table(itr_df$image)
-  ## ncells<-unlist(lapply(tissue,nrow))
   print("number of cells per image:")
   print(ncells)
   
-  ### for coords for each sample
+  ### coords for each sample
   coords<-lapply(tissue,GetCoords,axis = axis)
+  rm(list= c("tissue"))
 
   print("Initialization....")
   
@@ -60,16 +166,20 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   
   for (ini in 1:ninit){ ### should chose the best one among random sample points
     
-  
+    is_doparallel_available <-require(doParallel)
+    
+    if(!is_doparallel_available & do.parallel){
+      warning("R package do.parallel is not available! The process is without Parallel.")
+      do.parallel<-0
+    }
+    
     if(do.parallel){
       
       ### register cores for parallel computing 
-      require(doParallel)
       registerDoParallel(n.cores)
     
-      results<-foreach(i = 1:length(tissue),.packages=c('sf','RANN')) %dopar% {
-        
-        source("scripts/spatial_func.R")
+      results<-foreach(i = 1:num_images,.packages=c('sf','RANN'),
+                       .export = c("stratified_sampling_idx_sf")) %dopar% {
         
         ## set seed for each core in parallel computing
         set.seed(seed+i)
@@ -78,9 +188,9 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
         coords_selected<-coords[[i]]
        
         ## Strategy 2 with library(sf)
-        center_idx<-stratified_sampling_idx_sf(coords_selected, cellsize = c(region_radius*2,region_radius*2),
+        center_idx<-stratified_sampling_sf(coords_selected, 
+                                               cellsize = c(region_radius*2,region_radius*2),
                                                npoints_selected)
-          
         
         ncenters<-length(center_idx)
         
@@ -99,13 +209,14 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
       }
     }else{
       
-      results<-foreach(i = 1:length(tissue),.packages=c('RANN','sf')) %do% {
+      results<-foreach(i = 1:num_images,.packages=c('RANN','sf')) %do% {
         
         ## get coords
         coords_selected<-coords[[i]]
     
         ## Strategy 2 with library(sf)
-        center_idx<-stratified_sampling_idx_sf(coords_selected, cellsize = c(region_radius*2,region_radius*2),
+        center_idx<-stratified_sampling_sf(coords_selected, 
+                                               cellsize = c(region_radius*2,region_radius*2),
                                                npoints_selected)
         
         ncenters<-length(center_idx)
@@ -125,9 +236,7 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
         return(list(neigh_centers = neigh_centers, neigh_dists = neigh_dists, 
                     coords_centers = coords_centers))
       }
-      
     }
-    
   
   ## number of selected centers per image
   ncenters<-unlist(lapply(results, function(x) nrow(x$coords_centers)))
@@ -139,7 +248,7 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   neigh_centers<-do.call(rbind,neigh_centers)
   
   ### relabel centers if multiple images
-  if(length(tissue) > 1){
+  if(num_images > 1){
     add<-c(0,unlist(lapply(1:(length(ncenters)-1),function(x) sum(ncenters[1:x]))))
     neigh_centers<-neigh_centers+rep(add,times = ncells)
   }
@@ -152,7 +261,7 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   
   ## Initialize Z, D for spatial Topic model
   neigh_centers <- neigh_centers - 1L
-  D<-as.integer(neigh_centers[,1])
+  D<-as.integer(neigh_centers[,1])  ### The closest region centers
   C<-as.integer(itr_df$type)-1L
   
   ### other parameters 
@@ -166,7 +275,6 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   N<-length(C)
   
   ######-----------------------------------------------------------------------------
-  ## test Gibbs sampling codes for spatial LDA
   ## Both D and Z are changes over time
   
   ### additional input
@@ -192,7 +300,7 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
       system.time(gibbs.res <-gibbs_sampler_c(docs, Ndk, Nwk, Nk, Nd, Z, D, neigh_dists, 
                                           neigh_centers, doc_list, word_list, 
                                           K, beta, alpha, sigma, thin, niter_init, 0,
-                                          0, 0, 0))
+                                          0, 0))
       perplexity<-gibbs.res$Perplexity
     }else{
       perplexity<-0
@@ -205,7 +313,13 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
       neigh_centers_keep<-neigh_centers
       neigh_dists_keep<-neigh_dists
     }
+    ## within each iteration, release memory for the untouched objects
+    ##gc()
   }
+  
+  ###  release memory for large items
+  rm(list= c("itr_df"))
+  gc()
   
   ### Keep the best results during initialization
   if(ini_LDA){
@@ -217,10 +331,10 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
   neigh_centers<-neigh_centers_keep
   neigh_dists<-neigh_dists_keep
 
-  print("number of centers selected:")
-  print(ncenters) ### [TODO] change this later
+  print("number of region centers selected:")
+  print(ncenters) 
 
-  print("number of cells per region:")
+  print("number of cells per region on average:")
   print(mean(table(D)))
   
   
@@ -240,53 +354,29 @@ gibbs_spatial_LDA_multiple<-function(tissue, ntopics, sigma, region_radius, knei
     word_list<-as.integer(1:V)-1L
   }
   
-  
+  ##print(proc.time())
   print("Finish initialization. Start Gibbs sampling....")
-  
   
   ## Gibbs_sampling 
   ## [TODO] should allow multiple chains to be run in parallel.
   ## Simply add results from multiple chains
-  ## [TODO] can use Rcppparallel
-  system.time(gibbs.res <-gibbs_sampler_c(docs, Ndk, Nwk, Nk, Nd, Z, D, neigh_dists, 
+  ## [TODO] may use Rcppparallel
+  gibbs.res <-gibbs_sampler_c(docs, Ndk, Nwk, Nk, Nd, Z, D, neigh_dists, 
                                           neigh_centers, doc_list, word_list, 
                                           K, beta, alpha, sigma, thin, burnin, niter,
-                                          trace, display_progress, compute_loglike))
+                                          trace, display_progress)
   
+  gc()
   
-  ## [TODO] compute perpelxity across multiple posterior samples
-  #gibbs.res$perx<-perplexity(Ndk, Nwk, Nd, Nk, docs[,2], D, K, V, alpha = alpha, beta = beta)
-  ##gibbs.res$perx<-perplexity_spaLDA(gibbs.res$Theta, gibbs.res$Beta, C, neigh_dists, sigma,
-  ##                                            neigh_centers, M, alpha, beta)
+  ## [TODO] make the output better and readable
+  if(!trace){
+    gibbs.res$doc.trace<-NULL
+    gibbs.res$word.trace<-NULL
+    gibbs.res$loglike.trace<-NULL
+  }
+ 
   print("Output model perplexity..")
   print(gibbs.res$Perplexity)
-  
-  
-  # if(save_image){
-  #   ## assign cell with the max prob
-  #   prob<-as.matrix(gibbs.res$Z.trace)
-  #   itr_df$Z_max<-as.factor(apply(prob,1,which.max))
-  #   
-  #   for(image in levels(itr_df$image)){
-  #     
-  #     ggplot(itr_df[itr_df$image == image, ],aes(X,Y,color = Z_max))+geom_point(size = 0.8)+
-  #       scale_color_manual(limits = levels(itr_df$Z_max),values = hue_pal()(ntopics))
-  #   
-  #     ggsave(paste0(output_path,"test_K",K,"_sigma",sigma, "_radius",region_radius,"_center",
-  #                 npoints_selected,"_kneigh",kneigh, "_iter",niter*thin,"_burn", burnin, 
-  #                 "_initLDA",ini_LDA,"_",image,"_max_prob.png"),width = fig.width,height = fig.height,units = "in")
-  #   }
-  # }
-  # 
-  # if(save_data){
-  #   save(docs, Ndk, Nwk, Nk, Nd,
-  #        Z,D, neigh_dists, neigh_centers,
-  #        doc_list, word_list,
-  #        K, sigma, gibbs.res,
-  #        file = paste0(output_path,"test_K",K,"_sigma",sigma, "_radius",region_radius,"_center",
-  #                      npoints_selected,"_kneigh",kneigh,"_iter",niter*thin,"_burn",
-  #                      burnin, "_initLDA",ini_LDA,"_max_prob.rdata"))
-  # }
   
   return(gibbs.res)
   

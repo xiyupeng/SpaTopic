@@ -1,10 +1,9 @@
-#library(sp)
-#library(sf)
+## Some functions for spatial analysis
 
 GetCoords <- function(tissue,axis = "2D") {
   if(axis == "3D"){
     coords <- as.data.frame(cbind(tissue$X,tissue$Y,tissue$Y2))
-    colnames(coords) <- c("X", "Y","Y2")
+    colnames(coords) <- c("X", "Y", "Y2")
     return(coords)
   }else{
     coords <- as.data.frame(cbind(tissue$X,tissue$Y))
@@ -13,8 +12,27 @@ GetCoords <- function(tissue,axis = "2D") {
   }
 }
 
-
-stratified_sampling_idx_sf <- function(points, cellsize = c(600,600),num_samples_per_stratum = 1) {
+#' Spatially stratified random sample points from an image.
+#' 
+#' Spatially stratified random sample points from an image by R package \code{sf}
+#' 
+#' @param points a data frame contains all points in a image with X, Y coordinates. 
+#' 
+#' @param cellsize a vector of length 2 contains the size of each grid square. 
+#' Default c(600,600).
+#' 
+#' @param num_samples_per_stratum number of point selected from each grid square.
+#' Default 1.
+#' 
+#' @return Return a vector contains index of sampled points.
+#' 
+#' @examples 
+#' 
+#' stratified_sampling_sf(points, cellsize = c(600,600))
+#' 
+#' @export
+#' 
+stratified_sampling_sf <- function(points, cellsize = c(600,600), num_samples_per_stratum = 1) {
   
   # Convert points to an sf object
   points_sf <- st_as_sf(points, coords = c("X", "Y"))
@@ -43,5 +61,4 @@ stratified_sampling_idx_sf <- function(points, cellsize = c(600,600),num_samples
   
   return(selected_points)
 }
-
 
