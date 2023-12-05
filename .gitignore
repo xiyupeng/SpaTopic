@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 .png
+*.Rproj
 src/*.o
 src/*.so
 src/*.dll
