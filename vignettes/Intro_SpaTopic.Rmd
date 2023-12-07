@@ -33,11 +33,11 @@ The Collapsed Gibbs sampling algorithm is used for model inference.
 Contrasting to computationally intensive K-nearest-neighbor-based cell neighborhood analysis approaches, 
 `SpaTopic` is more scalable to large-scale image datasets without extracting neighborhood information for every single cell.
 
-`SpaTopic` can be applied on either single images or **across multiple images**.
+`SpaTopic` can be applied either on a single image or across multiple images.
 
 ## Set-up
 
-We use a non-small cell lung cancer image to illustrate . 
+We use a non-small cell lung cancer image to illustrate how to use `SpaTopic`. 
 The data object here can be download from [here](https://github.com/xiyupeng/SpaTopic),
 with original public resources available on the [nanostring website](https://nanostring.com/products/cosmx-spatial-molecular-imager/ffpe-dataset/nsclc-ffpe-dataset/).
 These images were generated using a 960-plex CoxMx RNA panel on the Nanostring CoxMx Spatial Molecular Imager platform. 
@@ -47,7 +47,7 @@ Since we used healthy lung tissue as the reference, tumor cells were labeled as 
 More informaion can be found [here](https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager).
 
 ```{r,message=FALSE,warning=FALSE}
-## We use Seurat v5 package for visualze the results
+## We use Seurat v5 package to visualze the results
 library(Seurat, quietly = TRUE);packageVersion("Seurat")
 ## Load the Seurat object for the image
 load("~/github/SpaTopic/data/nanostring_example.rdata")

@@ -46,3 +46,5 @@ test
 Thumbs.db
 .DS_Store
 *.swp
+/doc/
+/Meta/

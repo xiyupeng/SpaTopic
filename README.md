@@ -11,7 +11,7 @@ It runs much faster on large-scale image data, compared to the default KNN-Kmean
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("xiyupeng/SpaTopic",build_vignettes = TRUE)
+devtools::install_github("xiyupeng/SpaTopic")
 ```
 
 ## Dependency
