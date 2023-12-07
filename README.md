@@ -10,10 +10,8 @@ It runs much faster on large-scale image data, compared to the default KNN-Kmean
 `SpaTopic` can be installed from the GitHub repository using the devtools package.
 
 ``` r
-# Install SpaTopic
 # install.packages("devtools")
-devtools::install_github("xiyupeng/SpaTopic")
-library(SpaTopic)
+devtools::install_github("xiyupeng/SpaTopic",build_vignettes = TRUE)
 ```
 
 ## Dependency
@@ -30,10 +28,12 @@ SpaTopic requires dependency on the following R packages:
 ## Usage
 
 The required input of SpaTopic is a data frame containing cells within on a single image or a list of data frames for multiple images. Each data frame consists of four columns: The image ID, X, Y cell coordinates, and cell type. 
-You can find the example input data under the data folder.
 
 ``` r
-head(dataset)
+library(SpaTopic)
+## The input can be a data frame or a list of data frames
+data("lung5")
+head(lung5)
 #     image        X        Y           type
 #1_1 image1 4215.889 158847.7      Dendritic
 #2_1 image1 6092.889 158834.7     Macrophage
@@ -41,7 +41,7 @@ head(dataset)
 #4_1 image1 7418.889 158813.7     Macrophage
 #5_1 image1 7446.889 158845.7     Macrophage
 #6_1 image1 3254.889 158838.7          CD4 T
-gibbs.res<-SpaTopic_inference(dataset, ntopics = 7, sigma = 50, region_radius = 400)
+gibbs.res<-SpaTopic_inference(lung5, ntopics = 7, sigma = 50, region_radius = 400)
 ```
 
 For more detailed usage of SpaTopic,
@@ -49,7 +49,7 @@ please check the tutorial and the vignette.
 
 ## Data
 
-The example image used in the Vignette are provided in: 
+The example image in Seurat v5 object used in the Vignette are provided in: 
 
 ## Output
 

@@ -98,6 +98,7 @@ SpaTopic identify seven topics from the image.
 Below we use the heatmap to show the cell type composition within each topic.
 
 ```{r,fig.width=7,fig.height=4}
+library(pheatmap)
 m <- as.data.frame(gibbs.res$Beta)
 colnames(m)<-paste0("topic",1:7)
 rownames(m)<-levels(as.factor(nano.obj$predicted.annotation.l1))

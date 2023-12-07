@@ -25,3 +25,4 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Encoding: UTF-8
+LazyData: true

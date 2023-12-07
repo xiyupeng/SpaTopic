@@ -26,6 +26,12 @@ GetCoords <- function(tissue,axis = "2D") {
 #' 
 #' @return Return a vector contains index of sampled points.
 #' 
+#' @importFrom sf st_as_sf
+#' @importFrom sf st_make_grid
+#' @importFrom sf st_geometry
+#' @importFrom sf st_cast
+#' @importFrom sf st_within
+#' 
 #' @examples 
 #' 
 #' stratified_sampling_sf(points, cellsize = c(600,600))

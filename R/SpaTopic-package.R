@@ -27,6 +27,7 @@
 #' @keywords package
 #' 
 #' @importFrom Rcpp evalCpp
+#' 
 #' @useDynLib SpaTopic
 #' @exportPattern "^[[:alpha:]]+"
 NA
