@@ -2,18 +2,20 @@ Package: SpaTopic
 Type: Package
 Title: SpaTopic
 Version: 1.0
-Date: 2023-08-1e8
+Date: 2023-12-20
 Author: Xiyu Peng
 Maintainer: Xiyu Peng <pansypeng124@gmail.com>
 Description: Fast topic inference to identify tissue architecture in multiplexed images 
 License: GPL (>= 3)
 Depends: R (>= 3.4.0),
-         Rcpp (>= 0.12.0)
+         Rcpp (>= 0.12.0),
+         RcppArmadillo (>= 0.12.0)
 Imports: Rcpp (>= 1.0.10), 
          RcppProgress (>= 0.4), 
          RANN(>= 2.6.0),
          foreach(>= 1.5.0), 
-         sf(>= 1.0-12)
+         sf(>= 1.0-12),
+         RcppArmadillo (>= 0.12.0)
 LinkingTo: Rcpp, 
            RcppArmadillo,
            RcppProgress

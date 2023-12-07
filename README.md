@@ -11,9 +11,21 @@ It runs much faster on large-scale image data, compared to the default KNN-Kmean
 
 ``` r
 # Install SpaTopic
+# install.packages("devtools")
 devtools::install_github("xiyupeng/SpaTopic")
 library(SpaTopic)
 ```
+
+## Dependency
+
+SpaTopic requires dependency on the following R packages:
+
+- Rcpp  for C++ codes
+- RcppProgress for C++ codes
+- RcppArmadillo for C++ codes
+- RANN for fast KNN 
+- foreach  for parallel computing
+- sf for spatial analysis
 
 ## Usage
 
