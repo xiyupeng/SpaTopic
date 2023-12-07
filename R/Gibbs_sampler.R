@@ -379,6 +379,5 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   print(gibbs.res$Perplexity)
   
   return(gibbs.res)
-  
 }
 

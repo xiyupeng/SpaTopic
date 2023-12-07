@@ -6,9 +6,9 @@
 #' 
 #' @param object Seurat v5 object
 #' 
-#' @param group.by \code{character}. The name of the column that contains celltype information
+#' @param group.by \code{character}. The name of the column that contains celltype information in the Seurat object.
 #' 
-#' @param image \code{character}. The name of the image
+#' @param image \code{character}. The name of the image. Default is "image1".
 #' 
 #' @return Return a data frame as the input of SpaTopic
 #' 

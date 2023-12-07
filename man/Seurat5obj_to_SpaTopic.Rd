@@ -9,9 +9,9 @@ Seurat5obj_to_SpaTopic(object, group.by, image = "image1")
 \arguments{
 \item{object}{Seurat v5 object}
 
-\item{group.by}{\code{character}. The name of the column that contains celltype information}
+\item{group.by}{\code{character}. The name of the column that contains celltype information in the Seurat object.}
 
-\item{image}{\code{character}. The name of the image}
+\item{image}{\code{character}. The name of the image. Default is "image1".}
 }
 \value{
 Return a data frame as the input of SpaTopic
