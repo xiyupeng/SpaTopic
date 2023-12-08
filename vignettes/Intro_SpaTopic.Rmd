@@ -133,7 +133,7 @@ We also visualize the distribution of seven niches over the same image.
 ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "niches", axes = TRUE, dark.background = T,cols = "glasbey") + ggtitle("Niches") 
 ```
 
-## Topic Inference on Multiple Images.
+## Topic Inference on Multiple Images
 
 SpaTopic can identify common tissue patterns across multiple images. 
 The input should be a list of data frames.
