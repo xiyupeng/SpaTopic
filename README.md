@@ -2,7 +2,7 @@ SpaTopic
 =======
 
 An R package for fast topic inference to identify tissue architecture in multiplexed images.
-It runs much faster on large-scale image data, compared to the default KNN-Kmeans method in the Seurat package.
+It runs much faster on large-scale image data, compared to other KNN-based methods, such as the default KNN-Kmeans method in the Seurat v5 package.
 
 
 ## Installation
@@ -18,16 +18,16 @@ devtools::install_github("xiyupeng/SpaTopic")
 
 SpaTopic requires dependency on the following R packages:
 
-- Rcpp  for C++ codes
-- RcppProgress for C++ codes
-- RcppArmadillo for C++ codes
-- RANN for fast KNN 
-- foreach  for parallel computing
-- sf for spatial analysis
+- [Rcpp](https://cran.r-project.org/web/packages/Rcpp/index.html)  for C++ codes
+- [RcppProgress](https://cran.r-project.org/web/packages/RcppProgress/index.html) for C++ codes
+- [RcppArmadillo](https://cran.r-project.org/web/packages/RcppArmadillo/index.html) for C++ codes
+- [RANN](https://cran.r-project.org/web/packages/RANN/index.html) for fast KNN 
+- [foreach](https://cran.r-project.org/web/packages/foreach/index.html)  for parallel computing
+- [sf](https://cran.r-project.org/web/packages/sf/index.html) for spatial analysis
 
 ## Usage
 
-The required input of SpaTopic is a data frame containing cells within on a single image or a list of data frames for multiple images. Each data frame consists of four columns: The image ID, X, Y cell coordinates, and cell type. 
+The required input of SpaTopic is a data frame containing cells within on a single image or a list of data frames for multiple images. Each data frame consists of four columns: The image ID, X, Y cell coordinates, and cell type information. 
 
 ``` r
 library(SpaTopic)
@@ -44,12 +44,13 @@ head(lung5)
 gibbs.res<-SpaTopic_inference(lung5, ntopics = 7, sigma = 50, region_radius = 400)
 ```
 
-For more detailed usage of SpaTopic,
-please check the tutorial and the vignette.
+For detailed usage of SpaTopic,
+please check the [tutorial]((https://xiyupeng.github.io/SpaTopic/).
 
 ## Data
 
-The example image in Seurat v5 object used in the Vignette are provided in: 
+The example image used in the tutorial can be downloaded from [here](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD?usp=sharing).
+It is stored in a Seurat v5 object. 
 
 ## Output
 
@@ -75,6 +76,4 @@ Coming soon......
 If you have any problems, please contact:
 
 Xiyu Peng (pansypeng124@gmail.com, pengx1@mskcc.org)
-
-
 

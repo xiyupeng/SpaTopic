@@ -1,0 +1,32 @@
+---
+title: "Model Selection"
+author: "Xiyu Peng"
+date: 2023-12-20
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In this article, I introduce how to do model selection and tune parameters for your own image data.
+
+## Simple Usage
+
+```{r setup, warning=FALSE,message=FALSE}
+library(SpaTopic)
+```
+
+
+## Number of Topics
+
+
+
+## Parameter choice
+
+
+
+## Hyperparameters
+

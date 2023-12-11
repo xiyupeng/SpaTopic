@@ -1,14 +1,15 @@
 ---
-title: "Introduction to SpaTopic"
+title: "SpaTopic Basics"
 author: "Xiyu Peng"
-date: 2023 December
+date: 2023-12-20
 
 output: 
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{my-vignette}
+  %\VignetteIndexEntry{SpaTopic Basic}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  % \VignettePackage{SpaTopic}
 ---
 
 ```{r, include = FALSE}
@@ -18,7 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-**More detailed documentation is available at the [SpaTopic Home Page](https://github.com/xiyupeng/SpaTopic). 
+**More detailed documentation is available at the [SpaTopic Home Page](https://xiyupeng.github.io/SpaTopic/). 
 Please check the [github page](https://github.com/xiyupeng/SpaTopic) for more detailed information for the package.
 
 ## Introduction
@@ -35,113 +36,36 @@ Contrasting to computationally intensive K-nearest-neighbor-based cell neighborh
 
 `SpaTopic` can be applied either on a single image or across multiple images.
 
-## Set-up
+## Simple Usage
 
-We use a non-small cell lung cancer image to illustrate how to use `SpaTopic`. 
-The data object here can be download from [here](https://github.com/xiyupeng/SpaTopic),
-with original public resources available on the [nanostring website](https://nanostring.com/products/cosmx-spatial-molecular-imager/ffpe-dataset/nsclc-ffpe-dataset/).
-These images were generated using a 960-plex CoxMx RNA panel on the Nanostring CoxMx Spatial Molecular Imager platform. 
-We selected Lung5-1 sample and annotated cells using Azimuth [22] based on the human lung reference v1.0. 
-The Lung5-1 sample contains 38 annotated cell types.
-Since we used healthy lung tissue as the reference, tumor cells were labeled as ’basal’ cells.
-More informaion can be found [here](https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager).
+The required input of SpaTopic is a data frame containing cells within on a single image or a list of data frames for multiple images. Each data frame consists of four columns: 
 
-```{r,message=FALSE,warning=FALSE}
-## We use Seurat v5 package to visualze the results
-library(Seurat, quietly = TRUE);packageVersion("Seurat")
-## Load the Seurat object for the image
-load("~/github/SpaTopic/data/nanostring_example.rdata")
-## for large dataset
-options(future.globals.maxSize = 1e9)
-```
-
-We can use the Seurat function `ImageDimPlot` to visualize the distribution of cell types on the image.
-
-```{r,fig.width=7, fig.height=13,message=FALSE,warning=FALSE}
-library(ggplot2)
-celltype.plot <-ImageDimPlot(nano.obj, fov = "lung5.rep1", axes = TRUE, cols = "glasbey",dark.background = T)
-celltype.plot+theme(legend.position = "bottom",legend.direction = "vertical")
-```
-
-## Topic Inference on a Single Image
-
-Now, our data is ready.
-Below we show an example how to use `SpaTopic` to identify tissue architectures from multiplexed images.
-
-### Input
-
-The required input of SpaTopic is a data frame containing cells within on a single image or a list of data frames for multiple images. Each data frame consists of four columns: The image ID, X, Y cell coordinates, and cell type. 
-
-You may use the function `Seurat5obj_to_SpaTopic()` to extract input data from a typical Seurat v5 object. 
-The column name for cell type information need to be provided via option `group.by`.
-
-```{r,message=FALSE,warning=FALSE}
-library(SpaTopic);packageVersion("SpaTopic")
-## Prepare input from Seurat Object
-dataset<-Seurat5obj_to_SpaTopic(object = nano.obj, group.by = "predicted.annotation.l1",image = "image1")
-head(dataset)
-```
-
-### Gibbs Sampling
-
-This step takes around 90 seconds on a regular laptop
+- image: Image ID
+- X, Y: X, Y cell coordinate
+- type: cell type information
 
 ```{r}
-## Gibbs sampling for SpaTopic
-system.time(gibbs.res<-SpaTopic_inference(dataset, ntopics = 7, sigma = 50, region_radius = 400))
+library(SpaTopic)
+## The input can be a data frame or a list of data frames
+data("lung5")
+head(lung5)
 ```
 
-
-### Topic Content and Distribution
-
-SpaTopic identify seven topics from the image. 
-Below we use the heatmap to show the cell type composition within each topic.
-
-```{r,fig.width=7,fig.height=4}
-library(pheatmap)
-m <- as.data.frame(gibbs.res$Beta)
-colnames(m)<-paste0("topic",1:7)
-rownames(m)<-levels(as.factor(nano.obj$predicted.annotation.l1))
-pheatmap::pheatmap(t(m))
+Run Gibbs Sampling
+```{r,warning=FALSE,message=FALSE}
+## Gibbs sampling
+gibbs.res<-SpaTopic_inference(lung5, ntopics = 7, sigma = 50, region_radius = 400)
 ```
 
-We assign each cell to a topic with the highest posterior probability
-and visualize the distribution of cell topics over the image.
+Check the output of SpaTopic
 
-```{r,fig.width=7, fig.height=8}
-prob<-as.matrix(gibbs.res$Z.trace)
-nano.obj$Topic<-as.factor(apply(prob,1,which.max))
-library(ggplot2)
-ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "Topic", axes = TRUE, 
-                           dark.background = T,cols = "glasbey") + ggtitle("Topic") 
+```{r}
+str(gibbs.res)
 ```
 
-### Compare to BuildNicheAssay() in Seurat v5 
+For more detailed usage of SpaTopic and how to interprete output from SpaTopic,
+please check the complete tutorial in [SpaTopic Home Page]((https://xiyupeng.github.io/SpaTopic/).
+We also provide a function to prepare input from Seurat v5 object.
 
-We compare `SpaTopic` to the function `BuildNicheAssay()` in Seurat v5. 
-It took around 5 min on the same laptop.
 
-```{r,eval=FALSE}
-### NOT RUN!! We use the pre-computed result
-system.time(nano.obj <- BuildNicheAssay(object = nano.obj, "lung5.rep1", group.by = "predicted.annotation.l1",
-                            niches.k = 7, neighbors.k = 100))
-```
 
-We also visualize the distribution of seven niches over the same image.
-
-```{r,fig.width=7, fig.height=8}
-ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "niches", axes = TRUE, dark.background = T,cols = "glasbey") + ggtitle("Niches") 
-```
-
-## Topic Inference on Multiple Images
-
-SpaTopic can identify common tissue patterns across multiple images. 
-The input should be a list of data frames.
-See an example below (not run).
-
-```{r,eval=FALSE}
-## tissue1, tissue2 are data frames of two different images.
-gibbs.res<-SpaTopic_inference(list(A = tissue1, B = tissue2), ntopics = 7, sigma = 50, region_radius = 400) 
-```
-
-Please check more examples in [SpaTopic Home Page](https://github.com/xiyupeng/SpaTopic). 
