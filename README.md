@@ -45,7 +45,7 @@ gibbs.res<-SpaTopic_inference(lung5, ntopics = 7, sigma = 50, region_radius = 40
 ```
 
 For detailed usage of SpaTopic,
-please check the [tutorial]((https://xiyupeng.github.io/SpaTopic/).
+please check the [tutorial](https://xiyupeng.github.io/SpaTopic/).
 
 ## Data
 
