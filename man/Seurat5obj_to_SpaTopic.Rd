@@ -21,6 +21,13 @@ Prepare SpaTopic input from one Seurat v5 object
 }
 \examples{
 
-dataset<-Seurat5obj_to_SpaTopic(object = nano.obj, group.by = "predicted.annotation.l1",image = "image1")
+## nano.obj is a Seurat v5 object
+#dataset<-Seurat5obj_to_SpaTopic(object = nano.obj, 
+#                 group.by = "predicted.annotation.l1",image = "image1")
+## Expect output
+data("lung5")
 
+}
+\seealso{
+\code{\link{lung5}}
 }

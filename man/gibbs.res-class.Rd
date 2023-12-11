@@ -3,14 +3,14 @@
 \docType{class}
 \name{gibbs.res-class}
 \alias{gibbs.res-class}
-\title{A class representing outputs from SpaTopic}
+\title{A class of the output from SpaTopic}
 \description{
 Outputs from function \code{\link{SpaTopic_inference}}. 
 A \code{\link{list}} contains the following members:
 \itemize{
  \item \code{$Perplexity}. The perplexity is for the training data. 
  Let N be the total number of cells across all images.
-   \eqn{Perplexity = exp{-loglikelihood/N}}
+   \eqn{Perplexity = exp(-loglikelihood/N)}
  \item \code{$Deviance}. \eqn{Deviance = -2loglikelihood}.
  \item \code{$loglikelihood}. The model log-likelihood. 
  \item \code{$loglike.trace}. The log-likelihood for every collected posterior sample. 

@@ -27,6 +27,7 @@ Spatially stratified random sample points from an image by R package \code{sf}
 }
 \examples{
 
-stratified_sampling_sf(points, cellsize = c(600,600))
+data("lung5")
+pt_idx<-stratified_sampling_sf(lung5, cellsize = c(600,600))
 
 }
