@@ -24,7 +24,7 @@ library(SpaTopic)
 
 
 
-## Parameter choice
+## Parameter Choice
 
 
 

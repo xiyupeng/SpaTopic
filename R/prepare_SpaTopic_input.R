@@ -1,6 +1,6 @@
 ## prepare input for SpaTopic
 
-#' Convert one Seurat v5 object as the input of SpaTopic
+#' Convert a Seurat v5 object as the input of SpaTopic
 #' 
 #' Prepare SpaTopic input from one Seurat v5 object
 #' 

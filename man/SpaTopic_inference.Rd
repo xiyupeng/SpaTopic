@@ -111,6 +111,7 @@ as well as cell-cell interactions.
 data("lung5")
 gibbs.res<-SpaTopic_inference(lung5, ntopics = 7,
                               sigma = 50, region_radius = 400) 
+                              
 ## example for multiple images
 ## Make a fake image 2, NOT RUN
 #lung6<-lung5
