@@ -64,7 +64,7 @@ str(gibbs.res)
 ```
 
 For more detailed usage of SpaTopic and how to interprete output from SpaTopic,
-please check the complete tutorial in [SpaTopic Home Page]((https://xiyupeng.github.io/SpaTopic/).
+please check the complete tutorial in [SpaTopic Home Page](https://xiyupeng.github.io/SpaTopic/).
 We also provide a function to prepare input from Seurat v5 object.
 
 

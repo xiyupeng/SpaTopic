@@ -8,10 +8,10 @@
 ## `lung5`
 A data frame with 100149 rows and 4 columns: 
 \describe{ 
-  \item{image} Image ID
-  \item{X} X coordinate of the cell
-  \item{Y} Y coordinate of the cell
-  \item{type} cell type
+  \item{image}{Image ID}
+  \item{X}{X coordinate of the cell}
+  \item{Y}{Y coordinate of the cell}
+  \item{type}{Cell type}
 }
 }
 \source{

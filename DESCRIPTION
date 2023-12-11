@@ -14,15 +14,16 @@ Depends: R (>= 3.5.0),
          RANN (>= 2.6.0),
 Imports: sf (>= 1.0-12),
          methods (>= 3.4),
-         foreach (>= 1.5.0), 
-         doParallel (>= 1.0),
+         foreach (>= 1.5.0),
          iterators (>= 1.0),
+         doParallel (>= 1.0),
 LinkingTo: Rcpp, 
            RcppArmadillo,
-           RcppProgress
+           RcppProgress,
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    SeuratObject,
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Encoding: UTF-8

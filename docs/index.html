@@ -68,7 +68,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="spatopic">SpaTopic<a class="anchor" aria-label="anchor" href="#spatopic"></a>
 </h1></div>
-<p>An R package for fast topic inference to identify tissue architecture in multiplexed images. It runs much faster on large-scale image data, compared to other KNN-based methods, such as the default KNN-Kmeans method in the Seurat v5 package.</p>
+<p>An R package for fast topic inference to identify tissue architecture in multiplexed images. It implements a spatial topic model to identify immunologic topics across multiplexed images, given the cell location and cell type information as input. Collapsed Gibbs Sampling algorithm is used for model inference. Compared to other KNN-based methods (such as KNN-kmeans, the default in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -113,7 +113,7 @@
 <span><span class="co">#5_1 image1 7446.889 158845.7     Macrophage</span></span>
 <span><span class="co">#6_1 image1 3254.889 158838.7          CD4 T</span></span>
 <span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="va">lung5</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span></span></code></pre></div>
-<p>For detailed usage of SpaTopic, please check the [tutorial]((<a href="https://xiyupeng.github.io/SpaTopic/" class="external-link uri">https://xiyupeng.github.io/SpaTopic/</a>).</p>
+<p>For detailed usage of SpaTopic, please check the <a href="https://xiyupeng.github.io/SpaTopic/" class="external-link">tutorial</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>

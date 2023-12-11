@@ -98,6 +98,7 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' @seealso \code{\link{gibbs.res-class}}
 #' 
 #' @importFrom RANN nn2
+#' @import foreach
 #' 
 #' @examples 
 #' 
@@ -178,26 +179,27 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   for (ini in 1:ninit){ ### should chose the best one among random sample points
     
-    is_doparallel_available <-require(doParallel)
+    is_doparallel_available <- requireNamespace("doParallel", quietly = TRUE)
     
     if(!is_doparallel_available & do.parallel){
       warning("R package do.parallel is not available! The process is without Parallel.")
       do.parallel<-0
     }
     
+    i_id<-NULL  ## set global variable
     if(do.parallel){
       
       ### register cores for parallel computing 
       doParallel::registerDoParallel(n.cores)
     
-      results<-foreach::foreach(i = 1:num_images,.packages=c('sf','RANN'),
+      results<-foreach::foreach(i_id = 1:num_images,.packages=c('sf','RANN'),
                        .export = c("stratified_sampling_idx_sf")) %dopar% {
         
         ## set seed for each core in parallel computing
-        set.seed(seed+i)
+        set.seed(seed+i_id)
         
         ## get coords
-        coords_selected<-coords[[i]]
+        coords_selected<-coords[[i_id]]
        
         ## Strategy 2 with library(sf)
         center_idx<-stratified_sampling_sf(coords_selected, 
@@ -221,10 +223,10 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
       }
     }else{
       
-      results<-foreach(i = 1:num_images,.packages=c('RANN','sf')) %do% {
+      results<-foreach(i_id = 1:num_images,.packages=c('RANN','sf')) %do% {
         
         ## get coords
-        coords_selected<-coords[[i]]
+        coords_selected<-coords[[i_id]]
     
         ## Strategy 2 with library(sf)
         center_idx<-stratified_sampling_sf(coords_selected, 

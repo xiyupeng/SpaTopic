@@ -15,12 +15,11 @@
 ## set the appropriate value, possibly CXX17.
 #CXX_STD = CXX11
 
-PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
-PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) 
-PKG_LIBS += ‘$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"‘ $(SHLIB_OPENMP_CXXFLAGS)
-‘$(R_HOME)/bin/Rscript -e "RcppProgress:::CxxFlags()"‘
-PKG_CXXFLAGS +=-Ilibsrc $(SHLIB_OPENMP_CXXFLAGS) ‘$(R_HOME)/bin/Rscript
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) -Ilibsrc $(SHLIB_OPENMP_CXXFLAGS) ‘$(R_HOME)/bin/Rscript
 -e "RcppProgress:::CxxFlags()"‘
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) ‘$(R_HOME)/bin/Rscript 
+-e "Rcpp:::LdFlags()"‘ $(SHLIB_OPENMP_CXXFLAGS)
+‘$(R_HOME)/bin/Rscript -e "RcppProgress:::CxxFlags()"‘
 CXXFLAGS=-O3
 CC=ccache clang -Qunused-arguments
 CXX=ccache clang++ -Qunused-arguments

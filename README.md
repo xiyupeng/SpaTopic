@@ -2,7 +2,9 @@ SpaTopic
 =======
 
 An R package for fast topic inference to identify tissue architecture in multiplexed images.
-It runs much faster on large-scale image data, compared to other KNN-based methods, such as the default KNN-Kmeans method in the Seurat v5 package.
+It implements a spatial topic model to identify immunologic topics across multiplexed images, given the cell location and cell type information as input.
+Collapsed Gibbs Sampling algorithm is used for model inference.
+Compared to other KNN-based methods (such as KNN-kmeans, the default in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset.
 
 
 ## Installation
