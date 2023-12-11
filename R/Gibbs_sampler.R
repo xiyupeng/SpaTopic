@@ -103,9 +103,16 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' 
 #' ## tissue is a data frame containing cellular information from one image or
 #' ## multiple data frames from multiple images.
-#' gibbs.res<-SpaTopic_inference(tissue, ntopics = 7, sigma = 50, region_radius = 400) 
-#' ## for multiple images
-#' gibbs.res<-SpaTopic_inference(list(A = tissue1, B = tissue2), ntopics = 7, sigma = 50, region_radius = 400) 
+#' data("lung5")
+#' gibbs.res<-SpaTopic_inference(lung5, ntopics = 7,
+#'                               sigma = 50, region_radius = 400) 
+#'                               
+#' ## example for multiple images
+#' ## Make a fake image 2, NOT RUN
+#' #lung6<-lung5
+#' #lung6$image<-"image2"
+#' #gibbs.res<-SpaTopic_inference(list(A = lung5, B = lung6), 
+#' #                 ntopics = 7, sigma = 50, region_radius = 400) 
 #' 
 #' @export
 #' 
@@ -114,7 +121,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
                                      niter_init = 100, beta = .05, alpha = .01,
                                      trace = FALSE, seed = 123, thin = 20, burnin = 1000,
                                      niter = 200, display_progress = TRUE,
-                                     do.parallel = FALSE, n.cores = 1,axis = "2D",...){
+                                     do.parallel = FALSE, n.cores = 1,axis = "2D"){
   
   set.seed(seed)
   
@@ -136,6 +143,11 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   itr_df$Y<-as.numeric(itr_df$Y)
   itr_df$type<-as.factor(itr_df$type) 
   itr_df$image<-as.factor(itr_df$image)
+  
+  if(length(levels(itr_df$image))<num_images){
+    warning("Duplicate image ID! Please check images have distinct image ID!")
+    return(NULL)
+  }
   
   if(axis == "3D" & "Y2" %in% colnames(itr_df)){
     itr_df$Y2<-as.numeric(itr_df$Y2)
@@ -176,9 +188,9 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     if(do.parallel){
       
       ### register cores for parallel computing 
-      registerDoParallel(n.cores)
+      doParallel::registerDoParallel(n.cores)
     
-      results<-foreach(i = 1:num_images,.packages=c('sf','RANN'),
+      results<-foreach::foreach(i = 1:num_images,.packages=c('sf','RANN'),
                        .export = c("stratified_sampling_idx_sf")) %dopar% {
         
         ## set seed for each core in parallel computing

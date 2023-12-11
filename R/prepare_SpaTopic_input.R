@@ -14,13 +14,19 @@
 #' 
 #' @examples 
 #' 
-#' dataset<-Seurat5obj_to_SpaTopic(object = nano.obj, group.by = "predicted.annotation.l1",image = "image1")
+#' ## nano.obj is a Seurat v5 object
+#' #dataset<-Seurat5obj_to_SpaTopic(object = nano.obj, 
+#' #                 group.by = "predicted.annotation.l1",image = "image1")
+#' ## Expect output
+#' data("lung5")
+#' 
+#' @seealso \code{\link{lung5}}
 #' 
 #' @export
 #' 
 Seurat5obj_to_SpaTopic<-function(object,group.by,image = "image1"){
   
-  if (!requireNamespace("SeuratObject", quietly = TRUE)) {
+  if (!require("SeuratObject", quietly = TRUE)) {
     warning("The SeuratObject package (>= 5.0) must be installed to use this functionality")
     return(NULL)
   }
@@ -43,7 +49,7 @@ Seurat5obj_to_SpaTopic<-function(object,group.by,image = "image1"){
   
   
   tryCatch(
-    {celltype<-nano.obj[[group.by]]},
+    {celltype<-object[[group.by]]},
     error = function(e){
       print(e)
       return(NULL)
@@ -52,7 +58,6 @@ Seurat5obj_to_SpaTopic<-function(object,group.by,image = "image1"){
       print(w)
     }
   )
-  
   
   cells <- coords$cell
   rownames(coords) <- cells

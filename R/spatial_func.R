@@ -31,10 +31,12 @@ GetCoords <- function(tissue,axis = "2D") {
 #' @importFrom sf st_geometry
 #' @importFrom sf st_cast
 #' @importFrom sf st_within
+#' @importFrom sf st_crs
 #' 
 #' @examples 
 #' 
-#' stratified_sampling_sf(points, cellsize = c(600,600))
+#' data("lung5")
+#' pt_idx<-stratified_sampling_sf(lung5, cellsize = c(600,600))
 #' 
 #' @export
 #' 
