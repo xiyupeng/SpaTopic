@@ -138,4 +138,4 @@ See an example below (not run).
 gibbs.res<-SpaTopic_inference(list(A = tissue1, B = tissue2), ntopics = 7, sigma = 50, region_radius = 400) 
 ```
 
-Please check more examples in [SpaTopic Home Page]((https://xiyupeng.github.io/SpaTopic/). 
+Please check more examples in [SpaTopic Home Page](https://xiyupeng.github.io/SpaTopic/). 
