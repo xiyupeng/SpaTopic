@@ -44,7 +44,7 @@ The required input of SpaTopic is a data frame containing cells within on a sing
 - X, Y: X, Y cell coordinate
 - type: cell type information
 
-```{r}
+```{r,warning=FALSE,message=FALSE}
 library(SpaTopic)
 ## The input can be a data frame or a list of data frames
 data("lung5")
