@@ -21,7 +21,7 @@ A data frame with 100149 rows and 4 columns:
 lung5
 }
 \description{
-multiplexed image data on tumor tissue sample from non small cell lung cancer patient
+A lung cancer tumor tissue image, as the input of SpaTopic
 }
 \seealso{
 \code{\link{SpaTopic_inference}},\code{\link{Seurat5obj_to_SpaTopic}}
