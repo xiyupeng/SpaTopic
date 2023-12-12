@@ -103,7 +103,7 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">celltype.plot</span> <span class="op">&lt;-</span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">nano.obj</span>, fov <span class="op">=</span> <span class="st">"lung5.rep1"</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, cols <span class="op">=</span> <span class="st">"glasbey"</span>,dark.background <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="va">celltype.plot</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>,legend.direction <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaTopic_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
+<p><img src="SpaTopic_files/figure-html/celltype-1.png" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="topic-inference-on-a-single-image">Topic Inference on a Single Image<a class="anchor" aria-label="anchor" href="#topic-inference-on-a-single-image"></a>
@@ -154,7 +154,7 @@
 <span><span class="co">#&gt; [1] "Output model perplexity.."</span></span>
 <span><span class="co">#&gt; [1] 11.31563</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   89.25    0.38   90.22</span></span></code></pre></div>
+<span><span class="co">#&gt;   89.78    0.30   90.84</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="topic-content-and-distribution">Topic Content and Distribution<a class="anchor" aria-label="anchor" href="#topic-content-and-distribution"></a>
@@ -167,7 +167,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"topic"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">nano.obj</span><span class="op">$</span><span class="va">predicted.annotation.l1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">pheatmap</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaTopic_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<p><img src="SpaTopic_files/figure-html/heatmap-1.png" width="672"></p>
 <p>We assign each cell to a topic with the highest posterior probability and visualize the distribution of cell topics over the image.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">Z.trace</span><span class="op">)</span></span>
@@ -175,7 +175,7 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">nano.obj</span>, fov <span class="op">=</span> <span class="st">"lung5.rep1"</span>, group.by <span class="op">=</span> <span class="st">"Topic"</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                           dark.background <span class="op">=</span> <span class="cn">T</span>,cols <span class="op">=</span> <span class="st">"glasbey"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Topic"</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="SpaTopic_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
+<p><img src="SpaTopic_files/figure-html/topics-1.png" width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="compare-to-buildnicheassay-in-seurat-v5">Compare to BuildNicheAssay() in Seurat v5<a class="anchor" aria-label="anchor" href="#compare-to-buildnicheassay-in-seurat-v5"></a>
@@ -188,7 +188,7 @@
 <p>We also visualize the distribution of seven niches over the same image.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">nano.obj</span>, fov <span class="op">=</span> <span class="st">"lung5.rep1"</span>, group.by <span class="op">=</span> <span class="st">"niches"</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, dark.background <span class="op">=</span> <span class="cn">T</span>,cols <span class="op">=</span> <span class="st">"glasbey"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Niches"</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="SpaTopic_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p><img src="SpaTopic_files/figure-html/niches_vis-1.png" width="672"></p>
 </div>
 </div>
 <div class="section level2">

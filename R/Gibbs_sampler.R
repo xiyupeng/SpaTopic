@@ -97,7 +97,12 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' @seealso \code{\link{gibbs.res-class}}
 #' 
 #' @importFrom RANN nn2
+#' 
 #' @import foreach
+#' 
+#' @import methods
+#' 
+#' @import iterators
 #' 
 #' @examples 
 #' 

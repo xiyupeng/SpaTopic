@@ -26,7 +26,7 @@
 #'
 #' @keywords package
 #' 
-#' @importFrom Rcpp evalCpp
+#' @importFrom Rcpp sourceCpp
 #' 
 #' @useDynLib SpaTopic
 NA

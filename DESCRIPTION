@@ -15,8 +15,8 @@ Description: A novel spatial topic model to integrate both cell type and spatial
              information for every single cell.
 License: GPL (>= 3)
 Depends: R (>= 3.5.0),
-         Rcpp (>= 0.12.0),
-Imports: RANN (>= 2.6.0),
+Imports: Rcpp (>= 0.12.0),
+         RANN (>= 2.6.0),
          sf (>= 1.0-12),
          methods (>= 3.4),
          foreach (>= 1.5.0),

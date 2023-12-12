@@ -40,7 +40,7 @@ The Lung5-1 sample contains 38 annotated cell types.
 Since we used healthy lung tissue as the reference, tumor cells were labeled as ’basal’ cells.
 More informaion can be found [here](https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager).
 
-```{r,message=FALSE,warning=FALSE}
+```{r seurat,message=FALSE,warning=FALSE}
 ## We use Seurat v5 package to visualze the results
 library(Seurat, quietly = TRUE);packageVersion("Seurat")
 ## Load the Seurat object for the image
@@ -51,7 +51,7 @@ options(future.globals.maxSize = 1e9)
 
 We can use the Seurat function `ImageDimPlot` to visualize the distribution of cell types on the image.
 
-```{r,fig.width=7, fig.height=13,message=FALSE,warning=FALSE}
+```{r celltype,fig.width=7, fig.height=13,message=FALSE,warning=FALSE}
 library(ggplot2)
 celltype.plot <-ImageDimPlot(nano.obj, fov = "lung5.rep1", axes = TRUE, cols = "glasbey",dark.background = T)
 celltype.plot+theme(legend.position = "bottom",legend.direction = "vertical")
@@ -69,7 +69,7 @@ The required input of SpaTopic is a data frame containing cells within on a sing
 You may use the function `Seurat5obj_to_SpaTopic()` to extract input data from a typical Seurat v5 object. 
 The column name for cell type information need to be provided via option `group.by`.
 
-```{r,message=FALSE,warning=FALSE}
+```{r reformat, message=FALSE,warning=FALSE}
 library(SpaTopic);packageVersion("SpaTopic")
 ## Prepare input from Seurat Object
 dataset<-Seurat5obj_to_SpaTopic(object = nano.obj, group.by = "predicted.annotation.l1",image = "image1")
@@ -80,7 +80,7 @@ head(dataset)
 
 This step takes around 90 seconds on a regular laptop
 
-```{r}
+```{r inference}
 ## Gibbs sampling for SpaTopic
 system.time(gibbs.res<-SpaTopic_inference(dataset, ntopics = 7, sigma = 50, region_radius = 400))
 ```
@@ -91,7 +91,7 @@ system.time(gibbs.res<-SpaTopic_inference(dataset, ntopics = 7, sigma = 50, regi
 SpaTopic identify seven topics from the image. 
 Below we use the heatmap to show the cell type composition within each topic.
 
-```{r,fig.width=7,fig.height=4}
+```{r heatmap,fig.width=7,fig.height=4}
 library(pheatmap)
 m <- as.data.frame(gibbs.res$Beta)
 colnames(m)<-paste0("topic",1:7)
@@ -102,7 +102,7 @@ pheatmap::pheatmap(t(m))
 We assign each cell to a topic with the highest posterior probability
 and visualize the distribution of cell topics over the image.
 
-```{r,fig.width=7, fig.height=8}
+```{r topics,fig.width=7, fig.height=8}
 prob<-as.matrix(gibbs.res$Z.trace)
 nano.obj$Topic<-as.factor(apply(prob,1,which.max))
 library(ggplot2)
@@ -115,7 +115,7 @@ ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "Topic", axes = TRUE,
 We compare `SpaTopic` to the function `BuildNicheAssay()` in Seurat v5. 
 It took around 5 min on the same laptop.
 
-```{r,eval=FALSE}
+```{r niches,eval=FALSE}
 ### NOT RUN!! We use the pre-computed result
 system.time(nano.obj <- BuildNicheAssay(object = nano.obj, "lung5.rep1", group.by = "predicted.annotation.l1",
                             niches.k = 7, neighbors.k = 100))
@@ -123,7 +123,7 @@ system.time(nano.obj <- BuildNicheAssay(object = nano.obj, "lung5.rep1", group.b
 
 We also visualize the distribution of seven niches over the same image.
 
-```{r,fig.width=7, fig.height=8}
+```{r niches_vis,fig.width=7, fig.height=8}
 ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "niches", axes = TRUE, dark.background = T,cols = "glasbey") + ggtitle("Niches") 
 ```
 
