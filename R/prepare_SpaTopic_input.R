@@ -23,7 +23,6 @@
 #' @seealso \code{\link{lung5}}
 #' 
 #' @export
-#' 
 Seurat5obj_to_SpaTopic<-function(object,group.by,image = "image1"){
   
   if (!requireNamespace("SeuratObject", quietly = TRUE)) {

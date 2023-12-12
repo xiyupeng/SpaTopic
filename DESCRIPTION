@@ -1,18 +1,23 @@
 Package: SpaTopic
 Type: Package
-Title: topic inference to identify tissue architecture in multiplexed images 
+Title: Topic Inference to Identify Tissue Architecture in Multiplexed Images
 Version: 0.99
 Date: 2023-12-20
 Author: Xiyu Peng
 Maintainer: Xiyu Peng <pansypeng124@gmail.com>
-Description: Fast topic inference to identify tissue architecture across multiplexed images. 
-             Compared to other KNN-based methods, SpaTopic runs much faster on large-scale image data.
+Description: A novel spatial topic model to integrate both cell type and spatial 
+             information to identify the complex spatial tissue architectures on 
+             multiplexed tissue images without human intervention. The Package 
+             implements a Collapsed Gibbs sampling algorithm for inference. 
+             Contrasting to computationally intensive K-nearest-neighbor-based 
+             cell neighborhood analysis approaches, SpaTopic is more scalable 
+             to large-scale image datasets without extracting neighborhood 
+             information for every single cell.
 License: GPL (>= 3)
 Depends: R (>= 3.5.0),
          Rcpp (>= 0.12.0),
-         RcppArmadillo (>= 0.12.0),
-         RANN (>= 2.6.0),
-Imports: sf (>= 1.0-12),
+Imports: RANN (>= 2.6.0),
+         sf (>= 1.0-12),
          methods (>= 3.4),
          foreach (>= 1.5.0),
          iterators (>= 1.0),

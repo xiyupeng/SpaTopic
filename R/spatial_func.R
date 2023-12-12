@@ -39,7 +39,6 @@ GetCoords <- function(tissue,axis = "2D") {
 #' pt_idx<-stratified_sampling_sf(lung5, cellsize = c(600,600))
 #' 
 #' @export
-#' 
 stratified_sampling_sf <- function(points, cellsize = c(600,600), num_samples_per_stratum = 1) {
   
   # Convert points to an sf object

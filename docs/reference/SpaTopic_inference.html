@@ -221,31 +221,17 @@ However, the model inference for 3D tissue is still under test.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## tissue is a data frame containing cellular information from one image or</span></span></span>
 <span class="r-in"><span><span class="co">## multiple data frames from multiple images.</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"lung5"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu">SpaTopic_inference</span><span class="op">(</span><span class="va">lung5</span>, ntopics <span class="op">=</span> <span class="fl">7</span>,</span></span>
-<span class="r-in"><span>                              sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span> </span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "number of cells per image:"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> image1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 100149 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Initialization...."</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Numer of Initializations:"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 7.2.1; sf_use_s2() is TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Min perplexity during initialization:"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 11.63023</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "number of region centers selected:"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 971</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "number of cells per region on average:"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 103.1401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Finish initialization. Start Gibbs sampling...."</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Output model perplexity.."</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 11.31563</span>
+<span class="r-in"><span><span class="co">## NOT RUN, it takes about 90s</span></span></span>
+<span class="r-in"><span><span class="co">#gibbs.res&lt;-SpaTopic_inference(lung5, ntopics = 7,</span></span></span>
+<span class="r-in"><span><span class="co">#                               sigma = 50, region_radius = 400)</span></span></span>
+<span class="r-in"><span>                             </span></span>
 <span class="r-in"><span>                              </span></span>
-<span class="r-in"><span><span class="co">## example for multiple images</span></span></span>
-<span class="r-in"><span><span class="co">## Make a fake image 2, NOT RUN</span></span></span>
+<span class="r-in"><span><span class="co">## generate a fake image 2 and make an example for multiple images</span></span></span>
+<span class="r-in"><span><span class="co">## NOT RUN</span></span></span>
 <span class="r-in"><span><span class="co">#lung6&lt;-lung5</span></span></span>
-<span class="r-in"><span><span class="co">#lung6$image&lt;-"image2"</span></span></span>
+<span class="r-in"><span><span class="co">#lung6$image&lt;-"image2"  ## The image ID of two images should be different</span></span></span>
 <span class="r-in"><span><span class="co">#gibbs.res&lt;-SpaTopic_inference(list(A = lung5, B = lung6), </span></span></span>
 <span class="r-in"><span><span class="co">#                 ntopics = 7, sigma = 50, region_radius = 400) </span></span></span>
 <span class="r-in"><span></span></span>

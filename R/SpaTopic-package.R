@@ -27,9 +27,7 @@
 #' @keywords package
 #' 
 #' @importFrom Rcpp evalCpp
-#' @import RcppArmadillo
 #' 
 #' @useDynLib SpaTopic
-#' @exportPattern "^[[:alpha:]]+"
 NA
 

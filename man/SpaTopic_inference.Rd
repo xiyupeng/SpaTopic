@@ -108,14 +108,17 @@ as well as cell-cell interactions.
 
 ## tissue is a data frame containing cellular information from one image or
 ## multiple data frames from multiple images.
+
 data("lung5")
-gibbs.res<-SpaTopic_inference(lung5, ntopics = 7,
-                              sigma = 50, region_radius = 400) 
+## NOT RUN, it takes about 90s
+#gibbs.res<-SpaTopic_inference(lung5, ntopics = 7,
+#                               sigma = 50, region_radius = 400)
+                             
                               
-## example for multiple images
-## Make a fake image 2, NOT RUN
+## generate a fake image 2 and make an example for multiple images
+## NOT RUN
 #lung6<-lung5
-#lung6$image<-"image2"
+#lung6$image<-"image2"  ## The image ID of two images should be different
 #gibbs.res<-SpaTopic_inference(list(A = lung5, B = lung6), 
 #                 ntopics = 7, sigma = 50, region_radius = 400) 
 

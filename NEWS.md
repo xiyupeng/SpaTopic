@@ -1,3 +1,3 @@
 # SpaTopic 0.99
 
-* Version under development
+* The Version under development

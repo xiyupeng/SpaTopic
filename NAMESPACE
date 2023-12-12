@@ -2,10 +2,7 @@
 
 export(Seurat5obj_to_SpaTopic)
 export(SpaTopic_inference)
-export(gibbs_spatial_LDA_multiple)
 export(stratified_sampling_sf)
-exportPattern("^[[:alpha:]]+")
-import(RcppArmadillo)
 import(foreach)
 importFrom(RANN,nn2)
 importFrom(Rcpp,evalCpp)

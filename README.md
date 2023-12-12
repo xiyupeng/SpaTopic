@@ -1,6 +1,10 @@
 SpaTopic
 =======
 
+  <!-- badges: start -->
+  [![R-CMD-check](https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml)
+  <!-- badges: end -->
+
 An R package for fast topic inference to identify tissue architecture in multiplexed images.
 It implements a spatial topic model to identify immunologic topics across multiplexed images, given the cell location and cell type information as input.
 Collapsed Gibbs Sampling algorithm is used for model inference.
@@ -9,7 +13,7 @@ Compared to other KNN-based methods (such as KNN-kmeans, the default in Seurat v
 
 ## Installation
 
-`SpaTopic` can be installed from the GitHub repository using the devtools package.
+`SpaTopic` can be installed from the [GitHub repository](https://github.com/xiyupeng/SpaTopic) using the devtools package.
 
 ``` r
 # install.packages("devtools")
