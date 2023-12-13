@@ -24,12 +24,12 @@ devtools::install_github("xiyupeng/SpaTopic")
 
 SpaTopic requires dependency on the following R packages:
 
-- [Rcpp](https://cran.r-project.org/web/packages/Rcpp/index.html)  for C++ codes
-- [RcppProgress](https://cran.r-project.org/web/packages/RcppProgress/index.html) for C++ codes
-- [RcppArmadillo](https://cran.r-project.org/web/packages/RcppArmadillo/index.html) for C++ codes
-- [RANN](https://cran.r-project.org/web/packages/RANN/index.html) for fast KNN 
-- [foreach](https://cran.r-project.org/web/packages/foreach/index.html)  for parallel computing
-- [sf](https://cran.r-project.org/web/packages/sf/index.html) for spatial analysis
+- [Rcpp]( https://cran.r-project.org/package=Rcpp)  for C++ codes
+- [RcppProgress](https://cran.r-project.org/package=RcppProgress) for C++ codes
+- [RcppArmadillo](https://cran.r-project.org/package=RcppArmadillo) for C++ codes
+- [RANN](https://cran.r-project.org/package=RANN) for fast KNN 
+- [foreach](https://cran.r-project.org/package=foreach)  for parallel computing
+- [sf](https://cran.r-project.org/package=sf) for spatial analysis
 
 ## Usage
 

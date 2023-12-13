@@ -18,7 +18,7 @@ SpaTopic runs much faster than other KNN-based methods on large-scale images.
 The main functions in the SpaTopic package
 
 \itemize{
-\item Prepare input
+\item Prepare input   \code{\link{Seurat5obj_to_SpaTopic}}
 \item Model Infernece \code{\link{SpaTopic_inference}}
 \item Interpret outputs
 }
