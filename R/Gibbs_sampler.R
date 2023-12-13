@@ -171,7 +171,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   coords<-lapply(tissue,GetCoords,axis = axis)
   rm(list= c("tissue"))
 
-  print("Initialization....")
+  message("Start initialization....")
   
   perplexity_min<-Inf
   Z_keep<-NULL
@@ -181,25 +181,29 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   print("Numer of Initializations:")
   print(ninit)
-
+  
+  ## if we could do parallel?
+  is_doparallel_available <- requireNamespace("doParallel", quietly = TRUE)
+  
+  if(!is_doparallel_available & do.parallel){
+    warning("R package do.parallel is not available! The process is without Parallel.")
+    do.parallel<-0
+  }
   
   for (ini in 1:ninit){ ### should chose the best one among random sample points
-    
-    is_doparallel_available <- requireNamespace("doParallel", quietly = TRUE)
-    
-    if(!is_doparallel_available & do.parallel){
-      warning("R package do.parallel is not available! The process is without Parallel.")
-      do.parallel<-0
-    }
     
     i_id<-NULL  ## set global variable
     if(do.parallel){
       
       ### register cores for parallel computing 
       doParallel::registerDoParallel(n.cores)
-    
+      if(ini < 2){
+        print("Parallel computing with number of cores:")
+        print(n.cores)
+      }
+      
       results<-foreach::foreach(i_id = 1:num_images,.packages=c('sf','RANN'),
-                       .export = c("stratified_sampling_idx_sf")) %dopar% {
+                       .export = c("stratified_sampling_sf")) %dopar% {
         
         ## set seed for each core in parallel computing
         set.seed(seed+i_id)
@@ -374,8 +378,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     word_list<-as.integer(1:V)-1L
   }
   
-  ##print(proc.time())
-  print("Finish initialization. Start Gibbs sampling....")
+  message("Finish initialization. Start Gibbs sampling....")
   
   ## Gibbs_sampling 
   ## [TODO] should allow multiple chains to be run in parallel.

@@ -3,16 +3,14 @@ Type: Package
 Title: Topic Inference to Identify Tissue Architecture in Multiplexed Images
 Version: 0.99
 Date: 2023-12-20
-Author: Xiyu Peng
-Maintainer: Xiyu Peng <pansypeng124@gmail.com>
+Authors@R: person("Xiyu", "Peng", email = "pansypeng124@gmail.com",
+  role = c("aut", "cre"),comment = c(ORCID = "0000-0003-4232-0910"))
 Description: A novel spatial topic model to integrate both cell type and spatial 
              information to identify the complex spatial tissue architectures on 
              multiplexed tissue images without human intervention. The Package 
              implements a Collapsed Gibbs sampling algorithm for inference. 
-             Contrasting to computationally intensive K-nearest-neighbor-based 
-             cell neighborhood analysis approaches, SpaTopic is more scalable 
-             to large-scale image datasets without extracting neighborhood 
-             information for every single cell.
+             SpaTopic is scalable to large-scale image datasets without extracting 
+             neighborhood information for every single cell.
 License: GPL (>= 3)
 Depends: R (>= 3.5.0),
 Imports: Rcpp (>= 0.12.0),
@@ -21,7 +19,6 @@ Imports: Rcpp (>= 0.12.0),
          methods (>= 3.4),
          foreach (>= 1.5.0),
          iterators (>= 1.0),
-         doParallel (>= 1.0),
 LinkingTo: Rcpp, 
            RcppArmadillo,
            RcppProgress,
@@ -29,7 +26,10 @@ Suggests:
     knitr,
     rmarkdown,
     SeuratObject,
+    doParallel (>= 1.0),
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/xiyupeng/SpaTopic
+BugReports: https://github.com/xiyupeng/SpaTopic/issues
