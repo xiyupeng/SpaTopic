@@ -171,7 +171,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   coords<-lapply(tissue,GetCoords,axis = axis)
   rm(list= c("tissue"))
 
-  message("Start initialization....")
+  message("Start initialization...")
   
   perplexity_min<-Inf
   Z_keep<-NULL
@@ -378,7 +378,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     word_list<-as.integer(1:V)-1L
   }
   
-  message("Finish initialization. Start Gibbs sampling....")
+  message("Finish initialization. Start Gibbs sampling...")
   
   ## Gibbs_sampling 
   ## [TODO] should allow multiple chains to be run in parallel.
@@ -397,8 +397,9 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     gibbs.res$word.trace<-NULL
     gibbs.res$loglike.trace<-NULL
   }
+  message("Gibbs sampling done.")
  
-  print("Output model perplexity..")
+  print("Output model perplexity:")
   print(gibbs.res$Perplexity)
   
   return(gibbs.res)
