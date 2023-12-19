@@ -41,7 +41,8 @@ Since we used healthy lung tissue as the reference, tumor cells were labeled as 
 More informaion can be found [here](https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager).
 
 ```{r seurat,message=FALSE,warning=FALSE}
-## We use Seurat v5 package to visualze the results
+## We use Seurat v5 package to visualize the results.
+## If you still use Seurat v4, you will have the error
 library(Seurat, quietly = TRUE);packageVersion("Seurat")
 ## Load the Seurat object for the image
 load("~/github/SpaTopic_test/data/nanostring_example.rdata")

@@ -6,7 +6,7 @@ date: 2023-12-20
 output: 
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{SpaTopic Basic}
+  %\VignetteIndexEntry{SpaTopic Basics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
   % \VignettePackage{SpaTopic}

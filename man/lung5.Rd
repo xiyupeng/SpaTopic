@@ -11,7 +11,7 @@ A data frame with 100149 rows and 4 columns:
   \item{image}{Image ID}
   \item{X}{X coordinate of the cell}
   \item{Y}{Y coordinate of the cell}
-  \item{type}{Cell type}
+  \item{type}{cell type}
 }
 }
 \source{
@@ -21,7 +21,7 @@ A data frame with 100149 rows and 4 columns:
 lung5
 }
 \description{
-A lung cancer tumor tissue image, as the input of SpaTopic
+multiplexed image data on tumor tissue sample from non small cell lung cancer patient
 }
 \seealso{
 \code{\link{SpaTopic_inference}},\code{\link{Seurat5obj_to_SpaTopic}}
