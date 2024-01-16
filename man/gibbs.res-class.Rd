@@ -3,7 +3,7 @@
 \docType{class}
 \name{gibbs.res-class}
 \alias{gibbs.res-class}
-\title{A class of the output from SpaTopic}
+\title{A class of the output from 'SpaTopic'}
 \description{
 Outputs from function \code{\link{SpaTopic_inference}}. 
 A \code{\link{list}} contains the following members:

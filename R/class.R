@@ -1,5 +1,5 @@
 ############################################################################
-#' A class of the output from SpaTopic
+#' A class of the output from 'SpaTopic'
 #' 
 #' Outputs from function \code{\link{SpaTopic_inference}}. 
 #' A \code{\link{list}} contains the following members:

@@ -51,18 +51,20 @@ stratified_sampling_sf <- function(points, cellsize = c(600,600), num_samples_pe
   grid_sf <- st_geometry(grid_sf)
   grid_sf <- st_cast(grid_sf, "POLYGON")
   
-  # List to store sampled points' indices
-  sampled_point_idx <- list()
-  
   points_in_cells<-t(st_within(points_sf, grid_sf))
-  points_in_cells
   
-  for(i in 1:length(grid_sf)){
-    
-    sampled_point_idx[[i]] <- ifelse(length(points_in_cells[[i]])==0, NA, 
-                                   ifelse(length(points_in_cells[[i]]) < num_samples_per_stratum+1, points_in_cells[[i]], 
-                                          sample(points_in_cells[[i]], num_samples_per_stratum)))
-  }
+  # List to store sampled points' indices
+  sampled_point_idx <- lapply(points_in_cells, function(cell) {
+    if (length(cell) == 0) {
+      return(NA)
+    } else if (length(cell) < num_samples_per_stratum + 1) {
+      return(cell)
+    } else {
+      return(sample(cell, num_samples_per_stratum))
+    }
+  })
+ 
+  
   selected_points<- unlist(sampled_point_idx)
   selected_points <- selected_points[!is.na(selected_points)]
   

@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_SpaTopic_input.R
 \name{Seurat5obj_to_SpaTopic}
 \alias{Seurat5obj_to_SpaTopic}
-\title{Convert a Seurat v5 object as the input of SpaTopic}
+\title{Convert a Seurat v5 object as the input of 'SpaTopic'}
 \usage{
 Seurat5obj_to_SpaTopic(object, group.by, image = "image1")
 }
@@ -14,10 +14,10 @@ Seurat5obj_to_SpaTopic(object, group.by, image = "image1")
 \item{image}{\code{character}. The name of the image. Default is "image1".}
 }
 \value{
-Return a data frame as the input of SpaTopic
+Return a data frame as the input of 'SpaTopic'
 }
 \description{
-Prepare SpaTopic input from one Seurat v5 object
+Prepare 'SpaTopic' input from one Seurat v5 object
 }
 \examples{
 

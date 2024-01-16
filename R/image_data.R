@@ -1,4 +1,4 @@
-#' Example input data for SpaTopic
+#' Example input data for 'SpaTopic'
 #'
 #' multiplexed image data on tumor tissue sample from non small cell lung cancer patient
 #'

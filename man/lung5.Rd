@@ -3,7 +3,7 @@
 \docType{data}
 \name{lung5}
 \alias{lung5}
-\title{Example input data for SpaTopic}
+\title{Example input data for 'SpaTopic'}
 \format{
 ## `lung5`
 A data frame with 100149 rows and 4 columns: 

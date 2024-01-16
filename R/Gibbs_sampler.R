@@ -1,4 +1,4 @@
-## Gibbs sampling algorithm for SpaTopic
+## Gibbs sampling algorithm for 'SpaTopic'
 
 theta_est<-function(Ndk, alpha){
   Nd<-apply(Ndk,1,sum)
@@ -17,10 +17,10 @@ gibbs_spatial_LDA_multiple<-function(...){
 }
 
 
-#' SpaTopic: fast topic inference to identify tissue architecture in multiplexed images 
+#' 'SpaTopic': fast topic inference to identify tissue architecture in multiplexed images 
 #' 
 #' @description 
-#' This is the main function of SpaTopic, implementing a Collapsed Gibbs
+#' This is the main function of 'SpaTopic', implementing a Collapsed Gibbs
 #' Sampling algorithm to learn topics, which referred to different tissue microenvironments, 
 #' across multiple multiplexed tissue images. 
 #' The function takes as input cell labels and coordinates on tissue images 
@@ -111,6 +111,7 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' 
 #' data("lung5")
 #' ## NOT RUN, it takes about 90s
+#' library(sf)
 #' #gibbs.res<-SpaTopic_inference(lung5, ntopics = 7,
 #' #                               sigma = 50, region_radius = 400)
 #'                              
@@ -142,7 +143,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   ## check the colnames of the data frame
   if(!all(c("image","X","Y","type") %in% colnames(itr_df))){
-    warning("Please make sure you have image, X, Y, type in the colnames of tissue!")
+    stop("Please make sure you have image, X, Y, type in the colnames of tissue!")
     return(NULL)
   }
   
@@ -152,7 +153,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   itr_df$image<-as.factor(itr_df$image)
   
   if(length(levels(itr_df$image))<num_images){
-    warning("Duplicate image ID! Please check images have distinct image ID!")
+    stop("Duplicate image ID! Please check images have distinct image ID!")
     return(NULL)
   }
   
@@ -164,8 +165,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
 
   ## number of cells per image
   ncells<-table(itr_df$image)
-  print("number of cells per image:")
-  print(ncells)
+  message("number of cells per image:")
+  message(ncells)
   
   ### coords for each sample
   coords<-lapply(tissue,GetCoords,axis = axis)
@@ -179,14 +180,14 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   neigh_centers_keep<-NULL
   neigh_dists_keep<-NULL
   
-  print("Numer of Initializations:")
-  print(ninit)
+  message("Numer of Initializations:")
+  message(ninit)
   
   ## if we could do parallel?
   is_doparallel_available <- requireNamespace("doParallel", quietly = TRUE)
   
   if(!is_doparallel_available & do.parallel){
-    warning("R package do.parallel is not available! The process is without Parallel.")
+    warning("R package do.parallel is not available! The following process is without Parallel.")
     do.parallel<-0
   }
   
@@ -198,8 +199,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
       ### register cores for parallel computing 
       doParallel::registerDoParallel(n.cores)
       if(ini < 2){
-        print("Parallel computing with number of cores:")
-        print(n.cores)
+        message("Parallel computing with number of cores:")
+        message(n.cores)
       }
       
       results<-foreach::foreach(i_id = 1:num_images,.packages=c('sf','RANN'),
@@ -347,19 +348,19 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   ### Keep the best results during initialization
   if(ini_LDA){
-    print("Min perplexity during initialization:")
-    print(perplexity_min)
+    message("Min perplexity during initialization:")
+    message(perplexity_min)
   }
   Z<-Z_keep
   D<-D_keep
   neigh_centers<-neigh_centers_keep
   neigh_dists<-neigh_dists_keep
 
-  print("number of region centers selected:")
-  print(ncenters) 
+  message("number of region centers selected:")
+  message(ncenters) 
 
-  print("number of cells per region on average:")
-  print(mean(table(D)))
+  message("number of cells per region on average:")
+  message(mean(table(D)))
   
   
   if(ninit > 1){ ## need update only when several initialization
@@ -399,8 +400,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   }
   message("Gibbs sampling done.")
  
-  print("Output model perplexity:")
-  print(gibbs.res$Perplexity)
+  message("Output model perplexity:")
+  message(gibbs.res$Perplexity)
   
   return(gibbs.res)
 }

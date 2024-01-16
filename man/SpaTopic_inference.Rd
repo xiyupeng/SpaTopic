@@ -2,7 +2,7 @@
 % Please edit documentation in R/Gibbs_sampler.R
 \name{SpaTopic_inference}
 \alias{SpaTopic_inference}
-\title{SpaTopic: fast topic inference to identify tissue architecture in multiplexed images}
+\title{'SpaTopic': fast topic inference to identify tissue architecture in multiplexed images}
 \usage{
 SpaTopic_inference(
   tissue,
@@ -95,7 +95,7 @@ However, the model inference for 3D tissue is still under test.}
 Return a \code{\link{gibbs.res-class}} object. A list of outputs from Gibbs sampling.
 }
 \description{
-This is the main function of SpaTopic, implementing a Collapsed Gibbs
+This is the main function of 'SpaTopic', implementing a Collapsed Gibbs
 Sampling algorithm to learn topics, which referred to different tissue microenvironments, 
 across multiple multiplexed tissue images. 
 The function takes as input cell labels and coordinates on tissue images 
@@ -111,6 +111,7 @@ as well as cell-cell interactions.
 
 data("lung5")
 ## NOT RUN, it takes about 90s
+library(sf)
 #gibbs.res<-SpaTopic_inference(lung5, ntopics = 7,
 #                               sigma = 50, region_radius = 400)
                              

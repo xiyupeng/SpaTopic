@@ -46,6 +46,7 @@ The required input of SpaTopic is a data frame containing cells within on a sing
 
 ```{r,warning=FALSE,message=FALSE}
 library(SpaTopic)
+library(sf)
 ## The input can be a data frame or a list of data frames
 data("lung5")
 head(lung5)

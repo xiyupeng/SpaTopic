@@ -69,6 +69,7 @@ The column name for cell type information need to be provided via option `group.
 
 ```{r reformat, message=FALSE,warning=FALSE}
 library(SpaTopic);packageVersion("SpaTopic")
+library(sf)
 ## Prepare input from Seurat Object
 dataset<-Seurat5obj_to_SpaTopic(object = nano.obj, group.by = "predicted.annotation.l1",image = "image1")
 head(dataset)

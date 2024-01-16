@@ -3,9 +3,9 @@
 \docType{package}
 \name{SpaTopic-Package}
 \alias{SpaTopic-Package}
-\title{SpaTopic R package}
+\title{'SpaTopic' R package}
 \description{
-The SpaTopic R package is centered around the SpaTopic algorithm to infer the spatial
+The 'SpaTopic' R package is centered around the 'SpaTopic' algorithm to infer the spatial
 tissue architectures from multiplexed images.
 }
 \details{
@@ -13,14 +13,13 @@ The package implements a Collapsed
 Gibbs sampling algorithm to infer topics, corresponding to distinct tissue 
 microenvironments across multiple tissue images. 
 Without obtaining the cell neighborhood info of every single cell, 
-SpaTopic runs much faster than other KNN-based methods on large-scale images.
+'SpaTopic' runs much faster than other KNN-based methods on large-scale images.
 
-The main functions in the SpaTopic package
+The main functions in the 'SpaTopic' package
 
 \itemize{
 \item Prepare input   \code{\link{Seurat5obj_to_SpaTopic}}
-\item Model Infernece \code{\link{SpaTopic_inference}}
-\item Interpret outputs
+\item Model Inference \code{\link{SpaTopic_inference}}
 }
 }
 \author{

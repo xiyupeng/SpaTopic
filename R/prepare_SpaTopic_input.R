@@ -1,8 +1,8 @@
-## prepare input for SpaTopic
+## prepare input for `SpaTopic`
 
-#' Convert a Seurat v5 object as the input of SpaTopic
+#' Convert a Seurat v5 object as the input of 'SpaTopic'
 #' 
-#' Prepare SpaTopic input from one Seurat v5 object
+#' Prepare 'SpaTopic' input from one Seurat v5 object
 #' 
 #' @param object Seurat v5 object
 #' 
@@ -10,7 +10,7 @@
 #' 
 #' @param image \code{character}. The name of the image. Default is "image1".
 #' 
-#' @return Return a data frame as the input of SpaTopic
+#' @return Return a data frame as the input of 'SpaTopic'
 #' 
 #' @examples 
 #' 
@@ -26,7 +26,7 @@
 Seurat5obj_to_SpaTopic<-function(object,group.by,image = "image1"){
   
   if (!requireNamespace("SeuratObject", quietly = TRUE)) {
-    warning("The SeuratObject package (>= 5.0) must be installed to use this functionality")
+    stop("The SeuratObject package (>= 5.0) must be installed to use this functionality")
     return(NULL)
   } else {
     
@@ -38,11 +38,11 @@ Seurat5obj_to_SpaTopic<-function(object,group.by,image = "image1"){
     tryCatch(
     {coords <- SeuratObject::GetTissueCoordinates(object, which = "centroids")},
     error = function(e){
-      warning("Please check if the input object is a Seurat v5 object")
+      stop("Please check if the input object is a Seurat v5 object!")
       return(NULL)
     },
     warning = function(w){
-      print(w)
+      warning(w)
     }
     )
     
@@ -50,11 +50,11 @@ Seurat5obj_to_SpaTopic<-function(object,group.by,image = "image1"){
     tryCatch(
       {celltype<-object[[group.by]]},
       error = function(e){
-        print(e)
+        stop("Cannot find the column indicated by group.by in the Seurat object!")
         return(NULL)
       },
       warning = function(w){
-        print(w)
+        warning(w)
       }
     )
     
