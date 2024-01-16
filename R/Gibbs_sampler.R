@@ -23,19 +23,19 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' This is the main function of 'SpaTopic', implementing a Collapsed Gibbs
 #' Sampling algorithm to learn topics, which referred to different tissue microenvironments, 
 #' across multiple multiplexed tissue images. 
-#' The function takes as input cell labels and coordinates on tissue images 
-#' and returns the inferred topic labels and topic contents, a distribution
+#' The function takes cell labels and coordinates on tissue images as input,
+#' and returns the inferred topic labels for every cell, as well as topic contents, a distribution
 #' over celltypes.
 #' The function recovers spatial tissue architectures across images, 
-#' as well as cell-cell interactions.
+#' as well as indicating cell-cell interactions in each domain.
 #' 
 #' @param tissue (Required). A data frame or a list of data frames. One for each image. 
 #' Each row represent a cell with its image ID, X, Y coordinates on the image, celltype,
 #' with column names (image, X, Y, type), respectively. You may add another column 
 #' Y2 for 3D tissue image.
 #' 
-#' @param ntopics (Required). Number of topics. Topics will be obtained as a distribution 
-#' of 
+#' @param ntopics (Required). Number of topics. Topics will be obtained as distributions 
+#' of cell types.
 #' 
 #' @param sigma Default is 50. The lengthscale of the Nearest-neighbor Exponential Kernel.
 #' Sigma controls the strength of decay of correlation with distance in the kernel function.
@@ -44,7 +44,7 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' 
 #' @param region_radius Default is 400. The radius for each grid square when
 #' sampling region centers for each image. 
-#' Need to be adjusted based on the resolution and the complexity in images.
+#' Need to be adjusted based on the image resolution and pattern complexity.
 #' 
 #' @param npoints_selected Default is 1. Number of points sampled for each grid square 
 #' when sampling region centers for each image. Used with \code{region_radius}.
@@ -52,7 +52,7 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' @param kneigh Default is 5. Only consider the top 5 closest region centers for each cell.
 #' 
 #' @param ini_LDA Default is TRUE. Use warm start strategy for initialization and choose the best one
-#' to continue. If 0, it simply just uses the first initialization.
+#' to continue. If 0, it simply uses the first initialization.
 #' 
 #' @param ninit Default is 10. Number of initialization. 
 #' Only retain the initialization with the highest log likelihood (perplexity).
@@ -74,14 +74,14 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' @param seed Default is 123. Random seed.
 #' 
 #' @param thin Default is 20. Key parameter in Gibbs sampling. 
-#'  Collect a posterior sample for every 20 iterations.
+#'  Collect a posterior sample for every thin=20 iterations.
 #' 
 #' @param burnin Default is 1000. Key parameter in Gibbs sampling.
 #'  Start to collect posterior samples after 1000 iterations. You may increase
 #'  the number of iterations for burn-in for highly complex tissue images.
 #' 
 #' @param niter Default is 200. Key parameter in Gibbs sampling. 
-#' Number of posterior samples collected for the inference.
+#' Number of posterior samples collected for model inference.
 #' 
 #' @param display_progress Default is TRUE. Display the progress bar. 
 #' 
