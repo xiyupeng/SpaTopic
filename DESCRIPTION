@@ -1,7 +1,7 @@
 Package: SpaTopic
 Type: Package
 Title: Topic Inference to Identify Tissue Architecture in Multiplexed Images
-Version: 1.0.1
+Version: 1.0.1.9000
 Date: 2023-12-20
 Authors@R: person("Xiyu", "Peng", email = "pansypeng124@gmail.com",
   role = c("aut", "cre"),comment = c(ORCID = "0000-0003-4232-0910"))

@@ -1,3 +1,5 @@
+# SpaTopic (development version)
+
 # SpaTopic 1.0.1
 
 # SpaTopic 1.0
