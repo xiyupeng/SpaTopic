@@ -13,7 +13,13 @@ Compared to other KNN-based methods (such as KNN-kmeans, the default in Seurat v
 
 ## Installation
 
-`SpaTopic` can be installed from the [GitHub repository](https://github.com/xiyupeng/SpaTopic) using the devtools package.
+The R package `SpaTopic` now is available in CRAN and can be installed with the following code.
+
+``` r
+install.packages("SpaTopic")
+```
+
+The development version of `SpaTopic` can be installed from the [GitHub repository](https://github.com/xiyupeng/SpaTopic).
 
 ``` r
 # install.packages("devtools")
