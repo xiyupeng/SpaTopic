@@ -105,8 +105,9 @@ and visualize the distribution of cell topics over the image.
 prob<-as.matrix(gibbs.res$Z.trace)
 nano.obj$Topic<-as.factor(apply(prob,1,which.max))
 library(ggplot2)
+palatte<- c("#0000FFFF","#FF0000FF","#00FF00FF","#009FFFFF","#FF00B6FF","#005300FF","#FFD300FF")
 ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "Topic", axes = TRUE, 
-                           dark.background = T,cols = "glasbey") + ggtitle("Topic") 
+                           dark.background = T,cols = palatte) + ggtitle("Topic") 
 ```
 
 ### Compare to BuildNicheAssay() in Seurat v5 
@@ -123,7 +124,11 @@ system.time(nano.obj <- BuildNicheAssay(object = nano.obj, "lung5.rep1", group.b
 We also visualize the distribution of seven niches over the same image.
 
 ```{r niches_vis,fig.width=7, fig.height=8}
-ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "niches", axes = TRUE, dark.background = T,cols = "glasbey") + ggtitle("Niches") 
+nano.obj$niches<-factor(nano.obj$niches)
+nano.obj$niches<-ordered(nano.obj$niches,levels = c(1,2,3,4,5,6,7))
+## try to match the colors of topics
+palatte2<- c("#FF00B6FF","#0000FFFF","#FFD300FF","#009FFFFF","#FF0000FF","#005300FF","#00FF00FF")
+ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "niches", axes = TRUE, dark.background = T,cols = palatte2) + ggtitle("Niches") 
 ```
 
 ## Topic Inference on Multiple Images
