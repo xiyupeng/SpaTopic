@@ -166,7 +166,9 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   ## number of cells per image
   ncells<-table(itr_df$image)
   message("number of cells per image:")
-  message(ncells)
+  if(num_images == 1) message(ncells)
+  if(num_images > 1) message(paste(ncells,collapse = "\t"))
+  
   
   ### coords for each sample
   coords<-lapply(tissue,GetCoords,axis = axis)
@@ -357,7 +359,9 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   neigh_dists<-neigh_dists_keep
 
   message("number of region centers selected:")
-  message(ncenters) 
+  if(num_images == 1) message(ncenters) 
+  if(num_images > 1) message(paste(ncenters,collapse = "\t"))
+  
 
   message("number of cells per region on average:")
   message(mean(table(D)))
