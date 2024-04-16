@@ -297,7 +297,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   ## number of celltypes
   V<-length(unique((C)))
   ## number of regions
-  M<-length(table(D))
+  M<-max(D)+1
   ## number of words
   N<-length(C)
   
@@ -319,7 +319,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     Nwk <- table_2d_fast(C, Z, V, K) ## number of cells per topic per celltype
     Nk <- table_1d_fast(Z, K)  ## number of cells in each topic 
     Nd <- table_1d_fast(D, M) ## number of cells in each region (image specific)
-    
+   
     
     ### initialization (warm start)
     if(ini_LDA){
@@ -329,6 +329,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
                                           K, beta, alpha, sigma, thin, niter_init, 0,
                                           0, 0))
       perplexity<-gibbs.res$Perplexity
+      
     }else{
       perplexity<-0
     }
@@ -370,7 +371,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   if(ninit > 1){ ## need update only when several initialization
      
       ## number of regions
-    M<-length(table(D))  ## M might be changed since D changed
+    M<-max(D)+1  ## M might be changed since D changed
     
     Ndk <- table_2d_fast(D, Z, M, K) ## number of cells per topic per region (image specific)
     Nwk <- table_2d_fast(C, Z, V, K) ## number of cells per topic per celltype
