@@ -346,6 +346,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   }
   
   ###  release memory for large items
+  celltype<-levels(itr_df$type)
+  cellname<-rownames(itr_df)
   rm(list= c("itr_df"))
   gc()
   
@@ -371,7 +373,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   if(ninit > 1){ ## need update only when several initialization
      
       ## number of regions
-    M<-max(D)+1  ## M might be changed since D changed
+    M<-max(D)+1  ## M might be changed since D changed 
+    # A potential bug (what if the max(D) has been changed after gibbs sampling)
     
     Ndk <- table_2d_fast(D, Z, M, K) ## number of cells per topic per region (image specific)
     Nwk <- table_2d_fast(C, Z, V, K) ## number of cells per topic per celltype
@@ -407,6 +410,16 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
  
   message("Output model perplexity:")
   message(gibbs.res$Perplexity)
+  
+  ## Beta: Topic Content
+  gibbs.res$Beta<-as.data.frame(gibbs.res$Beta)
+  colnames(gibbs.res$Beta)<-paste0("topic",1:K)
+  rownames(gibbs.res$Beta)<-celltype
+  
+  ## Z.trace: posterior prob for every single cell
+  gibbs.res$Z.trace<-as.data.frame(gibbs.res$Z.trace/niter)
+  colnames(gibbs.res$Z.trace)<-paste0("topic",1:K)
+  rownames(gibbs.res$Z.trace)<-cellname
   
   return(gibbs.res)
 }
