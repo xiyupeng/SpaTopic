@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="index.html">SpaTopic</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -135,15 +135,29 @@
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">)</span></span>
-<span><span class="co">#List of 8</span></span>
-<span><span class="co"># $ Perplexity   : num 11.3</span></span>
-<span><span class="co"># $ Deviance     : num 485960</span></span>
-<span><span class="co"># $ loglikelihood: num -242980</span></span>
-<span><span class="co"># $ Beta         : num [1:38, 1:7] 0.03587 0.02539 0.00755 0.01858 0.02585 ...</span></span>
-<span><span class="co"># $ Theta        : num [1:971, 1:7] 0.855601 0.000232 0.999269 0.99889 0.998725 ...</span></span>
-<span><span class="co"># $ Ndk          : int [1:971, 1:7] 107 0 82 54 47 72 100 0 0 0 ...</span></span>
-<span><span class="co"># $ Nwk          : int [1:38, 1:7] 390 276 82 202 281 505 697 522 29 58 ...</span></span>
-<span><span class="co"># $ Z.trace      : int [1:100149, 1:7] 13 173 27 164 157 4 20 21 15 19 ...</span></span></code></pre></div>
+<span><span class="co"># List of 8</span></span>
+<span><span class="co">#  $ Perplexity   : num 11.3</span></span>
+<span><span class="co">#  $ Deviance     : num 485960</span></span>
+<span><span class="co">#  $ loglikelihood: num -242980</span></span>
+<span><span class="co">#  $ Beta         :'data.frame':    38 obs. of  7 variables:</span></span>
+<span><span class="co">#   ..$ topic1: num [1:38] 0.03587 0.02539 0.00755 0.01858 0.02585 ...</span></span>
+<span><span class="co">#   ..$ topic2: num [1:38] 6.51e-03 3.55e-02 2.62e-06 5.80e-04 7.75e-01 ...</span></span>
+<span><span class="co">#   ..$ topic3: num [1:38] 4.54e-06 4.54e-06 9.13e-04 3.45e-01 1.73e-03 ...</span></span>
+<span><span class="co">#   ..$ topic4: num [1:38] 0.02664 0.01743 0.00186 0.0152 0.08919 ...</span></span>
+<span><span class="co">#   ..$ topic5: num [1:38] 2.99e-06 2.99e-06 5.32e-03 1.91e-02 4.90e-03 ...</span></span>
+<span><span class="co">#   ..$ topic6: num [1:38] 6.35e-06 6.35e-06 2.04e-02 3.43e-03 6.35e-06 ...</span></span>
+<span><span class="co">#   ..$ topic7: num [1:38] 0.00534 0.00699 0.00604 0.01843 0.00655 ...</span></span>
+<span><span class="co">#  $ Theta        : num [1:971, 1:7] 0.855601 0.000232 0.999269 0.99889 0.998725 ...</span></span>
+<span><span class="co">#  $ Ndk          : int [1:971, 1:7] 107 0 82 54 47 72 100 0 0 0 ...</span></span>
+<span><span class="co">#  $ Nwk          : int [1:38, 1:7] 390 276 82 202 281 505 697 522 29 58 ...</span></span>
+<span><span class="co">#  $ Z.trace      :'data.frame':    100149 obs. of  7 variables:</span></span>
+<span><span class="co">#   ..$ topic1: num [1:100149] 0.065 0.865 0.135 0.82 0.785 0.02 0.1 0.105 0.075 0.095 ...</span></span>
+<span><span class="co">#   ..$ topic2: num [1:100149] 0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">#   ..$ topic3: num [1:100149] 0.275 0.005 0.21 0.005 0.005 0.77 0.02 0.015 0.085 0.075 ...</span></span>
+<span><span class="co">#   ..$ topic4: num [1:100149] 0.415 0 0 0.01 0.005 0.1 0.665 0.62 0.015 0.025 ...</span></span>
+<span><span class="co">#   ..$ topic5: num [1:100149] 0.005 0.01 0 0 0 0 0.005 0.005 0.005 0 ...</span></span>
+<span><span class="co">#   ..$ topic6: num [1:100149] 0 0 0.655 0.165 0.205 0.005 0 0 0 0 ...</span></span>
+<span><span class="co">#   ..$ topic7: num [1:100149] 0.24 0.12 0 0 0 0.105 0.21 0.255 0.82 0.805 ...</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>

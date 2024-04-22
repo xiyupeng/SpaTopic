@@ -1,7 +1,7 @@
 ---
 title: "Introduction to SpaTopic"
 author: "Xiyu Peng"
-date: 2023-12-20
+date: 2023-04-20
 ---
 
 ```{r, include = FALSE}
@@ -93,8 +93,6 @@ Below we use the heatmap to show the cell type composition within each topic.
 ```{r heatmap,fig.width=7,fig.height=4}
 library(pheatmap)
 m <- as.data.frame(gibbs.res$Beta)
-colnames(m)<-paste0("topic",1:7)
-rownames(m)<-levels(as.factor(nano.obj$predicted.annotation.l1))
 pheatmap::pheatmap(t(m))
 ```
 
