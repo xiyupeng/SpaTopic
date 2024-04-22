@@ -35,6 +35,7 @@ src/*.dll
 # ignore data folder
 data
 test
+revdep
 benchmarking
 .Rproj.user
 
