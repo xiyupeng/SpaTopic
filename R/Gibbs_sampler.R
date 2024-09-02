@@ -147,6 +147,14 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     return(NULL)
   }
   
+  if(any(is.na(itr_df$image)) | 
+     any(is.na(itr_df$X)) |
+     any(is.na(itr_df$Y)) |
+     any(is.na(itr_df$type)) ){
+    stop("Please make sure you have no NA in your input dataset!")
+    return(NULL)
+  }
+  
   itr_df$X<-as.numeric(itr_df$X)
   itr_df$Y<-as.numeric(itr_df$Y)
   itr_df$type<-as.factor(itr_df$type) 

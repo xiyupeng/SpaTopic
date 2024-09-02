@@ -4,7 +4,7 @@
     <loc>/404.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>/LICENSE.html</loc>
   </url>
   <url>
     <loc>/articles/Intro_SpaTopic.html</loc>
@@ -16,25 +16,16 @@
     <loc>/articles/SpaTopic.html</loc>
   </url>
   <url>
+    <loc>/articles/index.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
     <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gibbs.res-class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lung5.html</loc>
   </url>
   <url>
     <loc>/reference/Seurat5obj_to_SpaTopic.html</loc>
@@ -44,6 +35,15 @@
   </url>
   <url>
     <loc>/reference/SpaTopic_inference.html</loc>
+  </url>
+  <url>
+    <loc>/reference/gibbs.res-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/lung5.html</loc>
   </url>
   <url>
     <loc>/reference/stratified_sampling_sf.html</loc>

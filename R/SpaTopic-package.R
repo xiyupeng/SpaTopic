@@ -21,12 +21,10 @@
 #' 
 #' @author Xiyu Peng \email{pansypeng124@gmail.com}
 #'
-#' @docType package
-#'
 #' @keywords package
 #' 
 #' @importFrom Rcpp sourceCpp
 #' 
 #' @useDynLib SpaTopic
-NA
+"_PACKAGE"
 

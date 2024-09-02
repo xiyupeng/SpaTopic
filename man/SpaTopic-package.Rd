@@ -2,6 +2,8 @@
 % Please edit documentation in R/SpaTopic-package.R
 \docType{package}
 \name{SpaTopic-Package}
+\alias{SpaTopic}
+\alias{SpaTopic-package}
 \alias{SpaTopic-Package}
 \title{'SpaTopic' R package}
 \description{
@@ -21,6 +23,14 @@ The main functions in the 'SpaTopic' package
 \item Prepare input   \code{\link{Seurat5obj_to_SpaTopic}}
 \item Model Inference \code{\link{SpaTopic_inference}}
 }
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/xiyupeng/SpaTopic}
+  \item Report bugs at \url{https://github.com/xiyupeng/SpaTopic/issues}
+}
+
 }
 \author{
 Xiyu Peng \email{pansypeng124@gmail.com}
