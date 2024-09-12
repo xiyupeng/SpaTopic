@@ -42,7 +42,7 @@ More informaion can be found [here](https://satijalab.org/seurat/articles/seurat
 ## If you still use Seurat v4, you will have the error
 library(Seurat, quietly = TRUE);packageVersion("Seurat")
 ## Load the Seurat object for the image
-load("~/Documents/Research/github/SpaTopic/data/nanostring_example.rdata")
+load("~/Documents/Research/github/SpaTopic_data/nanostring_example.rdata")
 ## for large dataset
 options(future.globals.maxSize = 1e9)
 ```
