@@ -8,8 +8,8 @@
 <meta name="description" content="SpaTopic">
 <title>Introduction to SpaTopic • SpaTopic</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to SpaTopic">
 <meta property="og:description" content="SpaTopic">
@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SpaTopic</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9900</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,8 +44,8 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/Intro_SpaTopic.html">SpaTopic Basics</a>
     <a class="dropdown-item" href="../articles/Model_Selection.html">Model Selection</a>
+    <a class="dropdown-item" href="../articles/Intro_SpaTopic.html">SpaTopic Basics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -89,46 +89,24 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Recent advancements in multiplexed tissue imaging allow for
-examination of tissue microenvironments in great detail. These
-cutting-edge technologies offer invaluable insights into cellular
-heterogeneity and spatial architectures, playing a crucial role in
-decoding mechanisms of treatment response and disease progression.</p>
-<p>However, gaining a deep understanding of complex spatial patterns
-remains challenging. <code>SpaTopic</code> implements a novel spatial
-topic model to integrate both cell type and spatial information to
-identify the complex spatial tissue structures without human
-intervention. The Collapsed Gibbs sampling algorithm is used for model
-inference. Contrasting to computationally intensive
-K-nearest-neighbor-based cell neighborhood analysis approaches,
-<code>SpaTopic</code> is more scalable to large-scale image datasets
-without extracting neighborhood information for every single cell.</p>
-<p><code>SpaTopic</code> can be applied either on a single image or
-across multiple images.</p>
+<p>Recent advancements in multiplexed tissue imaging allow for examination of tissue microenvironments in great detail. These cutting-edge technologies offer invaluable insights into cellular heterogeneity and spatial architectures, playing a crucial role in decoding mechanisms of treatment response and disease progression.</p>
+<p>However, gaining a deep understanding of complex spatial patterns remains challenging. <code>SpaTopic</code> implements a novel spatial topic model to integrate both cell type and spatial information to identify the complex spatial tissue structures without human intervention. The Collapsed Gibbs sampling algorithm is used for model inference. Contrasting to computationally intensive K-nearest-neighbor-based cell neighborhood analysis approaches, <code>SpaTopic</code> is more scalable to large-scale image datasets without extracting neighborhood information for every single cell.</p>
+<p><code>SpaTopic</code> can be applied either on a single image or across multiple images.</p>
 </div>
 <div class="section level2">
 <h2 id="set-up">Set-up<a class="anchor" aria-label="anchor" href="#set-up"></a>
 </h2>
-<p>We use a non-small cell lung cancer image to illustrate how to use
-<code>SpaTopic</code>. The data object here can be download from <a href="https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD?usp=sharing" class="external-link">here</a>,
-with original public resources available on the <a href="https://nanostring.com/products/cosmx-spatial-molecular-imager/ffpe-dataset/nsclc-ffpe-dataset/" class="external-link">nanostring
-website</a>. These images were generated using a 960-plex CoxMx RNA
-panel on the Nanostring CoxMx Spatial Molecular Imager platform. We
-selected Lung5-1 sample and annotated cells using Azimuth based on the
-human lung reference v1.0. The Lung5-1 sample contains 38 annotated cell
-types. Since we used healthy lung tissue as the reference, tumor cells
-were labeled as ’basal’ cells. More informaion can be found <a href="https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager" class="external-link">here</a>.</p>
+<p>We use a non-small cell lung cancer image to illustrate how to use <code>SpaTopic</code>. The data object here can be download from <a href="https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD?usp=sharing" class="external-link">here</a>, with original public resources available on the <a href="https://nanostring.com/products/cosmx-spatial-molecular-imager/ffpe-dataset/nsclc-ffpe-dataset/" class="external-link">nanostring website</a>. These images were generated using a 960-plex CoxMx RNA panel on the Nanostring CoxMx Spatial Molecular Imager platform. We selected Lung5-1 sample and annotated cells using Azimuth based on the human lung reference v1.0. The Lung5-1 sample contains 38 annotated cell types. Since we used healthy lung tissue as the reference, tumor cells were labeled as ’basal’ cells. More informaion can be found <a href="https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## We use Seurat v5 package to visualize the results.</span></span>
 <span><span class="co">## If you still use Seurat v4, you will have the error</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"Seurat"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '5.0.2'</span></span>
+<span><span class="co">#&gt; [1] '4.9.9.9050'</span></span>
 <span><span class="co">## Load the Seurat object for the image</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"~/Documents/Research/github/SpaTopic/data/nanostring_example.rdata"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"~/github/SpaTopic_test/data/nanostring_example.rdata"</span><span class="op">)</span></span>
 <span><span class="co">## for large dataset</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>future.globals.maxSize <span class="op">=</span> <span class="fl">1e9</span><span class="op">)</span></span></code></pre></div>
-<p>We can use the Seurat function <code>ImageDimPlot</code> to visualize
-the distribution of cell types on the image.</p>
+<p>We can use the Seurat function <code>ImageDimPlot</code> to visualize the distribution of cell types on the image.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">celltype.plot</span> <span class="op">&lt;-</span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">nano.obj</span>, fov <span class="op">=</span> <span class="st">"lung5.rep1"</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, cols <span class="op">=</span> <span class="st">"glasbey"</span>,dark.background <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
@@ -138,23 +116,15 @@ the distribution of cell types on the image.</p>
 <div class="section level2">
 <h2 id="topic-inference-on-a-single-image">Topic Inference on a Single Image<a class="anchor" aria-label="anchor" href="#topic-inference-on-a-single-image"></a>
 </h2>
-<p>Now, our data is ready. Below we show an example how to use
-<code>SpaTopic</code> to identify tissue architectures from multiplexed
-images.</p>
+<p>Now, our data is ready. Below we show an example how to use <code>SpaTopic</code> to identify tissue architectures from multiplexed images.</p>
 <div class="section level3">
 <h3 id="input">Input<a class="anchor" aria-label="anchor" href="#input"></a>
 </h3>
-<p>The required input of SpaTopic is a data frame containing cells
-within on a single image or a list of data frames for multiple images.
-Each data frame consists of four columns: The image ID, X, Y cell
-coordinates, and cell type.</p>
-<p>You may use the function <code><a href="../reference/Seurat5obj_to_SpaTopic.html">Seurat5obj_to_SpaTopic()</a></code> to
-extract input data from a typical Seurat v5 object. The column name for
-cell type information need to be provided via option
-<code>group.by</code>.</p>
+<p>The required input of SpaTopic is a data frame containing cells within on a single image or a list of data frames for multiple images. Each data frame consists of four columns: The image ID, X, Y cell coordinates, and cell type.</p>
+<p>You may use the function <code><a href="../reference/Seurat5obj_to_SpaTopic.html">Seurat5obj_to_SpaTopic()</a></code> to extract input data from a typical Seurat v5 object. The column name for cell type information need to be provided via option <code>group.by</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/xiyupeng/SpaTopic" class="external-link">SpaTopic</a></span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"SpaTopic"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '1.1.0.9900'</span></span>
+<span><span class="co">#&gt; [1] '1.1.0.9000'</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="co">## Prepare input from Seurat Object</span></span>
 <span><span class="va">dataset</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/Seurat5obj_to_SpaTopic.html">Seurat5obj_to_SpaTopic</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">nano.obj</span>, group.by <span class="op">=</span> <span class="st">"predicted.annotation.l1"</span>,image <span class="op">=</span> <span class="st">"image1"</span><span class="op">)</span></span>
@@ -179,6 +149,7 @@ cell type information need to be provided via option
 <span><span class="co">#&gt; Start initialization...</span></span>
 <span><span class="co">#&gt; Numer of Initializations:</span></span>
 <span><span class="co">#&gt; 10</span></span>
+<span><span class="co">#&gt; Warning: package 'RANN' was built under R version 4.1.3</span></span>
 <span><span class="co">#&gt; Min perplexity during initialization:</span></span>
 <span><span class="co">#&gt; 11.6302259709245</span></span>
 <span><span class="co">#&gt; number of region centers selected:</span></span>
@@ -190,20 +161,19 @@ cell type information need to be provided via option
 <span><span class="co">#&gt; Output model perplexity:</span></span>
 <span><span class="co">#&gt; 11.3156329380619</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt; 213.339   0.529 214.161</span></span></code></pre></div>
+<span><span class="co">#&gt;   86.69    0.24   87.44</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="topic-content-and-distribution">Topic Content and Distribution<a class="anchor" aria-label="anchor" href="#topic-content-and-distribution"></a>
 </h3>
-<p>SpaTopic identify seven topics from the image. Below we use the
-heatmap to show the cell type composition within each topic.</p>
+<p>SpaTopic identify seven topics from the image. Below we use the heatmap to show the cell type composition within each topic.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'pheatmap' was built under R version 4.1.3</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">Beta</span><span class="op">)</span></span>
 <span><span class="fu">pheatmap</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="SpaTopic_files/figure-html/heatmap-1.png" width="672"></p>
-<p>We assign each cell to a topic with the highest posterior probability
-and visualize the distribution of cell topics over the image.</p>
+<p>We assign each cell to a topic with the highest posterior probability and visualize the distribution of cell topics over the image.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">Z.trace</span><span class="op">)</span></span>
 <span><span class="va">nano.obj</span><span class="op">$</span><span class="va">Topic</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">prob</span>,<span class="fl">1</span>,<span class="va">which.max</span><span class="op">)</span><span class="op">)</span></span>
@@ -216,15 +186,12 @@ and visualize the distribution of cell topics over the image.</p>
 <div class="section level3">
 <h3 id="compare-to-buildnicheassay-in-seurat-v5">Compare to BuildNicheAssay() in Seurat v5<a class="anchor" aria-label="anchor" href="#compare-to-buildnicheassay-in-seurat-v5"></a>
 </h3>
-<p>We compare <code>SpaTopic</code> to the function
-<code><a href="https://satijalab.org/seurat/reference/BuildNicheAssay.html" class="external-link">BuildNicheAssay()</a></code> in Seurat v5. It took around 5 min on the
-same laptop.</p>
+<p>We compare <code>SpaTopic</code> to the function <code><a href="https://satijalab.org/seurat/reference/BuildNicheAssay.html" class="external-link">BuildNicheAssay()</a></code> in Seurat v5. It took around 5 min on the same laptop.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### NOT RUN!! We use the pre-computed result</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">nano.obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/BuildNicheAssay.html" class="external-link">BuildNicheAssay</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">nano.obj</span>, <span class="st">"lung5.rep1"</span>, group.by <span class="op">=</span> <span class="st">"predicted.annotation.l1"</span>,</span>
 <span>                            niches.k <span class="op">=</span> <span class="fl">7</span>, neighbors.k <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>We also visualize the distribution of seven niches over the same
-image.</p>
+<p>We also visualize the distribution of seven niches over the same image.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nano.obj</span><span class="op">$</span><span class="va">niches</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">nano.obj</span><span class="op">$</span><span class="va">niches</span><span class="op">)</span></span>
 <span><span class="va">nano.obj</span><span class="op">$</span><span class="va">niches</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">nano.obj</span><span class="op">$</span><span class="va">niches</span>,levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="fl">6</span>,<span class="fl">7</span><span class="op">)</span><span class="op">)</span></span>
@@ -237,9 +204,7 @@ image.</p>
 <div class="section level2">
 <h2 id="topic-inference-on-multiple-images">Topic Inference on Multiple Images<a class="anchor" aria-label="anchor" href="#topic-inference-on-multiple-images"></a>
 </h2>
-<p>SpaTopic can identify common tissue patterns across multiple images.
-The input should be a list of data frames. See an example below (not
-run).</p>
+<p>SpaTopic can identify common tissue patterns across multiple images. The input should be a list of data frames. See an example below (not run).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## tissue1, tissue2 are data frames of two different images.</span></span>
 <span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">tissue1</span>, B <span class="op">=</span> <span class="va">tissue2</span><span class="op">)</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span> </span></code></pre></div>
