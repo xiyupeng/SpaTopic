@@ -96,7 +96,8 @@ str(gibbs.res)
 
 ## Citation
 
-Coming soon......
+Xiyu Peng, James W. Smithy, Mohammad Yosofvand, Caroline E. Kostrzewa, MaryLena Bleile, Fiona D. Ehrich, Jasme Lee, Michael A. Postow, Margaret K. Callahan, Katherine S. Panageas, Ronglai Shen. Decoding Spatial Tissue Architecture: A Scalable Bayesian Topic Model for Multiplexed Imaging Analysis.
+bioRxiv. doi: https://doi.org/10.1101/2024.10.08.617293
 
 ## Contact
 
