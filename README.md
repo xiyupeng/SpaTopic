@@ -3,12 +3,17 @@ SpaTopic
 
   <!-- badges: start -->
   [![R-CMD-check](https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml)
+   [![](https://cranlogs.r-pkg.org/badges/grand-total/SpaTopic)](https://cran.r-project.org/grand-total/package=SpaTopic)
+  [![](https://cranlogs.r-pkg.org/badges/SpaTopic)](https://cran.r-project.org/package=SpaTopic)
   <!-- badges: end -->
 
 An R package for fast topic inference to identify tissue architecture in multiplexed images.
-It implements a spatial topic model to identify immunologic topics across multiplexed images, given the cell location and cell type information as input.
-Collapsed Gibbs Sampling algorithm is used for model inference.
-Compared to other KNN-based methods (such as KNN-kmeans, the default in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset.
+It implements a **novel spatial topic model** to identify immunologic topics across **multiple** multiplexed images, simply given the cell location and cell type information as input.
+
+Here we adapt an approach originally developed for image segmentation in computer vision, incorporating spatial information into the flexible design of regions (image partitions, analogous to documents in language modeling).
+We further refined the approach to address unique challenges in cellular images and provide an efficient C++ implementation of the algorithm in this R package.
+
+Compared to other KNN-based methods (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset.
 
 
 ## Installation
@@ -60,39 +65,28 @@ gibbs.res<-SpaTopic_inference(lung5, ntopics = 7, sigma = 50, region_radius = 40
 For detailed usage of SpaTopic,
 please check the [tutorial](https://xiyupeng.github.io/SpaTopic/).
 
-## Data
+## Example Data
 
 The example image used in the tutorial can be downloaded from [here](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD?usp=sharing).
 It is stored in a Seurat v5 object. 
 
-## Output
+## Example Output
 
-``` r
-str(gibbs.res)
-# List of 8
-#  $ Perplexity   : num 11.3
-#  $ Deviance     : num 485960
-#  $ loglikelihood: num -242980
-#  $ Beta         :'data.frame':	38 obs. of  7 variables:
-#   ..$ topic1: num [1:38] 0.03587 0.02539 0.00755 0.01858 0.02585 ...
-#   ..$ topic2: num [1:38] 6.51e-03 3.55e-02 2.62e-06 5.80e-04 7.75e-01 ...
-#   ..$ topic3: num [1:38] 4.54e-06 4.54e-06 9.13e-04 3.45e-01 1.73e-03 ...
-#   ..$ topic4: num [1:38] 0.02664 0.01743 0.00186 0.0152 0.08919 ...
-#   ..$ topic5: num [1:38] 2.99e-06 2.99e-06 5.32e-03 1.91e-02 4.90e-03 ...
-#   ..$ topic6: num [1:38] 6.35e-06 6.35e-06 2.04e-02 3.43e-03 6.35e-06 ...
-#   ..$ topic7: num [1:38] 0.00534 0.00699 0.00604 0.01843 0.00655 ...
-#  $ Theta        : num [1:971, 1:7] 0.855601 0.000232 0.999269 0.99889 0.998725 ...
-#  $ Ndk          : int [1:971, 1:7] 107 0 82 54 47 72 100 0 0 0 ...
-#  $ Nwk          : int [1:38, 1:7] 390 276 82 202 281 505 697 522 29 58 ...
-#  $ Z.trace      :'data.frame':	100149 obs. of  7 variables:
-#   ..$ topic1: num [1:100149] 0.065 0.865 0.135 0.82 0.785 0.02 0.1 0.105 0.075 0.095 ...
-#   ..$ topic2: num [1:100149] 0 0 0 0 0 0 0 0 0 0 ...
-#   ..$ topic3: num [1:100149] 0.275 0.005 0.21 0.005 0.005 0.77 0.02 0.015 0.085 0.075 ...
-#   ..$ topic4: num [1:100149] 0.415 0 0 0.01 0.005 0.1 0.665 0.62 0.015 0.025 ...
-#   ..$ topic5: num [1:100149] 0.005 0.01 0 0 0 0 0.005 0.005 0.005 0 ...
-#   ..$ topic6: num [1:100149] 0 0 0.655 0.165 0.205 0.005 0 0 0 0 ...
-#   ..$ topic7: num [1:100149] 0.24 0.12 0 0 0 0.105 0.21 0.255 0.82 0.805 ...
-```
+The algorithm generates two key statistics for further analysis: 
+
+- 1) topic content, a spatially-resolved topic distribution
+over cell types, and
+- 2) topic assignment for each cell within images.
+
+**Topic Spatial Distribution over images**
+<div>
+<img src="https://github.com/user-attachments/assets/0f116b96-6afc-473a-acbf-8137bdf54c2f" width="500" height="600"/>
+</div>
+
+**Topic Content**
+<div>
+<img src="https://github.com/user-attachments/assets/c80dc4b3-5388-409a-8fa1-f3c975627771" width="600" height="300"/>
+</div>
 
 ## Citation
 
@@ -103,5 +97,5 @@ bioRxiv. doi: https://doi.org/10.1101/2024.10.08.617293
 
 If you have any problems, please contact:
 
-Xiyu Peng (pansypeng124@gmail.com, pengx1@mskcc.org)
+Xiyu Peng (pansypeng124@gmail.com, pengx@stat.tamu.edu)
 
