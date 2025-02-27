@@ -436,7 +436,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
 
   ## DIC  
   if(trace){
-    gibbs.res$DIC<-0.5*var(gibbs.res$Deviance)+mean(gibbs.res$Deviance)
+    Deviance<- -2*gibbs.res$loglike.trace
+    gibbs.res$DIC<-0.5*var(Deviance)+mean(Deviance)
   }else{
     gibbs.res$DIC<-NULL
   }
