@@ -15,6 +15,7 @@ A \code{\link{list}} contains the following members:
  \item \code{$loglikelihood}. The model log-likelihood. 
  \item \code{$loglike.trace}. The log-likelihood for every collected posterior sample. 
  NULL if \code{trace} = FALSE.
+ \item \code{$DIC}. Deviance Information Criterion. NULL if \code{trace} = FALSE.
  \item \code{$Beta}. Topic content matrix with rows as celltypes and columns as topics
  \item \code{$Theta}. Topic prevalent matrix with rows as regions and columns as topics
  \item \code{$Ndk}. Number of cells per topic (col) per region (row).
@@ -26,7 +27,7 @@ A \code{\link{list}} contains the following members:
   NULL if \code{trace} = FALSE.
  \item \code{$word.trace}. \code{Nwk} for every collected posterior sample.
   NULL if \code{trace} = FALSE.
- \item \code{$cell_topics}. Final topic assignments for each cell.
+ \item \code{$cell_topics}. Final topic assignments Z for individual cells.
  \item \code{$parameters}. Model parameters used in the analysis.
 }
 }
