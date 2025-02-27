@@ -92,7 +92,7 @@ Number of posterior samples collected for model inference.}
 However, the model inference for 3D tissue is still under test.}
 }
 \value{
-Return a \code{\link{gibbs.res-class}} object. A list of outputs from Gibbs sampling.
+Return a \code{\link{SpaTopic-class}} object. A list of outputs from Gibbs sampling.
 }
 \description{
 This is the main function of 'SpaTopic', implementing a Collapsed Gibbs
@@ -125,5 +125,5 @@ library(sf)
 
 }
 \seealso{
-\code{\link{gibbs.res-class}}
+\code{\link{SpaTopic-class}}
 }
