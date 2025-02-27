@@ -49,6 +49,7 @@ The required input of SpaTopic is a data frame containing cells within on a sing
 ``` r
 library(SpaTopic)
 packageVersion("SpaTopic")
+#> [1] '1.2.0'
 library(sf)
 ## The input can be a data frame or a list of data frames
 data("lung5")

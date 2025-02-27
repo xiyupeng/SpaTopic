@@ -2,8 +2,8 @@
 
 # SpaTopic 1.2.0
 
-- Update on output of the Algorithm
-- Format the info massage
+- Update on output of the main function
+- Format the info and error message
 
 # SpaTopic 1.1.0
 
