@@ -22,12 +22,15 @@
 #'   NULL if \code{trace} = FALSE.
 #'  \item \code{$word.trace}. \code{Nwk} for every collected posterior sample.
 #'   NULL if \code{trace} = FALSE.
+#'  \item \code{$cell_topics}. Final topic assignments for each cell.
+#'  \item \code{$parameters}. Model parameters used in the analysis.
 #' }
 #' 
 #' @seealso \code{\link{SpaTopic_inference}}
 #' 
-#' @name gibbs.res-class
+#' @name SpaTopic-class
 #' 
-#' @rdname gibbs.res-class
+#' @rdname SpaTopic-class
 #' 
-setClass("gibbs.res", contains = "list")
+setClass("SpaTopic", contains = "list")
+

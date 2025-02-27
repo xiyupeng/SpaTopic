@@ -3,7 +3,7 @@ SpaTopic
 
   <!-- badges: start -->
   [![R-CMD-check](https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml)
-   [![](https://cranlogs.r-pkg.org/badges/grand-total/SpaTopic)](https://cran.r-project.org/grand-total/package=SpaTopic)
+   [![](https://cranlogs.r-pkg.org/badges/grand-total/SpaTopic)](https://cran.r-project.org/package=SpaTopic)
   [![](https://cranlogs.r-pkg.org/badges/SpaTopic)](https://cran.r-project.org/package=SpaTopic)
   <!-- badges: end -->
 
@@ -48,6 +48,7 @@ The required input of SpaTopic is a data frame containing cells within on a sing
 
 ``` r
 library(SpaTopic)
+packageVersion("SpaTopic")
 library(sf)
 ## The input can be a data frame or a list of data frames
 data("lung5")

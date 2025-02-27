@@ -1,7 +1,7 @@
 ---
 title: "Introduction to SpaTopic"
 author: "Xiyu Peng"
-date: 2024-04-20
+date: 2025-02-27
 ---
 
 ```{r, include = FALSE}
@@ -17,14 +17,16 @@ knitr::opts_chunk$set(
 Recent advancements in multiplexed tissue imaging allow for examination of tissue microenvironments in great detail. 
 These cutting-edge technologies offer invaluable insights into cellular heterogeneity and spatial architectures, 
 playing a crucial role in decoding mechanisms of treatment response and disease progression.
-
 However, gaining a deep understanding of complex spatial patterns remains challenging. 
-`SpaTopic` implements a novel spatial topic model to integrate both cell type and spatial information to identify the complex spatial tissue structures without human intervention.
-The Collapsed Gibbs sampling algorithm is used for model inference.
-Contrasting to computationally intensive K-nearest-neighbor-based cell neighborhood analysis approaches, 
+
+We present `SpaTopic`, which implements a novel spatial topic model to integrate both **cell type** and **spatial information** to identify the complex spatial tissue structures without human intervention. 
+The method was originally developed for image segmentation in computer vision, incorporating spatial information into the flexible design of regions (image partitions, analogous to documents in language modeling).
+We further adapted and refined the approach to address unique challenges in cellular images and provide an efficient C++ implementation of the algorithm in this R package.
+
+Contrasting to computationally intensive K-nearest-neighbor-based cell neighborhood analysis approaches (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), 
 `SpaTopic` is more scalable to large-scale image datasets without extracting neighborhood information for every single cell.
 
-`SpaTopic` can be applied either on a single image or across multiple images.
+`SpaTopic` can be applied either on a **single** image or across **multiple** images.
 
 ## Set-up
 
@@ -35,7 +37,7 @@ These images were generated using a 960-plex CoxMx RNA panel on the Nanostring C
 We selected Lung5-1 sample and annotated cells using Azimuth based on the human lung reference v1.0. 
 The Lung5-1 sample contains 38 annotated cell types.
 Since we used healthy lung tissue as the reference, tumor cells were labeled as ’basal’ cells.
-More informaion can be found [here](https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager).
+Here we mainly followed the cell annoration step from Satija Lab, with more information can be found [here](https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager).
 
 ```{r seurat,message=FALSE,warning=FALSE}
 ## We use Seurat v5 package to visualize the results.
@@ -84,6 +86,10 @@ This step takes around 90 seconds on a regular laptop
 system.time(gibbs.res<-SpaTopic_inference(dataset, ntopics = 7, sigma = 50, region_radius = 400))
 ```
 
+Print the result
+```{r print}
+print(gibbs.res)
+```
 
 ### Topic Content and Distribution
 
@@ -100,8 +106,11 @@ We assign each cell to a topic with the highest posterior probability
 and visualize the distribution of cell topics over the image.
 
 ```{r topics,fig.width=7, fig.height=8}
+## you can can access the posterior probabilities of topic assignments for each cell
 prob<-as.matrix(gibbs.res$Z.trace)
 nano.obj$Topic<-as.factor(apply(prob,1,which.max))
+## In the new version of SpaTopic, the final topic assignments is in cell topics.
+nano.obj$Topic <- as.factor(gibbs.res$cell_topics)
 library(ggplot2)
 palatte<- c("#0000FFFF","#FF0000FF","#00FF00FF","#009FFFFF","#FF00B6FF","#005300FF","#FFD300FF")
 ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "Topic", axes = TRUE, 

@@ -92,9 +92,9 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' @param axis Default is "2D". You may switch to "3D" for 3D tissue images. 
 #' However, the model inference for 3D tissue is still under test. 
 #' 
-#' @return Return a \code{\link{gibbs.res-class}} object. A list of outputs from Gibbs sampling. 
+#' @return Return a \code{\link{SpaTopic-class}} object. A list of outputs from Gibbs sampling. 
 #' 
-#' @seealso \code{\link{gibbs.res-class}}
+#' @seealso \code{\link{SpaTopic-class}}
 #' 
 #' @importFrom RANN nn2
 #' 
@@ -143,7 +143,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   ## check the colnames of the data frame
   if(!all(c("image","X","Y","type") %in% colnames(itr_df))){
-    stop("Please make sure you have image, X, Y, type in the colnames of tissue!")
+    spatopic_message("ERROR", "Missing required columns. Please make sure you have image, X, Y, type in the colnames of tissue!")
     return(NULL)
   }
   
@@ -151,7 +151,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
      any(is.na(itr_df$X)) |
      any(is.na(itr_df$Y)) |
      any(is.na(itr_df$type)) ){
-    stop("Please make sure you have no NA in your input dataset!")
+    spatopic_message("ERROR", "Please make sure you have no NA in your input dataset!")
     return(NULL)
   }
   
@@ -161,7 +161,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   itr_df$image<-as.factor(itr_df$image)
   
   if(length(levels(itr_df$image))<num_images){
-    stop("Duplicate image ID! Please check images have distinct image ID!")
+    spatopic_message("ERROR", "Duplicate image ID! Please check images have distinct image ID!")
     return(NULL)
   }
   
@@ -173,16 +173,14 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
 
   ## number of cells per image
   ncells<-table(itr_df$image)
-  message("number of cells per image:")
-  if(num_images == 1) message(ncells)
-  if(num_images > 1) message(paste(ncells,collapse = "\t"))
+  spatopic_message("INFO", paste("Number of cells per image:", paste(ncells, collapse = "\t")))
   
   
   ### coords for each sample
   coords<-lapply(tissue,GetCoords,axis = axis)
   rm(list= c("tissue"))
 
-  message("Start initialization...")
+  spatopic_message("INFO", "Start initialization...")
   
   perplexity_min<-Inf
   Z_keep<-NULL
@@ -190,15 +188,14 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   neigh_centers_keep<-NULL
   neigh_dists_keep<-NULL
   
-  message("Numer of Initializations:")
-  message(ninit)
+  spatopic_message("INFO", paste("Number of Initializations:", ninit))
   
   ## if we could do parallel?
   is_doparallel_available <- requireNamespace("doParallel", quietly = TRUE)
   
   if(!is_doparallel_available & do.parallel){
-    warning("R package do.parallel is not available! The following process is without Parallel.")
-    do.parallel<-0
+    spatopic_message("WARNING", "Package 'doParallel' is not available. Running without parallel processing.")
+    do.parallel <- FALSE
   }
   
   for (ini in 1:ninit){ ### should chose the best one among random sample points
@@ -209,8 +206,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
       ### register cores for parallel computing 
       doParallel::registerDoParallel(n.cores)
       if(ini < 2){
-        message("Parallel computing with number of cores:")
-        message(n.cores)
+        spatopic_message("INFO", paste("Parallel computing with number of cores:", n.cores))
       }
       
       results<-foreach::foreach(i_id = 1:num_images,.packages=c('sf','RANN'),
@@ -361,21 +357,18 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   ### Keep the best results during initialization
   if(ini_LDA){
-    message("Min perplexity during initialization:")
-    message(perplexity_min)
+    spatopic_message("RESULT", paste("Min perplexity during initialization:", round(perplexity_min, 4)))
   }
   Z<-Z_keep
   D<-D_keep
   neigh_centers<-neigh_centers_keep
   neigh_dists<-neigh_dists_keep
 
-  message("number of region centers selected:")
-  if(num_images == 1) message(ncenters) 
-  if(num_images > 1) message(paste(ncenters,collapse = "\t"))
+  reg_info <- paste("Number of region centers selected:", paste(ncenters, collapse = ", "))
+  spatopic_message("INFO", reg_info)
   
 
-  message("number of cells per region on average:")
-  message(mean(table(D)))
+  spatopic_message("INFO", paste("Average number of cells per region:", round(mean(table(D)), 2)))
   
   
   if(ninit > 1){ ## need update only when several initialization
@@ -395,12 +388,13 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     word_list<-as.integer(1:V)-1L
   }
   
-  message("Finish initialization. Start Gibbs sampling...")
+  spatopic_message("PROGRESS", "Initialization complete. Starting Gibbs sampling...")
   
   ## Gibbs_sampling 
   ## [TODO] should allow multiple chains to be run in parallel.
   ## Simply add results from multiple chains
   ## [TODO] may use Rcppparallel
+  ## [TODO] compute log likelihood on a smaller subset of cells
   gibbs.res <-gibbs_sampler_c(docs, Ndk, Nwk, Nk, Nd, Z, D, neigh_dists, 
                                           neigh_centers, doc_list, word_list, 
                                           K, beta, alpha, sigma, thin, burnin, niter,
@@ -414,12 +408,41 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     gibbs.res$word.trace<-NULL
     gibbs.res$loglike.trace<-NULL
   }
-  message("Gibbs sampling done.")
- 
-  message("Output model perplexity:")
-  message(gibbs.res$Perplexity)
+  spatopic_message("COMPLETE", "Gibbs sampling completed successfully")
+  spatopic_message("RESULT", paste("Final model perplexity:", round(gibbs.res$Perplexity, 4)))
+
+   ## Model parameters used
+  gibbs.res$parameters <- list(
+    ## K
+    beta = beta,
+    alpha = alpha,
+    sigma = sigma,
+    region_radius = region_radius,
+    kneigh = kneigh,
+    npoints_selected = npoints_selected,
+    thin = thin,
+    burnin = burnin,
+    niter = niter,
+    ninit = ninit,
+    ini_LDA = ini_LDA,
+    niter_init = niter_init,
+    trace = trace,            
+    seed = seed,              
+    display_progress = display_progress,  
+    do.parallel = do.parallel,  
+    n.cores = n.cores,          
+    axis = axis                 
+  )
+
+  ## DIC  
+  if(trace){
+    gibbs.res$DIC<-0.5*var(gibbs.res$Deviance)+mean(gibbs.res$Deviance)
+  }else{
+    gibbs.res$DIC<-NULL
+  }
   
   ## Beta: Topic Content
+  gibbs.res$ntopics<-K
   gibbs.res$Beta<-as.data.frame(gibbs.res$Beta)
   colnames(gibbs.res$Beta)<-paste0("topic",1:K)
   rownames(gibbs.res$Beta)<-celltype
@@ -428,7 +451,93 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   gibbs.res$Z.trace<-as.data.frame(gibbs.res$Z.trace/niter)
   colnames(gibbs.res$Z.trace)<-paste0("topic",1:K)
   rownames(gibbs.res$Z.trace)<-cellname
+
+  ## Cell topic assignments - most likely topic for each cell
+  gibbs.res$cell_topics <- apply(as.matrix(gibbs.res$Z.trace), 1, which.max)
+
+  ## Set class for the output
+  class(gibbs.res) <- "SpaTopic"
   
   return(gibbs.res)
+}
+
+#' Print method for SpaTopic objects
+#'
+#' @description 
+#' Provides a formatted summary of SpaTopic results when the object is printed.
+#' This method displays key model metrics and explains how to access different components
+#' of the model output.
+#'
+#' @param x An object of class "SpaTopic" returned by the SpaTopic_inference function
+#' @param ... Additional arguments passed to print methods (not used)
+#'
+#' @details
+#' The method displays:
+#'   - Number of topics identified
+#'   - Model perplexity (lower is better)
+#'   - DIC (Deviance Information Criterion) for model comparison
+#'   - A preview of the topic distributions across cell types
+#'   - Instructions on how to access full results
+#'
+#' @return No return value, called for side effect of printing
+#'
+#' @examples
+#' # If gibbs.res is a SpaTopic object:
+#' # print(gibbs.res)
+#'@export 
+print.SpaTopic <- function(x, ...) {
+  cat("SpaTopic Results\n")
+  cat("----------------\n")
+  # Display basic model information
+  cat("Number of topics:", x$ntopics, "\n")
+  cat("Perplexity:", x$Perplexity, "\n\n")  # Show model fit - lower is better
+  # Only print DIC if it exists (which would be when trace=TRUE)
+  if(!is.null(x$DIC)) {
+    cat("DIC:", x$DIC, "\n\n")  # Deviance Information Criterion for model comparison
+  }
+  
+  # Show preview of topic content
+  cat("Topic Content(Topic distribution across cell types):\n")
+  print(head(x$Beta, 5))
+  cat("...\n\n")
+  
+  # Guide for accessing full results
+  cat("Use $Z.trace for posterior probabilities of topic assignments for each cell\n")
+  cat("Use $cell_topics for final topic assignments for each cell\n")
+  cat("Use $parameters for accessing model parameters\n")
+}
+
+#' Format messages for SpaTopic package
+#'
+#' @description 
+#' Creates consistently formatted messages for the SpaTopic package with 
+#' timestamps and message type indicators. This function helps standardize
+#' all output messages across the package.
+#'
+#' @param type Character string indicating message type (e.g., "INFO", "WARNING", "ERROR", "PROGRESS")
+#' @param message The message content to display
+#' @param timestamp Logical; whether to include a timestamp in the message (default: TRUE)
+#'
+#' @details
+#' This function prefixes messages with a timestamp and the SpaTopic tag,
+#' creating a consistent message format throughout the package.
+#'
+#' @return No return value, called for side effect of displaying a message
+#'
+#' @examples
+#' \dontrun{
+#' spatopic_message("INFO", "Starting analysis...")
+#' spatopic_message("WARNING", "Parameter out of recommended range", timestamp = FALSE)
+#' spatopic_message("ERROR", "Required input missing")
+#' spatopic_message("PROGRESS", "Processing complete")
+#' }
+#'
+spatopic_message <- function(type = "INFO", message, timestamp = TRUE) {
+  prefix <- paste0("[SpaTopic ", type, "]")
+  if(timestamp) {
+    time_str <- format(Sys.time(), "[%H:%M:%S]")
+    prefix <- paste(time_str, prefix)
+  }
+  message(prefix, " ", message)
 }
 
