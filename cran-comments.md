@@ -1,6 +1,12 @@
 ## R CMD check results
 
 0 errors | 0 warnings | 1 note
+   
+* Note about HTML validation is due to the standard R documentation conversion process.
+
+## R CMD check results
+
+0 errors | 0 warnings | 1 note
 
 * This is a new release.
 
