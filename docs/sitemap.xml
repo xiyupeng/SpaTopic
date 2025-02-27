@@ -34,6 +34,9 @@
     <loc>/reference/SpaTopic-Package.html</loc>
   </url>
   <url>
+    <loc>/reference/SpaTopic-class.html</loc>
+  </url>
+  <url>
     <loc>/reference/SpaTopic_inference.html</loc>
   </url>
   <url>
@@ -44,6 +47,12 @@
   </url>
   <url>
     <loc>/reference/lung5.html</loc>
+  </url>
+  <url>
+    <loc>/reference/print.SpaTopic.html</loc>
+  </url>
+  <url>
+    <loc>/reference/spatopic_message.html</loc>
   </url>
   <url>
     <loc>/reference/stratified_sampling_sf.html</loc>

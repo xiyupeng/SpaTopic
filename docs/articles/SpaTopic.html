@@ -78,7 +78,7 @@
       <img src="" class="logo" alt=""><h1>Introduction to SpaTopic</h1>
                         <h4 data-toc-skip class="author">Xiyu Peng</h4>
             
-            <h4 data-toc-skip class="date">2024-04-20</h4>
+            <h4 data-toc-skip class="date">2025-02-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/xiyupeng/SpaTopic/blob/HEAD/vignettes/articles/SpaTopic.Rmd" class="external-link"><code>vignettes/articles/SpaTopic.Rmd</code></a></small>
       <div class="d-none name"><code>SpaTopic.Rmd</code></div>
@@ -93,18 +93,27 @@
 examination of tissue microenvironments in great detail. These
 cutting-edge technologies offer invaluable insights into cellular
 heterogeneity and spatial architectures, playing a crucial role in
-decoding mechanisms of treatment response and disease progression.</p>
-<p>However, gaining a deep understanding of complex spatial patterns
-remains challenging. <code>SpaTopic</code> implements a novel spatial
-topic model to integrate both cell type and spatial information to
-identify the complex spatial tissue structures without human
-intervention. The Collapsed Gibbs sampling algorithm is used for model
-inference. Contrasting to computationally intensive
-K-nearest-neighbor-based cell neighborhood analysis approaches,
-<code>SpaTopic</code> is more scalable to large-scale image datasets
-without extracting neighborhood information for every single cell.</p>
-<p><code>SpaTopic</code> can be applied either on a single image or
-across multiple images.</p>
+decoding mechanisms of treatment response and disease progression.
+However, gaining a deep understanding of complex spatial patterns
+remains challenging.</p>
+<p>We present <code>SpaTopic</code>, which implements a novel spatial
+topic model to integrate both <strong>cell type</strong> and
+<strong>spatial information</strong> to identify the complex spatial
+tissue structures without human intervention. The method was originally
+developed for image segmentation in computer vision, incorporating
+spatial information into the flexible design of regions (image
+partitions, analogous to documents in language modeling). We further
+adapted and refined the approach to address unique challenges in
+cellular images and provide an efficient C++ implementation of the
+algorithm in this R package.</p>
+<p>Contrasting to computationally intensive K-nearest-neighbor-based
+cell neighborhood analysis approaches (such as KNN-kmeans, the default
+neighborhood analysis in Seurat v5 R package), <code>SpaTopic</code> is
+more scalable to large-scale image datasets without extracting
+neighborhood information for every single cell.</p>
+<p><code>SpaTopic</code> can be applied either on a
+<strong>single</strong> image or across <strong>multiple</strong>
+images.</p>
 </div>
 <div class="section level2">
 <h2 id="set-up">Set-up<a class="anchor" aria-label="anchor" href="#set-up"></a>
@@ -117,7 +126,8 @@ panel on the Nanostring CoxMx Spatial Molecular Imager platform. We
 selected Lung5-1 sample and annotated cells using Azimuth based on the
 human lung reference v1.0. The Lung5-1 sample contains 38 annotated cell
 types. Since we used healthy lung tissue as the reference, tumor cells
-were labeled as ’basal’ cells. More informaion can be found <a href="https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager" class="external-link">here</a>.</p>
+were labeled as ’basal’ cells. Here we mainly followed the cell
+annoration step from Satija Lab, with more information can be found <a href="https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## We use Seurat v5 package to visualize the results.</span></span>
 <span><span class="co">## If you still use Seurat v4, you will have the error</span></span>
@@ -174,39 +184,62 @@ cell type information need to be provided via option
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Gibbs sampling for SpaTopic</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="va">dataset</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; number of cells per image:</span></span>
-<span><span class="co">#&gt; 100149</span></span>
-<span><span class="co">#&gt; Start initialization...</span></span>
-<span><span class="co">#&gt; Numer of Initializations:</span></span>
-<span><span class="co">#&gt; 10</span></span>
-<span><span class="co">#&gt; Min perplexity during initialization:</span></span>
-<span><span class="co">#&gt; 11.6302259709245</span></span>
-<span><span class="co">#&gt; number of region centers selected:</span></span>
-<span><span class="co">#&gt; 971</span></span>
-<span><span class="co">#&gt; number of cells per region on average:</span></span>
-<span><span class="co">#&gt; 103.140061791967</span></span>
-<span><span class="co">#&gt; Finish initialization. Start Gibbs sampling...</span></span>
-<span><span class="co">#&gt; Gibbs sampling done.</span></span>
-<span><span class="co">#&gt; Output model perplexity:</span></span>
-<span><span class="co">#&gt; 11.3156329380619</span></span>
+<span><span class="co">#&gt; [14:04:42] [SpaTopic INFO] Number of cells per image: 100149</span></span>
+<span><span class="co">#&gt; [14:04:42] [SpaTopic INFO] Start initialization...</span></span>
+<span><span class="co">#&gt; [14:04:42] [SpaTopic INFO] Number of Initializations: 10</span></span>
+<span><span class="co">#&gt; [14:05:03] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
+<span><span class="co">#&gt; [14:05:03] [SpaTopic INFO] Number of region centers selected: 971</span></span>
+<span><span class="co">#&gt; [14:05:03] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
+<span><span class="co">#&gt; [14:05:03] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
+<span><span class="co">#&gt; [14:05:40] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
+<span><span class="co">#&gt; [14:05:40] [SpaTopic RESULT] Final model perplexity: 11.3156</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  54.056   0.074  54.179</span></span></code></pre></div>
+<span><span class="co">#&gt;  56.559   0.436  57.721</span></span></code></pre></div>
+<p>Print the result</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">)</span></span>
+<span><span class="co">#&gt; SpaTopic Results</span></span>
+<span><span class="co">#&gt; ----------------</span></span>
+<span><span class="co">#&gt; Number of topics: 7 </span></span>
+<span><span class="co">#&gt; Perplexity: 11.31563 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Topic Content(Topic distribution across cell types):</span></span>
+<span><span class="co">#&gt;                                 topic1       topic2       topic3      topic4</span></span>
+<span><span class="co">#&gt; Alveolar Epithelial Type 1 0.035870295 6.511503e-03 4.541367e-06 0.026643327</span></span>
+<span><span class="co">#&gt; Alveolar Epithelial Type 2 0.025386476 3.553900e-02 4.541367e-06 0.017427665</span></span>
+<span><span class="co">#&gt; Artery                     0.007545591 2.624548e-06 9.128148e-04 0.001856373</span></span>
+<span><span class="co">#&gt; B                          0.018581190 5.800251e-04 3.446035e-01 0.015203195</span></span>
+<span><span class="co">#&gt; Basal                      0.025846292 7.753466e-01 1.730261e-03 0.089193312</span></span>
+<span><span class="co">#&gt;                                  topic5       topic6      topic7</span></span>
+<span><span class="co">#&gt; Alveolar Epithelial Type 1 2.987411e-06 6.348481e-06 0.005341969</span></span>
+<span><span class="co">#&gt; Alveolar Epithelial Type 2 2.987411e-06 6.348481e-06 0.006994451</span></span>
+<span><span class="co">#&gt; Artery                     5.320579e-03 2.044846e-02 0.006041096</span></span>
+<span><span class="co">#&gt; B                          1.912242e-02 3.434528e-03 0.018434717</span></span>
+<span><span class="co">#&gt; Basal                      4.902342e-03 6.348481e-06 0.006549552</span></span>
+<span><span class="co">#&gt; ...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Use $Z.trace for posterior probabilities of topic assignments for each cell</span></span>
+<span><span class="co">#&gt; Use $cell_topics for final topic assignments for each cell</span></span>
+<span><span class="co">#&gt; Use $parameters for accessing model parameters</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="topic-content-and-distribution">Topic Content and Distribution<a class="anchor" aria-label="anchor" href="#topic-content-and-distribution"></a>
 </h3>
 <p>SpaTopic identify seven topics from the image. Below we use the
 heatmap to show the cell type composition within each topic.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">Beta</span><span class="op">)</span></span>
 <span><span class="fu">pheatmap</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="SpaTopic_files/figure-html/heatmap-1.png" width="672"></p>
 <p>We assign each cell to a topic with the highest posterior probability
 and visualize the distribution of cell topics over the image.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">prob</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">Z.trace</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## you can can access the posterior probabilities of topic assignments for each cell</span></span>
+<span><span class="va">prob</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">Z.trace</span><span class="op">)</span></span>
 <span><span class="va">nano.obj</span><span class="op">$</span><span class="va">Topic</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">prob</span>,<span class="fl">1</span>,<span class="va">which.max</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## In the new version of SpaTopic, the final topic assignments is in cell topics.</span></span>
+<span><span class="va">nano.obj</span><span class="op">$</span><span class="va">Topic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">cell_topics</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">palatte</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#0000FFFF"</span>,<span class="st">"#FF0000FF"</span>,<span class="st">"#00FF00FF"</span>,<span class="st">"#009FFFFF"</span>,<span class="st">"#FF00B6FF"</span>,<span class="st">"#005300FF"</span>,<span class="st">"#FFD300FF"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">nano.obj</span>, fov <span class="op">=</span> <span class="st">"lung5.rep1"</span>, group.by <span class="op">=</span> <span class="st">"Topic"</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, </span>
@@ -219,13 +252,13 @@ and visualize the distribution of cell topics over the image.</p>
 <p>We compare <code>SpaTopic</code> to the function
 <code><a href="https://satijalab.org/seurat/reference/BuildNicheAssay.html" class="external-link">BuildNicheAssay()</a></code> in Seurat v5. It took around 5 min on the
 same laptop.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### NOT RUN!! We use the pre-computed result</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">nano.obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/BuildNicheAssay.html" class="external-link">BuildNicheAssay</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">nano.obj</span>, <span class="st">"lung5.rep1"</span>, group.by <span class="op">=</span> <span class="st">"predicted.annotation.l1"</span>,</span>
 <span>                            niches.k <span class="op">=</span> <span class="fl">7</span>, neighbors.k <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We also visualize the distribution of seven niches over the same
 image.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nano.obj</span><span class="op">$</span><span class="va">niches</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">nano.obj</span><span class="op">$</span><span class="va">niches</span><span class="op">)</span></span>
 <span><span class="va">nano.obj</span><span class="op">$</span><span class="va">niches</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">nano.obj</span><span class="op">$</span><span class="va">niches</span>,levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="fl">6</span>,<span class="fl">7</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">## try to match the colors of topics</span></span>
@@ -240,7 +273,7 @@ image.</p>
 <p>SpaTopic can identify common tissue patterns across multiple images.
 The input should be a list of data frames. See an example below (not
 run).</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## tissue1, tissue2 are data frames of two different images.</span></span>
 <span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">tissue1</span>, B <span class="op">=</span> <span class="va">tissue2</span><span class="op">)</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span> </span></code></pre></div>
 <p>Please check more examples in <a href="https://xiyupeng.github.io/SpaTopic/" class="external-link">SpaTopic Home Page</a>.</p>
