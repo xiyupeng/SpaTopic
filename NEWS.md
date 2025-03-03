@@ -1,3 +1,5 @@
+# SpaTopic (development version)
+
 # SpaTopic 1.2.0
 
 * Update on output of the main function
