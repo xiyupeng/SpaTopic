@@ -513,7 +513,7 @@ print.SpaTopic <- function(x, ...) {
 #' @description 
 #' Creates consistently formatted messages for the SpaTopic package with 
 #' timestamps and message type indicators. This function helps standardize
-#' all output messages across the package.
+#' all output messages across the package. Error messages will stop execution.
 #'
 #' @param type Character string indicating message type (e.g., "INFO", "WARNING", "ERROR", "PROGRESS")
 #' @param message The message content to display
@@ -522,6 +522,9 @@ print.SpaTopic <- function(x, ...) {
 #' @details
 #' This function prefixes messages with a timestamp and the SpaTopic tag,
 #' creating a consistent message format throughout the package.
+#' When type="ERROR", this will stop execution with stop().
+#' When type="WARNING", this will use warning() for non-fatal warnings.
+#' All other message types will use message() for informational output.
 #'
 #' @return No return value, called for side effect of displaying a message
 #'
@@ -529,7 +532,7 @@ print.SpaTopic <- function(x, ...) {
 #' \dontrun{
 #' spatopic_message("INFO", "Starting analysis...")
 #' spatopic_message("WARNING", "Parameter out of recommended range", timestamp = FALSE)
-#' spatopic_message("ERROR", "Required input missing")
+#' spatopic_message("ERROR", "Required input missing") # This will stop execution
 #' spatopic_message("PROGRESS", "Processing complete")
 #' }
 #'
@@ -539,6 +542,14 @@ spatopic_message <- function(type = "INFO", message, timestamp = TRUE) {
     time_str <- format(Sys.time(), "[%H:%M:%S]")
     prefix <- paste(time_str, prefix)
   }
-  message(prefix, " ", message)
+  
+  # Use appropriate function based on message type
+  if(type == "ERROR") {
+    stop(prefix, " ", message, call. = FALSE)
+  } else if(type == "WARNING") {
+    warning(prefix, " ", message, call. = FALSE)
+  } else {
+    message(prefix, " ", message)
+  }
 }
 
