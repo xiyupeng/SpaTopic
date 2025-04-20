@@ -1,7 +1,7 @@
 ---
 title: "Introduction to SpaTopic"
 author: "Xiyu Peng"
-date: 2025-02-27
+date: 2025-04-17
 ---
 
 ```{r, include = FALSE}
@@ -39,7 +39,7 @@ The Lung5-1 sample contains 38 annotated cell types.
 Since we used healthy lung tissue as the reference, tumor cells were labeled as ’basal’ cells.
 Here we mainly followed the cell annoration step from Satija Lab, with more information can be found [here](https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2.html#human-lung-nanostring-cosmx-spatial-molecular-imager).
 
-```{r seurat,message=FALSE,warning=FALSE}
+```{r seurat, message=FALSE, warning=FALSE}
 ## We use Seurat v5 package to visualize the results.
 ## If you still use Seurat v4, you will have the error
 library(Seurat, quietly = TRUE);packageVersion("Seurat")
@@ -51,7 +51,7 @@ options(future.globals.maxSize = 1e9)
 
 We can use the Seurat function `ImageDimPlot` to visualize the distribution of cell types on the image.
 
-```{r celltype,fig.width=7, fig.height=13,message=FALSE,warning=FALSE}
+```{r celltype,fig.width=7, fig.height=13, message=FALSE, warning=FALSE}
 library(ggplot2)
 celltype.plot <-ImageDimPlot(nano.obj, fov = "lung5.rep1", axes = TRUE, cols = "glasbey",dark.background = T)
 celltype.plot+theme(legend.position = "bottom",legend.direction = "vertical")
@@ -79,7 +79,18 @@ head(dataset)
 
 ### Gibbs Sampling
 
-This step takes around 90 seconds on a regular laptop
+This step takes around 60~90 seconds on a regular laptop
+
+**Important Notes for Parameter Selection:**
+
+When running SpaTopic, both `sigma` and `region_radius` should be set based on image resolution and tissue complexity:
+
+- For whole-slide imaging applications, select `region_radius` to include at least 100 cells per region on average. 
+Note that different imaging platforms may report spatial coordinates in either pixels or microns, so adjust parameters accordingly.
+
+- The `sigma` parameter should be tuned in conjunction with `region_radius`. 
+Empirically, we've found that setting `sigma` to approximately the square root of `region_radius` works well as a starting point for parameter tuning.
+
 
 ```{r inference}
 ## Gibbs sampling for SpaTopic
@@ -87,6 +98,7 @@ system.time(gibbs.res<-SpaTopic_inference(dataset, ntopics = 7, sigma = 50, regi
 ```
 
 Print the result
+
 ```{r print}
 print(gibbs.res)
 ```
@@ -112,7 +124,7 @@ nano.obj$Topic<-as.factor(apply(prob,1,which.max))
 ## In the new version of SpaTopic, the final topic assignments is in cell topics.
 nano.obj$Topic <- as.factor(gibbs.res$cell_topics)
 library(ggplot2)
-palatte<- c("#0000FFFF","#FF0000FF","#00FF00FF","#009FFFFF","#FF00B6FF","#005300FF","#FFD300FF")
+palatte<- c("#0000FFFF","#FF0000FF","#00FF00FF","#009FFFFF","#ff00b7fa","#005300FF","#FFD300FF")
 ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "Topic", axes = TRUE, 
                            dark.background = T,cols = palatte) + ggtitle("Topic") 
 ```
@@ -137,6 +149,91 @@ nano.obj$niches<-ordered(nano.obj$niches,levels = c(1,2,3,4,5,6,7))
 palatte2<- c("#FF00B6FF","#0000FFFF","#FFD300FF","#009FFFFF","#FF0000FF","#005300FF","#00FF00FF")
 ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "niches", axes = TRUE, dark.background = T,cols = palatte2) + ggtitle("Niches") 
 ```
+
+### Visualizing Topic Probability Distributions
+
+After running SpaTopic, users can visualize not just the discrete topic assignments but also the probability distribution of each topic across the tissue. 
+
+Here's how to create these visualizations:
+
+```{r topic_prob,fig.width=10, fig.height=16}
+# Extract topic probabilities for each cell and add as metadata to the Seurat object
+topic_prob <- as.matrix(gibbs.res$Z.trace)
+for(i in 1:ncol(topic_prob)) {
+  nano.obj[[paste0("Topic", i, "_probability")]] <- topic_prob[,i]
+}
+
+# Function to create a topic probability plot
+plot_topic_prob <- function(topic_num) {
+  feature_name <- paste0("Topic", topic_num, "_probability")
+  ImageFeaturePlot(nano.obj,
+                  fov = "lung5.rep1",
+                  features = feature_name,
+                  axes = FALSE,
+                  dark.background = FALSE,
+                  cols = viridis::magma(100)) +
+    ggtitle(paste0("Topic ", topic_num)) +
+    theme(
+      legend.position = "right",
+      plot.title = element_text(size = 10),
+      plot.margin = margin(1, 1, 1, 1, "pt")  # Reduce margins (top, right, bottom, left)
+    )
+}
+
+# Create plots for each topic
+topic_plots <- lapply(1:ncol(topic_prob), plot_topic_prob)
+
+# Combine into a multi-panel figure
+library(patchwork)
+wrap_plots(topic_plots, ncol = 2) & 
+  plot_layout(guides = "collect") 
+```
+
+## CAF spatial subtypes across different topics
+
+Inspured by [Liu et al 2025](https://www.cell.com/cancer-cell/fulltext/S1535-6108(25)00083-2), SpaTopic can also help to identify CAF spatial subtypes.
+Specifically: 
+
+- Topic 6 is associated with s1-CAFs adjacent to the tumor; 
+- Topics 5 and 7 correspond to s2-CAFs within the stromal niche; 
+- Topic 1 is linked to s3-CAFs in the myeloid niche; 
+- and Topic 3, primarily comprising B cells and CD4 T cells along with some myofibroblasts, corresponds to s4-CAFs in the TLS niche. 
+
+```{r cafsubtype,fig.width=10, fig.height=4,warning=FALSE,message = FALSE}
+DefaultAssay(nano.obj) <- "Nanostring"
+Idents(nano.obj)<-"predicted.annotation.l1"
+## gene list from [Liu et al 2025]
+caf_genes <- c("TPM2", "MYH11", "ACTA2", "COL1A1", "TGFB1", "LIF", 
+               "COL12A1", "IL6", "HSPA1A", "CFD", "CXCL2", "ENG", 
+               "C1QB", "CD74", "CXCL12", "HLA-DPB1", "CCL8", "TAP2")
+
+### we only look at CAF
+myofibro_obj <- subset(nano.obj, predicted.annotation.l1 %in% c("Myofibroblast"))
+selected_topics <- c("1", "3", "5", "6", "7")
+myofibro_filtered <- subset(myofibro_obj, Topic %in% selected_topics)
+
+custom_topic_labels <- c(
+  "6" = "Topic6 - s1-CAFs (Tumor adjacent)",
+  "7" = "Topic7 - s2-CAFs (Stromal niche)",
+  "5" = "Topic5 - s2-CAFs (Stromal niche)",
+  "1" = "Topic1 - s3-CAFs (Myeloid niche)",
+  "3" = "Topic3 - s4-CAFs (TLS niche)"
+)
+
+library(ggplot2)
+red_blue_colors <- colorRampPalette(c("blue", "white", "red"))(100)
+DotPlot(myofibro_filtered, features = caf_genes, group.by = "Topic") + 
+  scale_y_discrete(labels = custom_topic_labels) +
+  scale_color_gradientn(colors = red_blue_colors) + 
+  RotatedAxis()+  scale_size_continuous(
+    range = c(0, 8),  # Min and max dot size
+    breaks = c(0, 10, 20, 30, 40, 50, 60, 70),  # Custom breaks
+    limits = c(0, 100)  # Set limits to ensure all breaks are included
+  ) 
+```
+
+Though CAF in stroma niche generally have common gene expression profile, there are some CAF genes that are differentially expressed between Topic 5 and Topic 7, such as TGFB1, HSP1A1, COL12A1 genes, potentially due to different immune-enriched neighborhood in the stroma region.
+
 
 ## Topic Inference on Multiple Images
 

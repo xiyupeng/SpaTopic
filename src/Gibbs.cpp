@@ -118,6 +118,7 @@ size_t n_words, size_t K, double beta = .05, double alpha = .01, double sigma = 
     // \sum_k \sum_d P(Zgi = k, Dgi = d, x_gi^c, C_gi | x^d_d)
     loglike.row(j) = m_beta.row(docs(j,1)) % loglike.row(j);
     perp += log(accu(loglike.row(j)));
+    // TODO: output the likelihood for each data point to compute lppd
 
   }
 

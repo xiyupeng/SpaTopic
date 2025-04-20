@@ -1,7 +1,7 @@
 ---
 title: "Model Selection"
 author: "Xiyu Peng"
-date: 2023-12-20
+date: 2025-04-17
 ---
 
 ```{r, include = FALSE}
@@ -11,22 +11,144 @@ knitr::opts_chunk$set(
 )
 ```
 
-In this article, I introduce how to do model selection and tune parameters for your own image data.
+In this tutorial, I will introduce how to do model selection and tune parameters when applied `SpaTopic` to your own imaging dataset. 
 
-## Simple Usage
+## Set-up
 
-```{r setup, warning=FALSE,message=FALSE}
-library(SpaTopic)
+Again, we use the lung cancer image to illustrate how to use `SpaTopic`. 
+The data object here can be download from [here](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD?usp=sharing),
+with original public resources available on the [nanostring website](https://nanostring.com/products/cosmx-spatial-molecular-imager/ffpe-dataset/nsclc-ffpe-dataset/).
+
+```{r seurat, message=FALSE, warning=FALSE}
+## We use Seurat v5 package to visualize the results.
+## If you still use Seurat v4, you will have the error
+library(Seurat, quietly = TRUE);packageVersion("Seurat")
+## Load the Seurat object for the image
+load("~/Documents/Research/github/SpaTopic_data/nanostring_example.rdata")
+## for large dataset
+options(future.globals.maxSize = 1e9)
 ```
 
+Like before, we prepare the dataset as the input of the algorithm.
+
+```{r}
+library(SpaTopic)
+dataset<-Seurat5obj_to_SpaTopic(object = nano.obj, group.by = "predicted.annotation.l1", image = "image1")
+head(dataset)
+```
+
+## Convergence of Gibbs Sampling
+
+This time we will track and keep all output from Gibbs sampling algorithm with `trace = TRUE`. 
+Here we also reset the parameters for Gibbs sampling (thin = 20, burnin = 0, niter = 200): we run Gibbs sampling train in first 4000 iterations and take 200 posterior samples every 20 iterations.
+
+__Important Note for running__
+
+With `trace = TRUE`, we will compute the log likelihood for every posterior samples. 
+However, it takes time on large dataset and we recommend tuning your parameters on one or a few images instead of directly on the whole big image datasets.
+
+```{r}
+## it take about 3-4min to run 
+library(SpaTopic)
+library(sf)
+system.time(gibbs.res<-SpaTopic_inference(dataset, ntopics = 7, sigma = 50, 
+                                          region_radius = 400,trace = TRUE, thin = 20, burnin = 0, niter = 200))
+```
+
+Now we can plot the log likelihood across different iterations.
+
+```{r,fig.height=4,fig.width=7}
+library(ggplot2)
+### plot the log likelihood of the method
+trace_result<-data.frame(loglike = gibbs.res$loglike.trace, iteration = seq(0, 4000, 20))
+ggplot(trace_result, aes(x = iteration, y = loglike))+ geom_line()+theme_minimal()+geom_vline(xintercept = 1000, linetype = "dashed", color = "red") + geom_vline(xintercept = 2000, color = "blue")
+```
+
+Based on the plot, we found the algorithm converges around 1000 iterations. 
+Thus it is safe to set `burnin = 1000` (by default) for this dataset, starting taking posterior samples after 1000 iterations. 
+Or a more conserved choice is `burnin = 2000`, which is used for the analysis results in the paper.
+
+With `trace = TRUE`, we also output DIC for model selection.
+
+```{r}
+print(gibbs.res)
+```
 
 ## Number of Topics
 
+Here, we will illustrate how to use DIC to select number of topics.
+We first run the model under different number of topics, each collecting 200 posterior samples after 1000 burnin iterations. For higher number of topics, it may take longer time to converge, thus we set `burnin = 2000` instead of the default.
+
+```{r,eval=FALSE}
+## PRE-RUN the result
+for(topic in 2:9){
+  gibbs.res<-SpaTopic_inference(dataset, ntopics = topic, sigma = 50, region_radius = 400, trace = TRUE, thin = 20, burnin = 2000, niter = 200)
+  filename<-paste0("~/Documents/Research/github/SpaTopic_data/nanostring_niter200_K",topic,".rds")
+  saveRDS(gibbs.res, file = filename)
+}
+```
+
+```{r}
+### Extract result object
+result<-list()
+for (topic in 2:9) {
+  filename<-paste0("~/Documents/Research/github/SpaTopic_data/nanostring_niter200_K",topic,".rds")
+  result[[topic]]<- readRDS(filename)
+}
+```
+
+Here, we plot DIC for each selected number of topics.
+
+```{r DIC,fig.height=3,fig.width=5}
+DICs <- unlist(lapply(result, function(x) x$DIC))
+DIC_df <- data.frame(
+  Topics = 2:9,
+  DIC = DICs
+)
+ggplot(DIC_df, aes(x = Topics, y = DIC))+ geom_line()+theme_minimal()+geom_vline(xintercept  = 7, color = "blue")
+```
+
+It may be time consuming to compute DIC. You may also check the perplexity of the last posterior if working on large dataset. 
+Just like likelihood, as the number of topics increases, the model likelihood generally improves, leading to a decrease in perplexity. 
+However, a stable perplexity score can indicate an optimal number of topics, providing a balance between model complexity and fit. 
+
+```{r perplexity, fig.height=3,fig.width=5}
+Perplexity <- unlist(lapply(result, function(x) x$Perplexity))
+perx_df <- data.frame(
+  Topics = 2:9,
+  Perplexity = Perplexity
+)
+ggplot(perx_df, aes(x = Topics, y = Perplexity))+ geom_line()+theme_minimal()+geom_vline(xintercept  = 7, color = "blue")
+```
+
+Based on our model selection analysis, **k = 7 topics** provides an optimal balance between model fit and interpretability.
+This provides biologically meaningful spatial topics that align well with known tissue structures and cellular interactions in the tumor microenvironment.
+Choosing number of topics (clusters) sometimes is subjective since there is often no real number of clusters in real biological dataset.
+
+```{r inference}
+## Gibbs sampling for SpaTopic
+system.time(gibbs.res<-SpaTopic_inference(dataset, ntopics = 7, sigma = 50, region_radius = 400))
+```
+
+```{r topics,fig.width=7, fig.height=8}
+## In the new version of SpaTopic, the final topic assignments is in cell topics.
+nano.obj$Topic <- as.factor(gibbs.res$cell_topics)
+library(ggplot2)
+palatte<- c("#0000FFFF","#FF0000FF","#00FF00FF","#009FFFFF","#ff00b7fa","#005300FF","#FFD300FF")
+ImageDimPlot(nano.obj, fov = "lung5.rep1", group.by = "Topic", axes = TRUE, 
+                           dark.background = T,cols = palatte) + ggtitle("Topic") 
+```
 
 
 ## Parameter Choice
 
+When running SpaTopic, both `sigma` and `region_radius` should be set based on image resolution and tissue complexity:
 
+- For whole-slide imaging applications, select `region_radius` to include at least 100 cells per region on average. 
+Note that different imaging platforms may report spatial coordinates in either pixels or microns, so adjust parameters accordingly.
 
-## Hyperparameters
+- The `sigma` parameter should be tuned in conjunction with `region_radius`. 
+Empirically, we've found that setting `sigma` to approximately the square root of `region_radius` works well as a starting point for parameter tuning.
+
+- Small `sigma` and `region_radius` will focus on more local structure while ignoring global structure.
 

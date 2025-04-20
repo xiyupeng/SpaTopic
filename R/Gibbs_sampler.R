@@ -200,6 +200,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   for (ini in 1:ninit){ ### should chose the best one among random sample points
     
+    #spatopic_message("INFO", paste("Initialization:", ini))
+
     i_id<-NULL  ## set global variable
     if(do.parallel){
       
@@ -254,7 +256,9 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
         #print("number of centers selected:\n")
         #print(ncenters)
         
-        ### visualize selected centers
+        ### visualize selected centers 
+        ### [TODO] SAVE THE SELECTED CENTERS FOR EACH IMAGE
+        ### [TODO] ADD OPTION TO MANUALLY SELECT CENTERS
         coords_centers<-coords_selected[center_idx,]
         
         ### Find Knearest centers
