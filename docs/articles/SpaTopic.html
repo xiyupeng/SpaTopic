@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SpaTopic</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,6 +46,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/Intro_SpaTopic.html">SpaTopic Basics</a>
     <a class="dropdown-item" href="../articles/Model_Selection.html">Model Selection</a>
+    <a class="dropdown-item" href="../articles/spleen_analysis.html">Analysis across Multiple Images</a>
   </div>
 </li>
 <li class="nav-item">
@@ -78,7 +79,7 @@
       <img src="" class="logo" alt=""><h1>Introduction to SpaTopic</h1>
                         <h4 data-toc-skip class="author">Xiyu Peng</h4>
             
-            <h4 data-toc-skip class="date">2025-02-27</h4>
+            <h4 data-toc-skip class="date">2025-04-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/xiyupeng/SpaTopic/blob/HEAD/vignettes/articles/SpaTopic.Rmd" class="external-link"><code>vignettes/articles/SpaTopic.Rmd</code></a></small>
       <div class="d-none name"><code>SpaTopic.Rmd</code></div>
@@ -164,7 +165,7 @@ cell type information need to be provided via option
 <code>group.by</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/xiyupeng/SpaTopic" class="external-link">SpaTopic</a></span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"SpaTopic"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '1.2.0'</span></span>
+<span><span class="co">#&gt; [1] '1.2.0.9000'</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="co">## Prepare input from Seurat Object</span></span>
 <span><span class="va">dataset</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/Seurat5obj_to_SpaTopic.html">Seurat5obj_to_SpaTopic</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">nano.obj</span>, group.by <span class="op">=</span> <span class="st">"predicted.annotation.l1"</span>,image <span class="op">=</span> <span class="st">"image1"</span><span class="op">)</span></span>
@@ -180,21 +181,37 @@ cell type information need to be provided via option
 <div class="section level3">
 <h3 id="gibbs-sampling">Gibbs Sampling<a class="anchor" aria-label="anchor" href="#gibbs-sampling"></a>
 </h3>
-<p>This step takes around 90 seconds on a regular laptop</p>
+<p>This step takes around 60~90 seconds on a regular laptop</p>
+<p><strong>Important Notes for Parameter Selection:</strong></p>
+<p>When running SpaTopic, both <code>sigma</code> and
+<code>region_radius</code> should be set based on image resolution and
+tissue complexity:</p>
+<ul>
+<li><p>For whole-slide imaging applications, select
+<code>region_radius</code> to include at least 100 cells per region on
+average. Note that different imaging platforms may report spatial
+coordinates in either pixels or microns, so adjust parameters
+accordingly.</p></li>
+<li><p>The <code>sigma</code> parameter should be tuned in conjunction
+with <code>region_radius</code>. Empirically, we’ve found that setting
+<code>sigma</code> to approximately the square root of
+<code>region_radius</code> works well as a starting point for parameter
+tuning.</p></li>
+</ul>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Gibbs sampling for SpaTopic</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="va">dataset</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [14:49:07] [SpaTopic INFO] Number of cells per image: 100149</span></span>
-<span><span class="co">#&gt; [14:49:07] [SpaTopic INFO] Start initialization...</span></span>
-<span><span class="co">#&gt; [14:49:07] [SpaTopic INFO] Number of Initializations: 10</span></span>
-<span><span class="co">#&gt; [14:49:26] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
-<span><span class="co">#&gt; [14:49:26] [SpaTopic INFO] Number of region centers selected: 971</span></span>
-<span><span class="co">#&gt; [14:49:26] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
-<span><span class="co">#&gt; [14:49:26] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
-<span><span class="co">#&gt; [14:50:02] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
-<span><span class="co">#&gt; [14:50:02] [SpaTopic RESULT] Final model perplexity: 11.3156</span></span>
+<span><span class="co">#&gt; [22:10:08] [SpaTopic INFO] Number of cells per image: 100149</span></span>
+<span><span class="co">#&gt; [22:10:08] [SpaTopic INFO] Start initialization...</span></span>
+<span><span class="co">#&gt; [22:10:08] [SpaTopic INFO] Number of Initializations: 10</span></span>
+<span><span class="co">#&gt; [22:10:34] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
+<span><span class="co">#&gt; [22:10:34] [SpaTopic INFO] Number of region centers selected: 971</span></span>
+<span><span class="co">#&gt; [22:10:34] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
+<span><span class="co">#&gt; [22:10:34] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
+<span><span class="co">#&gt; [22:11:29] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
+<span><span class="co">#&gt; [22:11:29] [SpaTopic RESULT] Final model perplexity: 11.3156</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  55.081   0.160  55.272</span></span></code></pre></div>
+<span><span class="co">#&gt;  80.215   0.354  81.620</span></span></code></pre></div>
 <p>Print the result</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">)</span></span>
@@ -241,7 +258,7 @@ and visualize the distribution of cell topics over the image.</p>
 <span><span class="co">## In the new version of SpaTopic, the final topic assignments is in cell topics.</span></span>
 <span><span class="va">nano.obj</span><span class="op">$</span><span class="va">Topic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">cell_topics</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="va">palatte</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#0000FFFF"</span>,<span class="st">"#FF0000FF"</span>,<span class="st">"#00FF00FF"</span>,<span class="st">"#009FFFFF"</span>,<span class="st">"#FF00B6FF"</span>,<span class="st">"#005300FF"</span>,<span class="st">"#FFD300FF"</span><span class="op">)</span></span>
+<span><span class="va">palatte</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#0000FFFF"</span>,<span class="st">"#FF0000FF"</span>,<span class="st">"#00FF00FF"</span>,<span class="st">"#009FFFFF"</span>,<span class="st">"#ff00b7fa"</span>,<span class="st">"#005300FF"</span>,<span class="st">"#FFD300FF"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">nano.obj</span>, fov <span class="op">=</span> <span class="st">"lung5.rep1"</span>, group.by <span class="op">=</span> <span class="st">"Topic"</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                           dark.background <span class="op">=</span> <span class="cn">T</span>,cols <span class="op">=</span> <span class="va">palatte</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Topic"</span><span class="op">)</span> </span></code></pre></div>
 <p><img src="SpaTopic_files/figure-html/topics-1.png" width="672"></p>
@@ -266,6 +283,97 @@ image.</p>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">nano.obj</span>, fov <span class="op">=</span> <span class="st">"lung5.rep1"</span>, group.by <span class="op">=</span> <span class="st">"niches"</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, dark.background <span class="op">=</span> <span class="cn">T</span>,cols <span class="op">=</span> <span class="va">palatte2</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Niches"</span><span class="op">)</span> </span></code></pre></div>
 <p><img src="SpaTopic_files/figure-html/niches_vis-1.png" width="672"></p>
 </div>
+<div class="section level3">
+<h3 id="visualizing-topic-probability-distributions">Visualizing Topic Probability Distributions<a class="anchor" aria-label="anchor" href="#visualizing-topic-probability-distributions"></a>
+</h3>
+<p>After running SpaTopic, users can visualize not just the discrete
+topic assignments but also the probability distribution of each topic
+across the tissue.</p>
+<p>Here’s how to create these visualizations:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Extract topic probabilities for each cell and add as metadata to the Seurat object</span></span>
+<span><span class="va">topic_prob</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">Z.trace</span><span class="op">)</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">topic_prob</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">nano.obj</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Topic"</span>, <span class="va">i</span>, <span class="st">"_probability"</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">topic_prob</span><span class="op">[</span>,<span class="va">i</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Function to create a topic probability plot</span></span>
+<span><span class="va">plot_topic_prob</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">topic_num</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">feature_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Topic"</span>, <span class="va">topic_num</span>, <span class="st">"_probability"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://satijalab.org/seurat/reference/ImageFeaturePlot.html" class="external-link">ImageFeaturePlot</a></span><span class="op">(</span><span class="va">nano.obj</span>,</span>
+<span>                  fov <span class="op">=</span> <span class="st">"lung5.rep1"</span>,</span>
+<span>                  features <span class="op">=</span> <span class="va">feature_name</span>,</span>
+<span>                  axes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                  dark.background <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                  cols <span class="op">=</span> <span class="fu">viridis</span><span class="fu">::</span><span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">magma</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Topic "</span>, <span class="va">topic_num</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>      legend.position <span class="op">=</span> <span class="st">"right"</span>,</span>
+<span>      plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>      plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="st">"pt"</span><span class="op">)</span>  <span class="co"># Reduce margins (top, right, bottom, left)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Create plots for each topic</span></span>
+<span><span class="va">topic_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">topic_prob</span><span class="op">)</span>, <span class="va">plot_topic_prob</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine into a multi-panel figure</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">topic_plots</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">&amp;</span> </span>
+<span>  <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>guides <span class="op">=</span> <span class="st">"collect"</span><span class="op">)</span> </span></code></pre></div>
+<p><img src="SpaTopic_files/figure-html/topic_prob-1.png" width="960"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="caf-spatial-subtypes-across-different-topics">CAF spatial subtypes across different topics<a class="anchor" aria-label="anchor" href="#caf-spatial-subtypes-across-different-topics"></a>
+</h2>
+<p>Inspured by <a href="https://www.cell.com/cancer-cell/fulltext/S1535-6108(25)00083-2" class="external-link">Liu
+et al 2025</a>, SpaTopic can also help to identify CAF spatial subtypes.
+Specifically:</p>
+<ul>
+<li>Topic 6 is associated with s1-CAFs adjacent to the tumor;</li>
+<li>Topics 5 and 7 correspond to s2-CAFs within the stromal niche;</li>
+<li>Topic 1 is linked to s3-CAFs in the myeloid niche;</li>
+<li>and Topic 3, primarily comprising B cells and CD4 T cells along with
+some myofibroblasts, corresponds to s4-CAFs in the TLS niche.</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">nano.obj</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"Nanostring"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/Idents.html" class="external-link">Idents</a></span><span class="op">(</span><span class="va">nano.obj</span><span class="op">)</span><span class="op">&lt;-</span><span class="st">"predicted.annotation.l1"</span></span>
+<span><span class="co">## gene list from [Liu et al 2025]</span></span>
+<span><span class="va">caf_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TPM2"</span>, <span class="st">"MYH11"</span>, <span class="st">"ACTA2"</span>, <span class="st">"COL1A1"</span>, <span class="st">"TGFB1"</span>, <span class="st">"LIF"</span>, </span>
+<span>               <span class="st">"COL12A1"</span>, <span class="st">"IL6"</span>, <span class="st">"HSPA1A"</span>, <span class="st">"CFD"</span>, <span class="st">"CXCL2"</span>, <span class="st">"ENG"</span>, </span>
+<span>               <span class="st">"C1QB"</span>, <span class="st">"CD74"</span>, <span class="st">"CXCL12"</span>, <span class="st">"HLA-DPB1"</span>, <span class="st">"CCL8"</span>, <span class="st">"TAP2"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">### we only look at CAF</span></span>
+<span><span class="va">myofibro_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">nano.obj</span>, <span class="va">predicted.annotation.l1</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Myofibroblast"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">selected_topics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"3"</span>, <span class="st">"5"</span>, <span class="st">"6"</span>, <span class="st">"7"</span><span class="op">)</span></span>
+<span><span class="va">myofibro_filtered</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">myofibro_obj</span>, <span class="va">Topic</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">selected_topics</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">custom_topic_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"6"</span> <span class="op">=</span> <span class="st">"Topic6 - s1-CAFs (Tumor adjacent)"</span>,</span>
+<span>  <span class="st">"7"</span> <span class="op">=</span> <span class="st">"Topic7 - s2-CAFs (Stromal niche)"</span>,</span>
+<span>  <span class="st">"5"</span> <span class="op">=</span> <span class="st">"Topic5 - s2-CAFs (Stromal niche)"</span>,</span>
+<span>  <span class="st">"1"</span> <span class="op">=</span> <span class="st">"Topic1 - s3-CAFs (Myeloid niche)"</span>,</span>
+<span>  <span class="st">"3"</span> <span class="op">=</span> <span class="st">"Topic3 - s4-CAFs (TLS niche)"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="va">red_blue_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html" class="external-link">colorRampPalette</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"white"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://satijalab.org/seurat/reference/DotPlot.html" class="external-link">DotPlot</a></span><span class="op">(</span><span class="va">myofibro_filtered</span>, features <span class="op">=</span> <span class="va">caf_genes</span>, group.by <span class="op">=</span> <span class="st">"Topic"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_y_discrete</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">custom_topic_labels</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="va">red_blue_colors</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://satijalab.org/seurat/reference/SeuratTheme.html" class="external-link">RotatedAxis</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html" class="external-link">scale_size_continuous</a></span><span class="op">(</span></span>
+<span>    range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">8</span><span class="op">)</span>,  <span class="co"># Min and max dot size</span></span>
+<span>    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span>, <span class="fl">40</span>, <span class="fl">50</span>, <span class="fl">60</span>, <span class="fl">70</span><span class="op">)</span>,  <span class="co"># Custom breaks</span></span>
+<span>    limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span>  <span class="co"># Set limits to ensure all breaks are included</span></span>
+<span>  <span class="op">)</span> </span></code></pre></div>
+<p><img src="SpaTopic_files/figure-html/cafsubtype-1.png" width="960"></p>
+<p>Though CAF in stroma niche generally have common gene expression
+profile, there are some CAF genes that are differentially expressed
+between Topic 5 and Topic 7, such as TGFB1, HSP1A1, COL12A1 genes,
+potentially due to different immune-enriched neighborhood in the stroma
+region.</p>
 </div>
 <div class="section level2">
 <h2 id="topic-inference-on-multiple-images">Topic Inference on Multiple Images<a class="anchor" aria-label="anchor" href="#topic-inference-on-multiple-images"></a>
@@ -273,7 +381,7 @@ image.</p>
 <p>SpaTopic can identify common tissue patterns across multiple images.
 The input should be a list of data frames. See an example below (not
 run).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## tissue1, tissue2 are data frames of two different images.</span></span>
 <span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">tissue1</span>, B <span class="op">=</span> <span class="va">tissue2</span><span class="op">)</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span> </span></code></pre></div>
 <p>Please check more examples in <a href="https://xiyupeng.github.io/SpaTopic/" class="external-link">SpaTopic Home Page</a>.</p>

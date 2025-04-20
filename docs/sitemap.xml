@@ -19,6 +19,9 @@
     <loc>/articles/index.html</loc>
   </url>
   <url>
+    <loc>/articles/spleen_analysis.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
@@ -38,9 +41,6 @@
   </url>
   <url>
     <loc>/reference/SpaTopic_inference.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gibbs.res-class.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
