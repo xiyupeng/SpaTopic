@@ -201,17 +201,17 @@ tuning.</p></li>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Gibbs sampling for SpaTopic</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="va">dataset</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [11:00:03] [SpaTopic INFO] Number of cells per image: 100149</span></span>
-<span><span class="co">#&gt; [11:00:03] [SpaTopic INFO] Start initialization...</span></span>
-<span><span class="co">#&gt; [11:00:03] [SpaTopic INFO] Number of Initializations: 10</span></span>
-<span><span class="co">#&gt; [11:00:21] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
-<span><span class="co">#&gt; [11:00:21] [SpaTopic INFO] Number of region centers selected: 971</span></span>
-<span><span class="co">#&gt; [11:00:21] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
-<span><span class="co">#&gt; [11:00:21] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
-<span><span class="co">#&gt; [11:00:57] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
-<span><span class="co">#&gt; [11:00:57] [SpaTopic RESULT] Final model perplexity: 11.3156</span></span>
+<span><span class="co">#&gt; [11:28:22] [SpaTopic INFO] Number of cells per image: 100149</span></span>
+<span><span class="co">#&gt; [11:28:22] [SpaTopic INFO] Start initialization...</span></span>
+<span><span class="co">#&gt; [11:28:22] [SpaTopic INFO] Number of Initializations: 10</span></span>
+<span><span class="co">#&gt; [11:28:41] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
+<span><span class="co">#&gt; [11:28:41] [SpaTopic INFO] Number of region centers selected: 971</span></span>
+<span><span class="co">#&gt; [11:28:41] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
+<span><span class="co">#&gt; [11:28:41] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
+<span><span class="co">#&gt; [11:29:17] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
+<span><span class="co">#&gt; [11:29:17] [SpaTopic RESULT] Final model perplexity: 11.3156</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  54.324   0.055  54.411</span></span></code></pre></div>
+<span><span class="co">#&gt;  54.692   0.116  55.052</span></span></code></pre></div>
 <p>Print the result</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">)</span></span>
