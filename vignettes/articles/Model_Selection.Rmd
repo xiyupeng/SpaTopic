@@ -82,7 +82,7 @@ We first run the model under different number of topics, each collecting 200 pos
 ```{r,eval=FALSE}
 ## PRE-RUN the result
 for(topic in 2:9){
-  gibbs.res<-SpaTopic_inference(dataset, ntopics = topic, sigma = 50, region_radius = 400, trace = TRUE, thin = 20, burnin = 2000, niter = 200)
+  gibbs.res<-SpaTopic_inference(dataset, ntopics = topic, sigma = 50, region_radius = 400, trace = TRUE, thin = 20, burnin = 2000, niter = 100)
   filename<-paste0("~/Documents/Research/github/SpaTopic_data/nanostring_niter200_K",topic,".rds")
   saveRDS(gibbs.res, file = filename)
 }
