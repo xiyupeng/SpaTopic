@@ -14,7 +14,7 @@ In the R package, we adapt an approach originally developed for image segmentati
 We further refined the approach to address unique challenges in cellular images and provide an efficient C++ implementation of the algorithm in this R package.
 
 Compared to other KNN-based methods (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset with minimal memory usage. 
-For example, when working on Nanostring CosMx NSCLC dataset, Spatopic can spatial cluster **0.1 million** of cells on a single image within **1 min** on a regular Mac Air (See [tutorial](https://xiyupeng.github.io/SpaTopic/)).
+For example, when working on Nanostring CosMx NSCLC dataset, SpaTopic can spatially cluster **0.1 million** of cells on a single image within **1 min** on a regular Mac Air (See [tutorial](https://xiyupeng.github.io/SpaTopic/)).
 
 
 ## Installation
