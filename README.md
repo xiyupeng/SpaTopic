@@ -8,12 +8,13 @@ SpaTopic
   <!-- badges: end -->
 
 An R package for fast topic inference to identify tissue architecture in multiplexed images.
-It implements a **novel spatial topic model** to identify immunologic topics across **multiple** multiplexed images, simply given the cell location and cell type information as input.
+It implements a **novel spatial topic model** to identify highly interpretable immunologic topics across **multiple** multiplexed images, simply given the cell location and cell type information as input.
 
-Here we adapt an approach originally developed for image segmentation in computer vision, incorporating spatial information into the flexible design of regions (image partitions, analogous to documents in language modeling).
+In the R package, we adapt an approach originally developed for image segmentation in computer vision, incorporating spatial information into the flexible design of regions (image partitions, analogous to documents in language modeling).
 We further refined the approach to address unique challenges in cellular images and provide an efficient C++ implementation of the algorithm in this R package.
 
-Compared to other KNN-based methods (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset.
+Compared to other KNN-based methods (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset with minimal memory usage. 
+For example, when working on Nanostring CosMx NSCLC dataset, SpaTopic can spatially cluster **0.1 million** of cells on a single image within **1 min** on a regular Mac Air (See [tutorial](https://xiyupeng.github.io/SpaTopic/)).
 
 
 ## Installation
