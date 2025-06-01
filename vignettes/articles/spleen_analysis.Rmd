@@ -147,3 +147,30 @@ for (i in names(spleen_objects)){
 }
 wrap_plots(p_spatopic,nrow = 3,guides = "collect") & NoLegend()
 ```
+
+Let's take a closer look on the first image again
+
+```{r,fig.height=6,fig.width=10}
+p_spatopic[[1]]
+```
+
+
+We use a heatmap to show the cell type distributions for all six topics:
+
+- Normal spleen samples are primarily characterized by topics 1, 2, and 3, which reflect red pulp (mixed of B cells, erythroblasts, and F4/80(+) macrophages), PALS (mixed of CD8 T cells and CD4 T cells), and B-follicle (B cell dominated) respectively. 
+- There is an increase in Topic 6 and depletion of Topic 1 in MRL samples, representing much fewer B cells and F4/80(+) macrophages but more granulocytes and erythroblasts in the red pulp regions. 
+- Topic 5 (mainly B220(+) DN T cells and CD4(+) T cells) is enriched in lupus-affected spleen tissue at late stage. 
+
+```{r,fig.height=5,fig.width=10}
+m <- as.data.frame(gibbs.res$Beta)
+
+library(RColorBrewer)
+breaksList = seq(0.01, 0.4, by = 0.01)
+
+# Plots the heatmap
+pheatmap::pheatmap(t(m), 
+         color = colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(length(breaksList)), 
+         angle_col = 45,
+         angle_row = 45,
+         breaks = breaksList) # Sets the breaks of the color scale as in breaks List
+```

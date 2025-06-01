@@ -1,60 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Intro_SpaTopic.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Model_Selection.html</loc>
-  </url>
-  <url>
-    <loc>/articles/SpaTopic.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/spleen_analysis.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Seurat5obj_to_SpaTopic.html</loc>
-  </url>
-  <url>
-    <loc>/reference/SpaTopic-Package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/SpaTopic-class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/SpaTopic_inference.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lung5.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print.SpaTopic.html</loc>
-  </url>
-  <url>
-    <loc>/reference/spatopic_message.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stratified_sampling_sf.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://xiyupeng.github.io/SpaTopic/404.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/LICENSE.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/articles/Intro_SpaTopic.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/articles/Model_Selection.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/articles/SpaTopic.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/articles/index.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/articles/spleen_analysis.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/authors.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/index.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/news/index.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/reference/Seurat5obj_to_SpaTopic.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/reference/SpaTopic-Package.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/reference/SpaTopic-class.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/reference/SpaTopic_inference.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/reference/index.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/reference/lung5.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/reference/print.SpaTopic.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/reference/spatopic_message.html</loc></url>
+<url><loc>https://xiyupeng.github.io/SpaTopic/reference/stratified_sampling_sf.html</loc></url>
 </urlset>
+

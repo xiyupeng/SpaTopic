@@ -1,10 +1,12 @@
 pandoc: 3.1.8
-pkgdown: 2.0.9
+pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   Intro_SpaTopic: Intro_SpaTopic.html
-  Model_Selection: Model_Selection.html
-  SpaTopic: SpaTopic.html
-  spleen_analysis: spleen_analysis.html
-last_built: 2025-04-22T16:22Z
-
+  articles/Model_Selection: Model_Selection.html
+  articles/SpaTopic: SpaTopic.html
+  articles/spleen_analysis: spleen_analysis.html
+last_built: 2025-06-01T20:43Z
+urls:
+  reference: https://xiyupeng.github.io/SpaTopic/reference
+  article: https://xiyupeng.github.io/SpaTopic/articles

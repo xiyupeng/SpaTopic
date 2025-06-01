@@ -77,7 +77,7 @@ print(gibbs.res)
 ## Number of Topics
 
 Here, we will illustrate how to use DIC to select number of topics.
-We first run the model under different number of topics, each collecting 200 posterior samples after 1000 burnin iterations. For higher number of topics, it may take longer time to converge, thus we set `burnin = 2000` instead of the default.
+We first run the model under different number of topics, each collecting 100 posterior samples after 1000 burnin iterations. For higher number of topics, it may take longer time to converge, thus we set `burnin = 2000` instead of the default.
 
 ```{r,eval=FALSE}
 ## PRE-RUN the result
