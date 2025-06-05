@@ -165,6 +165,13 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     return(NULL)
   }
   
+  if(length(levels(itr_df$image))>num_images){
+    spatopic_message("ERROR", "Multiple images should be input as a list of data frames 
+                     or please check multiple image IDs in a single image")
+    return(NULL)
+  }
+  
+  
   if(axis == "3D" & "Y2" %in% colnames(itr_df)){
     itr_df$Y2<-as.numeric(itr_df$Y2)
   }else{
