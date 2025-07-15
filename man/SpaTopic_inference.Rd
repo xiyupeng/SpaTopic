@@ -22,6 +22,7 @@ SpaTopic_inference(
   burnin = 1000,
   niter = 200,
   display_progress = TRUE,
+  z_cellsize = region_radius * 2,
   do.parallel = FALSE,
   n.cores = 1,
   axis = "2D"
@@ -30,8 +31,8 @@ SpaTopic_inference(
 \arguments{
 \item{tissue}{(Required). A data frame or a list of data frames. One for each image. 
 Each row represent a cell with its image ID, X, Y coordinates on the image, celltype,
-with column names (image, X, Y, type), respectively. You may add another column 
-Y2 for 3D tissue image.}
+with column names (image, X, Y, type), respectively. For 3D tissue images, you may add 
+either a 'Z' column (preferred) or 'Y2' column (legacy support) for the third dimension.}
 
 \item{ntopics}{(Required). Number of topics. Topics will be obtained as distributions 
 of cell types.}
@@ -83,6 +84,11 @@ the number of iterations for burn-in for highly complex tissue images.}
 Number of posterior samples collected for model inference.}
 
 \item{display_progress}{Default is TRUE. Display the progress bar.}
+
+\item{z_cellsize}{Default is region_radius*2. The thickness of each Z slice when
+performing 3D stratified sampling. Only used when axis = "3D". Controls the 
+Z-dimension binning resolution for region center selection in 3D tissue images.
+Need to be adjusted based on the tissue thickness and Z-resolution.}
 
 \item{do.parallel}{Default is FALSE. Use parallel computing through R package \code{foreach}.}
 

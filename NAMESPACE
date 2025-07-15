@@ -3,6 +3,7 @@
 S3method(print,SpaTopic)
 export(Seurat5obj_to_SpaTopic)
 export(SpaTopic_inference)
+export(stratified_sampling_3D_via_2D)
 export(stratified_sampling_sf)
 import(foreach)
 import(iterators)

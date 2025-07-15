@@ -31,8 +31,8 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' 
 #' @param tissue (Required). A data frame or a list of data frames. One for each image. 
 #' Each row represent a cell with its image ID, X, Y coordinates on the image, celltype,
-#' with column names (image, X, Y, type), respectively. You may add another column 
-#' Y2 for 3D tissue image.
+#' with column names (image, X, Y, type), respectively. For 3D tissue images, you may add 
+#' either a 'Z' column (preferred) or 'Y2' column (legacy support) for the third dimension.
 #' 
 #' @param ntopics (Required). Number of topics. Topics will be obtained as distributions 
 #' of cell types.
@@ -92,6 +92,11 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' @param axis Default is "2D". You may switch to "3D" for 3D tissue images. 
 #' However, the model inference for 3D tissue is still under test. 
 #' 
+#' @param z_cellsize Default is region_radius*2. The thickness of each Z slice when
+#' performing 3D stratified sampling. Only used when axis = "3D". Controls the 
+#' Z-dimension binning resolution for region center selection in 3D tissue images.
+#' Need to be adjusted based on the tissue thickness and Z-resolution.
+#' 
 #' @return Return a \code{\link{SpaTopic-class}} object. A list of outputs from Gibbs sampling. 
 #' 
 #' @seealso \code{\link{SpaTopic-class}}
@@ -128,11 +133,11 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
                                      npoints_selected = 1, ini_LDA = TRUE, ninit = 10, 
                                      niter_init = 100, beta = .05, alpha = .01,
                                      trace = FALSE, seed = 123, thin = 20, burnin = 1000,
-                                     niter = 200, display_progress = TRUE,
-                                     do.parallel = FALSE, n.cores = 1,axis = "2D"){
+                                     niter = 200, display_progress = TRUE, z_cellsize = region_radius*2,
+                                     do.parallel = FALSE, n.cores = 1, axis = "2D"){
   
   set.seed(seed)
-  
+   
   if(is.data.frame(tissue)) tissue<-list(tissue)
   num_images<-length(tissue)
   
@@ -172,8 +177,12 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   }
   
   
-  if(axis == "3D" & "Y2" %in% colnames(itr_df)){
-    itr_df$Y2<-as.numeric(itr_df$Y2)
+  if(axis == "3D" & ("Z" %in% colnames(itr_df) | "Y2" %in% colnames(itr_df))){
+    if("Z" %in% colnames(itr_df)){
+      itr_df$Z<-as.numeric(itr_df$Z)
+    } else if("Y2" %in% colnames(itr_df)){
+      itr_df$Y2<-as.numeric(itr_df$Y2)
+    }
   }else{
     axis = "2D"
   }
@@ -204,6 +213,11 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     spatopic_message("WARNING", "Package 'doParallel' is not available. Running without parallel processing.")
     do.parallel <- FALSE
   }
+
+  if(do.parallel){
+    ### register cores for parallel computing 
+    doParallel::registerDoParallel(n.cores)
+  }
   
   for (ini in 1:ninit){ ### should chose the best one among random sample points
     
@@ -213,13 +227,14 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     if(do.parallel){
       
       ### register cores for parallel computing 
-      doParallel::registerDoParallel(n.cores)
+      ## doParallel::registerDoParallel(n.cores)
+
       if(ini < 2){
         spatopic_message("INFO", paste("Parallel computing with number of cores:", n.cores))
       }
       
       results<-foreach::foreach(i_id = 1:num_images,.packages=c('sf','RANN'),
-                       .export = c("stratified_sampling_sf")) %dopar% {
+                       .export = c("stratified_sampling_sf", "stratified_sampling_3D_via_2D")) %dopar% {
         
         ## set seed for each core in parallel computing
         set.seed(seed+i_id)
@@ -227,10 +242,12 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
         ## get coords
         coords_selected<-coords[[i_id]]
        
-        ## Strategy 2 with library(sf)
-        center_idx<-stratified_sampling_sf(coords_selected, 
-                                               cellsize = c(region_radius*2,region_radius*2),
-                                               npoints_selected)
+        if(axis == "3D" & "Z" %in% colnames(coords_selected)){
+          ### 3D tissue image
+          center_idx<-stratified_sampling_3D_via_2D(coords_selected, cellsize = c(region_radius*2,region_radius*2), z_cellsize = z_cellsize, num_samples_per_stratum = npoints_selected)
+        }else{
+          center_idx<-stratified_sampling_sf(coords_selected, cellsize = c(region_radius*2,region_radius*2), num_samples_per_stratum = npoints_selected)
+        }
         
         ncenters<-length(center_idx)
         
@@ -254,10 +271,11 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
         ## get coords
         coords_selected<-coords[[i_id]]
     
-        ## Strategy 2 with library(sf)
-        center_idx<-stratified_sampling_sf(coords_selected, 
-                                               cellsize = c(region_radius*2,region_radius*2),
-                                               npoints_selected)
+        if(axis == "3D" & "Z" %in% colnames(coords_selected)){
+          center_idx<-stratified_sampling_3D_via_2D(coords_selected, cellsize = c(region_radius*2,region_radius*2), z_cellsize = z_cellsize, num_samples_per_stratum = npoints_selected)
+        }else{
+          center_idx<-stratified_sampling_sf(coords_selected, cellsize = c(region_radius*2,region_radius*2), num_samples_per_stratum = npoints_selected)
+        }
         
         ncenters<-length(center_idx)
         #print("number of centers selected:\n")
@@ -400,7 +418,10 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   }
   
   spatopic_message("PROGRESS", "Initialization complete. Starting Gibbs sampling...")
-  
+
+  if(do.parallel){
+    doParallel::stopImplicitCluster()
+  }
   ## Gibbs_sampling 
   ## [TODO] should allow multiple chains to be run in parallel.
   ## Simply add results from multiple chains
@@ -442,7 +463,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     display_progress = display_progress,  
     do.parallel = do.parallel,  
     n.cores = n.cores,          
-    axis = axis                 
+    axis = axis,
+    z_cellsize = z_cellsize
   )
 
   ## DIC  
