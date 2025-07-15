@@ -47,6 +47,8 @@ names(dataset) ## names of the 9 images
 head(dataset[["BALBc-1"]]) ## df for the first image
 ```
 
+Note: The option for 3D image `axis = "3D"` is only available in the current development version with this example. New tutorial for SpaTopic on 3D images will come soon!
+
 ## Run SpaTopic
 
 Once we have prepared data, we can start to run SpaTopic with number of topic = 6. The initialization may takes time, and you may run the algorithm in parallel `do.parallel = TRUE` with multiple cores `n.cores = 8`.
