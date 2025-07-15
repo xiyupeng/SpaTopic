@@ -33,12 +33,12 @@ For multiple images, SpaTopic requires a list of data frames as input, each with
 - Y
 - type
 
-You may add additional axis Y2 for 3D image.
+You may add additional axis Z for 3D image.
 
 ```{r}
 select_column<-function(data){
   data_select<-as.data.frame(cbind(data$sample, data$sample.X, data$sample.Y, data$sample.Z, data$cluster))
-  colnames(data_select)<-c("image","X","Y","Y2","type") # we also save the coordinate on Z axis
+  colnames(data_select)<-c("image","X","Y","Z","type") # we also save the coordinate on Z axis
   data_select$image<-gsub("-", ".", data_select$image)
   data_select
 }

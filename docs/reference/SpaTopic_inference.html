@@ -40,7 +40,7 @@ as well as indicating cell-cell interactions in each domain."></head><body>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/xiyupeng/SpaTopic/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="nav-link" href="https://github.com/xiyupeng/SpaTopic/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -50,7 +50,7 @@ as well as indicating cell-cell interactions in each domain."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>'SpaTopic': fast topic inference to identify tissue architecture in multiplexed images</h1>
-      <small class="dont-index">Source: <a href="https://github.com/xiyupeng/SpaTopic/blob/HEAD/R/Gibbs_sampler.R" class="external-link"><code>R/Gibbs_sampler.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/xiyupeng/SpaTopic/blob/HEAD/R/Gibbs_sampler.R"><code>R/Gibbs_sampler.R</code></a></small>
       <div class="d-none name"><code>SpaTopic_inference.Rd</code></div>
     </div>
 
@@ -85,6 +85,7 @@ as well as indicating cell-cell interactions in each domain.</p>
 <span>  burnin <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  niter <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  display_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  z_cellsize <span class="op">=</span> <span class="va">region_radius</span> <span class="op">*</span> <span class="fl">2</span>,</span>
 <span>  do.parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  n.cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  axis <span class="op">=</span> <span class="st">"2D"</span></span>
@@ -98,8 +99,8 @@ as well as indicating cell-cell interactions in each domain.</p>
 <dl><dt id="arg-tissue">tissue<a class="anchor" aria-label="anchor" href="#arg-tissue"></a></dt>
 <dd><p>(Required). A data frame or a list of data frames. One for each image.
 Each row represent a cell with its image ID, X, Y coordinates on the image, celltype,
-with column names (image, X, Y, type), respectively. You may add another column
-Y2 for 3D tissue image.</p></dd>
+with column names (image, X, Y, type), respectively. For 3D tissue images, you may add
+either a 'Z' column (preferred) or 'Y2' column (legacy support) for the third dimension.</p></dd>
 
 
 <dt id="arg-ntopics">ntopics<a class="anchor" aria-label="anchor" href="#arg-ntopics"></a></dt>
@@ -183,6 +184,13 @@ Number of posterior samples collected for model inference.</p></dd>
 
 <dt id="arg-display-progress">display_progress<a class="anchor" aria-label="anchor" href="#arg-display-progress"></a></dt>
 <dd><p>Default is TRUE. Display the progress bar.</p></dd>
+
+
+<dt id="arg-z-cellsize">z_cellsize<a class="anchor" aria-label="anchor" href="#arg-z-cellsize"></a></dt>
+<dd><p>Default is region_radius*2. The thickness of each Z slice when
+performing 3D stratified sampling. Only used when axis = "3D". Controls the
+Z-dimension binning resolution for region center selection in 3D tissue images.
+Need to be adjusted based on the tissue thickness and Z-resolution.</p></dd>
 
 
 <dt id="arg-do-parallel">do.parallel<a class="anchor" aria-label="anchor" href="#arg-do-parallel"></a></dt>

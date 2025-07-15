@@ -47,7 +47,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/xiyupeng/SpaTopic/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="nav-link" href="https://github.com/xiyupeng/SpaTopic/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -58,17 +58,17 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="spatopic">SpaTopic<a class="anchor" aria-label="anchor" href="#spatopic"></a>
 </h1></div>
-<p><!-- badges: start --> <a href="https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://cran.r-project.org/package=SpaTopic" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/SpaTopic"></a> <a href="https://cran.r-project.org/package=SpaTopic" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/SpaTopic"></a> <!-- badges: end --></p>
-<p>An R package for fast topic inference to identify tissue architecture in multiplexed images. It implements a <strong>novel spatial topic model</strong> to identify immunologic topics across <strong>multiple</strong> multiplexed images, simply given the cell location and cell type information as input.</p>
-<p>Here we adapt an approach originally developed for image segmentation in computer vision, incorporating spatial information into the flexible design of regions (image partitions, analogous to documents in language modeling). We further refined the approach to address unique challenges in cellular images and provide an efficient C++ implementation of the algorithm in this R package.</p>
-<p>Compared to other KNN-based methods (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset.</p>
+<p><!-- badges: start --> <a href="https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://cran.r-project.org/package=SpaTopic" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/SpaTopic"></a> <a href="https://cran.r-project.org/package=SpaTopic" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/SpaTopic"></a> <!-- badges: end --></p>
+<p>An R package for fast topic inference to identify tissue architecture in multiplexed images. It implements a <strong>novel spatial topic model</strong> to identify highly interpretable immunologic topics across <strong>multiple</strong> multiplexed images, simply given the cell location and cell type information as input.</p>
+<p>In the R package, we adapt an approach originally developed for image segmentation in computer vision, incorporating spatial information into the flexible design of regions (image partitions, analogous to documents in language modeling). We further refined the approach to address unique challenges in cellular images and provide an efficient C++ implementation of the algorithm in this R package.</p>
+<p>Compared to other KNN-based methods (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset with minimal memory usage. For example, when working on Nanostring CosMx NSCLC dataset, SpaTopic can spatially cluster <strong>0.1 million</strong> of cells on a single image within <strong>1 min</strong> on a regular Mac Air (See <a href="https://xiyupeng.github.io/SpaTopic/" class="external-link">tutorial</a>).</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>The R package <code>SpaTopic</code> now is available in CRAN and can be installed with the following code.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"SpaTopic"</span><span class="op">)</span></span></code></pre></div>
-<p>The development version of <code>SpaTopic</code> can be installed from the <a href="https://github.com/xiyupeng/SpaTopic" class="external-link">GitHub repository</a>.</p>
+<p>The development version of <code>SpaTopic</code> can be installed from the <a href="https://github.com/xiyupeng/SpaTopic">GitHub repository</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"xiyupeng/SpaTopic"</span><span class="op">)</span></span></code></pre></div>
@@ -97,7 +97,7 @@
 </h2>
 <p>The required input of SpaTopic is a data frame containing cells within on a single image or a list of data frames for multiple images. Each data frame consists of four columns: The image ID, X, Y cell coordinates, and cell type information.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/xiyupeng/SpaTopic" class="external-link">SpaTopic</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/xiyupeng/SpaTopic">SpaTopic</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"SpaTopic"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] '1.2.0'</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
@@ -112,7 +112,7 @@
 <span><span class="co">#5_1 image1 7446.889 158845.7     Macrophage</span></span>
 <span><span class="co">#6_1 image1 3254.889 158838.7          CD4 T</span></span>
 <span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="va">lung5</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span></span></code></pre></div>
-<p>For detailed usage of SpaTopic, please check the <a href="https://xiyupeng.github.io/SpaTopic/">tutorial</a>.</p>
+<p>For detailed usage of SpaTopic, please check the <a href="https://xiyupeng.github.io/SpaTopic/" class="external-link">tutorial</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="example-data">Example Data<a class="anchor" aria-label="anchor" href="#example-data"></a>
@@ -156,8 +156,8 @@
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://cloud.r-project.org/package=SpaTopic" class="external-link">View on CRAN</a></li>
-<li><a href="https://github.com/xiyupeng/SpaTopic/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/xiyupeng/SpaTopic/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/xiyupeng/SpaTopic/">Browse source code</a></li>
+<li><a href="https://github.com/xiyupeng/SpaTopic/issues">Report a bug</a></li>
 </ul>
 </div>
 
