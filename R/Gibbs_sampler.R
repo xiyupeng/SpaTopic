@@ -183,7 +183,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     } else if("Y2" %in% colnames(itr_df)){
       itr_df$Y2<-as.numeric(itr_df$Y2)
     }
-  }else{
+  }else if(axis == "3D"){
     spatopic_message("WARNING", "No extra column with colname Z or Y2 available for 3D image. 
                      Will just treat it as 2D image." )
     axis = "2D"
@@ -302,6 +302,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   ## number of selected centers per image
   ncenters<-unlist(lapply(results, function(x) nrow(x$coords_centers)))
+  all_centers <- do.call(rbind, lapply(results, function(x) x$coords_centers))
   #print("number of centers selected:")
   #print(ncenters)
   
@@ -375,6 +376,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
       D_keep<-D
       neigh_centers_keep<-neigh_centers
       neigh_dists_keep<-neigh_dists
+      all_centers_keep<-all_centers
     }
     ## within each iteration, release memory for the untouched objects
     ##gc()
@@ -394,7 +396,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   D<-D_keep
   neigh_centers<-neigh_centers_keep
   neigh_dists<-neigh_dists_keep
-
+  all_centers<-all_centers_keep
   reg_info <- paste("Number of region centers selected:", paste(ncenters, collapse = ", "))
   spatopic_message("INFO", reg_info)
   
@@ -476,6 +478,9 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   }else{
     gibbs.res$DIC<-NULL
   }
+
+  ## save the selected centers
+  gibbs.res$selected_centers<-all_centers
   
   ## Beta: Topic Content
   gibbs.res$ntopics<-K
