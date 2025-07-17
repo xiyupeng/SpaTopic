@@ -34,7 +34,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Intro_SpaTopic.html">SpaTopic Basics</a></li>
+<li><a class="dropdown-item" href="../articles/Analysis_for_3Dimage.html">Analysis_for_3Dimage</a></li>
+    <li><a class="dropdown-item" href="../articles/Intro_SpaTopic.html">SpaTopic Basics</a></li>
     <li><a class="dropdown-item" href="../articles/Model_Selection.html">Model Selection</a></li>
     <li><a class="dropdown-item" href="../articles/spleen_analysis.html">Analysis across Multiple Images</a></li>
   </ul>
@@ -149,6 +150,7 @@ let’s create a list of Seurat Object.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">counts</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">30</span>,<span class="fl">34</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">&lt;-</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="co">### to avoid bug for mismatch</span></span>
 <span>  <span class="va">subset</span><span class="op">&lt;-</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, assay <span class="op">=</span> <span class="st">"protein"</span><span class="op">)</span></span>
 <span>  <span class="va">subset</span><span class="op">$</span><span class="va">X</span><span class="op">&lt;-</span><span class="va">x</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">sample.X</span></span>
 <span>  <span class="va">subset</span><span class="op">$</span><span class="va">Y</span><span class="op">&lt;-</span><span class="va">x</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">sample.Y</span></span>
@@ -183,7 +185,8 @@ images.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_celltype</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <p><img src="spleen_analysis_files/figure-html/unnamed-chunk-6-1.png" width="960"></p>
-<p>Then we add SpaTopic to the Seurat objects for visualization</p>
+<p>Then we add back the results from SpaTopic to the Seurat objects for
+visualization</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">itr_df</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">dataset</span><span class="op">)</span></span>
 <span><span class="va">itr_df</span><span class="op">$</span><span class="va">image</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">itr_df</span><span class="op">$</span><span class="va">image</span><span class="op">)</span></span>

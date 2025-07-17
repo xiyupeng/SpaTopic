@@ -75,6 +75,7 @@ spleen_objects<-list()
 library(Seurat)
 for(i in names(x)){
   counts<-as.matrix(x[[i]][,c(2:30,34)])
+  rownames(counts)<-1:nrow(counts) ### to avoid bug for mismatch
   subset<-CreateSeuratObject(counts = t(counts), assay = "protein")
   subset$X<-x[[i]]$sample.X
   subset$Y<-x[[i]]$sample.Y
@@ -115,7 +116,7 @@ p_celltype[[1]]
 ```
 
 
-Then we add SpaTopic to the Seurat objects for visualization
+Then we add back the results from SpaTopic to the Seurat objects for visualization
 
 ```{r}
 itr_df<-do.call(rbind, dataset)
