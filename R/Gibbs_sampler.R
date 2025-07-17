@@ -184,6 +184,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
       itr_df$Y2<-as.numeric(itr_df$Y2)
     }
   }else{
+    spatopic_message("WARNING", "No extra column with colname Z or Y2 available for 3D image. 
+                     Will just treat it as 2D image." )
     axis = "2D"
   }
 
