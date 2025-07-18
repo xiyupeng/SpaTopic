@@ -34,7 +34,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Intro_SpaTopic.html">SpaTopic Basics</a></li>
+<li><a class="dropdown-item" href="../articles/Analysis_for_3Dimage.html">Analysis for 3D image</a></li>
+    <li><a class="dropdown-item" href="../articles/Intro_SpaTopic.html">SpaTopic Basics</a></li>
     <li><a class="dropdown-item" href="../articles/Model_Selection.html">Model Selection</a></li>
     <li><a class="dropdown-item" href="../articles/spleen_analysis.html">Analysis across Multiple Images</a></li>
   </ul>
@@ -94,7 +95,7 @@ algorithm.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/xiyupeng/SpaTopic">SpaTopic</a></span><span class="op">)</span></span>
 <span><span class="va">dataset</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/Seurat5obj_to_SpaTopic.html">Seurat5obj_to_SpaTopic</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">nano.obj</span>, group.by <span class="op">=</span> <span class="st">"predicted.annotation.l1"</span>, image <span class="op">=</span> <span class="st">"image1"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [16:41:56] [SpaTopic INFO] Successfully extracted 100149 cells with coordinates and annotations</span></span>
+<span><span class="co">#&gt; [11:51:39] [SpaTopic INFO] Successfully extracted 100149 cells with coordinates and annotations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      image        X        Y           type</span></span>
 <span><span class="co">#&gt; 1_1 image1 4215.889 158847.7      Dendritic</span></span>
@@ -124,17 +125,17 @@ directly on the whole big image datasets.</p>
 <span><span class="co">#&gt; Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="va">dataset</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, </span>
 <span>                                          region_radius <span class="op">=</span> <span class="fl">400</span>,trace <span class="op">=</span> <span class="cn">TRUE</span>, thin <span class="op">=</span> <span class="fl">20</span>, burnin <span class="op">=</span> <span class="fl">0</span>, niter <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [16:41:56] [SpaTopic INFO] Number of cells per image: 100149</span></span>
-<span><span class="co">#&gt; [16:41:56] [SpaTopic INFO] Start initialization...</span></span>
-<span><span class="co">#&gt; [16:41:56] [SpaTopic INFO] Number of Initializations: 10</span></span>
-<span><span class="co">#&gt; [16:42:16] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
-<span><span class="co">#&gt; [16:42:16] [SpaTopic INFO] Number of region centers selected: 971</span></span>
-<span><span class="co">#&gt; [16:42:16] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
-<span><span class="co">#&gt; [16:42:16] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
-<span><span class="co">#&gt; [16:45:10] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
-<span><span class="co">#&gt; [16:45:10] [SpaTopic RESULT] Final model perplexity: 11.3127</span></span>
+<span><span class="co">#&gt; [11:51:40] [SpaTopic INFO] Number of cells per image: 100149</span></span>
+<span><span class="co">#&gt; [11:51:40] [SpaTopic INFO] Start initialization...</span></span>
+<span><span class="co">#&gt; [11:51:40] [SpaTopic INFO] Number of Initializations: 10</span></span>
+<span><span class="co">#&gt; [11:52:05] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
+<span><span class="co">#&gt; [11:52:05] [SpaTopic INFO] Number of region centers selected: 971</span></span>
+<span><span class="co">#&gt; [11:52:05] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
+<span><span class="co">#&gt; [11:52:05] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
+<span><span class="co">#&gt; [11:55:30] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
+<span><span class="co">#&gt; [11:55:30] [SpaTopic RESULT] Final model perplexity: 11.3127</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt; 193.209   0.589 194.050</span></span></code></pre></div>
+<span><span class="co">#&gt; 228.688   0.840 231.033</span></span></code></pre></div>
 <p>Now we can plot the log likelihood across different iterations.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -232,17 +233,17 @@ biological dataset.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Gibbs sampling for SpaTopic</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="va">dataset</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [16:45:11] [SpaTopic INFO] Number of cells per image: 100149</span></span>
-<span><span class="co">#&gt; [16:45:11] [SpaTopic INFO] Start initialization...</span></span>
-<span><span class="co">#&gt; [16:45:11] [SpaTopic INFO] Number of Initializations: 10</span></span>
-<span><span class="co">#&gt; [16:45:31] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
-<span><span class="co">#&gt; [16:45:31] [SpaTopic INFO] Number of region centers selected: 971</span></span>
-<span><span class="co">#&gt; [16:45:31] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
-<span><span class="co">#&gt; [16:45:31] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
-<span><span class="co">#&gt; [16:46:09] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
-<span><span class="co">#&gt; [16:46:09] [SpaTopic RESULT] Final model perplexity: 11.3156</span></span>
+<span><span class="co">#&gt; [11:55:32] [SpaTopic INFO] Number of cells per image: 100149</span></span>
+<span><span class="co">#&gt; [11:55:32] [SpaTopic INFO] Start initialization...</span></span>
+<span><span class="co">#&gt; [11:55:32] [SpaTopic INFO] Number of Initializations: 10</span></span>
+<span><span class="co">#&gt; [11:55:54] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
+<span><span class="co">#&gt; [11:55:54] [SpaTopic INFO] Number of region centers selected: 971</span></span>
+<span><span class="co">#&gt; [11:55:54] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
+<span><span class="co">#&gt; [11:55:54] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
+<span><span class="co">#&gt; [11:56:37] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
+<span><span class="co">#&gt; [11:56:37] [SpaTopic RESULT] Final model perplexity: 11.3156</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  57.310   0.187  57.568</span></span></code></pre></div>
+<span><span class="co">#&gt;  65.108   0.127  65.320</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## In the new version of SpaTopic, the final topic assignments is in cell topics.</span></span>
 <span><span class="va">nano.obj</span><span class="op">$</span><span class="va">Topic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">$</span><span class="va">cell_topics</span><span class="op">)</span></span>
