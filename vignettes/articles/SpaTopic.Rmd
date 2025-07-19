@@ -85,7 +85,7 @@ This step takes around 60~90 seconds on a regular laptop
 
 When running SpaTopic, both `sigma` and `region_radius` should be set based on image resolution and tissue complexity:
 
-- For whole-slide imaging applications, select `region_radius` to include at least 100 cells per region on average. 
+- For whole-slide imaging applications, select `region_radius` to include **at least 100 cells (around 100 cells usually works fine)** per region on average. 
 Note that different imaging platforms may report spatial coordinates in either pixels or microns, so adjust parameters accordingly.
 
 - The `sigma` parameter should be tuned in conjunction with `region_radius`. 

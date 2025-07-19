@@ -172,10 +172,10 @@ cell type information need to be provided via option
 tissue complexity:</p>
 <ul>
 <li><p>For whole-slide imaging applications, select
-<code>region_radius</code> to include at least 100 cells per region on
-average. Note that different imaging platforms may report spatial
-coordinates in either pixels or microns, so adjust parameters
-accordingly.</p></li>
+<code>region_radius</code> to include <strong>at least 100 cells (around
+100 cells usually works fine)</strong> per region on average. Note that
+different imaging platforms may report spatial coordinates in either
+pixels or microns, so adjust parameters accordingly.</p></li>
 <li><p>The <code>sigma</code> parameter should be tuned in conjunction
 with <code>region_radius</code>. Empirically, we’ve found that setting
 <code>sigma</code> to approximately the square root of
@@ -185,17 +185,17 @@ tuning.</p></li>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Gibbs sampling for SpaTopic</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="va">dataset</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [11:56:49] [SpaTopic INFO] Number of cells per image: 100149</span></span>
-<span><span class="co">#&gt; [11:56:49] [SpaTopic INFO] Start initialization...</span></span>
-<span><span class="co">#&gt; [11:56:49] [SpaTopic INFO] Number of Initializations: 10</span></span>
-<span><span class="co">#&gt; [11:57:10] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
-<span><span class="co">#&gt; [11:57:10] [SpaTopic INFO] Number of region centers selected: 971</span></span>
-<span><span class="co">#&gt; [11:57:10] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
-<span><span class="co">#&gt; [11:57:10] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
-<span><span class="co">#&gt; [11:57:49] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
-<span><span class="co">#&gt; [11:57:49] [SpaTopic RESULT] Final model perplexity: 11.3156</span></span>
+<span><span class="co">#&gt; [13:33:31] [SpaTopic INFO] Number of cells per image: 100149</span></span>
+<span><span class="co">#&gt; [13:33:31] [SpaTopic INFO] Start initialization...</span></span>
+<span><span class="co">#&gt; [13:33:31] [SpaTopic INFO] Number of Initializations: 10</span></span>
+<span><span class="co">#&gt; [13:33:51] [SpaTopic RESULT] Min perplexity during initialization: 11.6302</span></span>
+<span><span class="co">#&gt; [13:33:51] [SpaTopic INFO] Number of region centers selected: 971</span></span>
+<span><span class="co">#&gt; [13:33:51] [SpaTopic INFO] Average number of cells per region: 103.14</span></span>
+<span><span class="co">#&gt; [13:33:51] [SpaTopic PROGRESS] Initialization complete. Starting Gibbs sampling...</span></span>
+<span><span class="co">#&gt; [13:34:29] [SpaTopic COMPLETE] Gibbs sampling completed successfully</span></span>
+<span><span class="co">#&gt; [13:34:29] [SpaTopic RESULT] Final model perplexity: 11.3156</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  60.472   0.116  60.644</span></span></code></pre></div>
+<span><span class="co">#&gt;  57.635   0.116  57.937</span></span></code></pre></div>
 <p>Print the result</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">)</span></span>
