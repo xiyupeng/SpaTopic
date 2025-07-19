@@ -57,12 +57,16 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="spatopic">SpaTopic<a class="anchor" aria-label="anchor" href="#spatopic"></a>
+<div class="page-header"><h1 id="spatopic-spatialtopic">SpaTopic (SpatialTopic)<a class="anchor" aria-label="anchor" href="#spatopic-spatialtopic"></a>
 </h1></div>
 <p><!-- badges: start --> <a href="https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/xiyupeng/SpaTopic/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://cran.r-project.org/package=SpaTopic" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/SpaTopic"></a> <a href="https://cran.r-project.org/package=SpaTopic" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/SpaTopic"></a> <!-- badges: end --></p>
 <p>An R package for fast topic inference to identify tissue architecture in multiplexed images. It implements a <strong>novel spatial topic model</strong> to identify highly interpretable immunologic topics across <strong>multiple</strong> multiplexed images, simply given the cell location and cell type information as input.</p>
 <p>In the R package, we adapt an approach originally developed for image segmentation in computer vision, incorporating spatial information into the flexible design of regions (image partitions, analogous to documents in language modeling). We further refined the approach to address unique challenges in cellular images and provide an efficient C++ implementation of the algorithm in this R package.</p>
-<p>Compared to other KNN-based methods (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset with minimal memory usage. For example, when working on Nanostring CosMx NSCLC dataset, SpaTopic can spatially cluster <strong>0.1 million</strong> of cells on a single image within <strong>1 min</strong> on a regular Mac Air (See <a href="https://xiyupeng.github.io/SpaTopic/" class="external-link">tutorial</a>).</p>
+<p>Compared to other KNN-based methods (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset with minimal memory usage. For example, when working on Nanostring CosMx NSCLC dataset, SpaTopic can spatially cluster <strong>0.1 million</strong> of cells on a single image within <strong>1 min</strong> on a regular Mac Air (See <a href="https://xiyupeng.github.io/SpaTopic/articles/SpaTopic.html" class="external-link">tutorial</a>).</p>
+<p><strong>News: SpatialTopic now has been published in Nature Communications</strong>:</p>
+<p>Peng, X., Smithy, J.W., Yosofvand, M. et al. Scalable topic modelling decodes spatial tissue architecture for large-scale multiplexed imaging analysis. Nat Commun 16, 6619 (2025). <a href="https://doi.org/10.1038/s41467-025-61821-y" class="external-link uri">https://doi.org/10.1038/s41467-025-61821-y</a></p>
+<p><strong>Tutorial available to get start it</strong></p>
+<p><a href="https://xiyupeng.github.io/SpaTopic/articles/SpaTopic.html" class="external-link uri">https://xiyupeng.github.io/SpaTopic/articles/SpaTopic.html</a></p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -144,7 +148,8 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>Xiyu Peng, James W. Smithy, Mohammad Yosofvand, Caroline E. Kostrzewa, MaryLena Bleile, Fiona D. Ehrich, Jasme Lee, Michael A. Postow, Margaret K. Callahan, Katherine S. Panageas, Ronglai Shen. Decoding Spatial Tissue Architecture: A Scalable Bayesian Topic Model for Multiplexed Imaging Analysis. bioRxiv. doi: <a href="https://doi.org/10.1101/2024.10.08.617293" class="external-link uri">https://doi.org/10.1101/2024.10.08.617293</a></p>
+<p>Peng, X., Smithy, J.W., Yosofvand, M. et al. Scalable topic modelling decodes spatial tissue architecture for large-scale multiplexed imaging analysis. Nat Commun 16, 6619 (2025). <a href="https://doi.org/10.1038/s41467-025-61821-y" class="external-link uri">https://doi.org/10.1038/s41467-025-61821-y</a></p>
+<p>Preprint: Xiyu Peng, James W. Smithy, Mohammad Yosofvand, Caroline E. Kostrzewa, MaryLena Bleile, Fiona D. Ehrich, Jasme Lee, Michael A. Postow, Margaret K. Callahan, Katherine S. Panageas, Ronglai Shen. Decoding Spatial Tissue Architecture: A Scalable Bayesian Topic Model for Multiplexed Imaging Analysis. bioRxiv. doi: <a href="https://doi.org/10.1101/2024.10.08.617293" class="external-link uri">https://doi.org/10.1101/2024.10.08.617293</a></p>
 </div>
 <div class="section level2">
 <h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
