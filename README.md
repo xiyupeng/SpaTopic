@@ -73,6 +73,33 @@ head(lung5)
 gibbs.res<-SpaTopic_inference(lung5, ntopics = 7, sigma = 50, region_radius = 400)
 ```
 
+```
+print(gibbs.res)
+#> SpaTopic Results
+#> ----------------
+#> Number of topics: 7 
+#> Perplexity: 11.31563 
+#> 
+#> Topic Content(Topic distribution across cell types):
+#>                                 topic1       topic2       topic3      topic4
+#> Alveolar Epithelial Type 1 0.035870295 6.511503e-03 4.541367e-06 0.026643327
+#> Alveolar Epithelial Type 2 0.025386476 3.553900e-02 4.541367e-06 0.017427665
+#> Artery                     0.007545591 2.624548e-06 9.128148e-04 0.001856373
+#> B                          0.018581190 5.800251e-04 3.446035e-01 0.015203195
+#> Basal                      0.025846292 7.753466e-01 1.730261e-03 0.089193312
+#>                                  topic5       topic6      topic7
+#> Alveolar Epithelial Type 1 2.987411e-06 6.348481e-06 0.005341969
+#> Alveolar Epithelial Type 2 2.987411e-06 6.348481e-06 0.006994451
+#> Artery                     5.320579e-03 2.044846e-02 0.006041096
+#> B                          1.912242e-02 3.434528e-03 0.018434717
+#> Basal                      4.902342e-03 6.348481e-06 0.006549552
+#> ...
+#> 
+#> Use $Z.trace for posterior probabilities of topic assignments for each cell
+#> Use $cell_topics for final topic assignments for each cell
+#> Use $parameters for accessing model parameters
+```
+
 For detailed usage of SpaTopic,
 please check the [tutorial](https://xiyupeng.github.io/SpaTopic/).
 

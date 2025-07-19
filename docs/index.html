@@ -117,6 +117,30 @@
 <span><span class="co">#5_1 image1 7446.889 158845.7     Macrophage</span></span>
 <span><span class="co">#6_1 image1 3254.889 158838.7          CD4 T</span></span>
 <span><span class="va">gibbs.res</span><span class="op">&lt;-</span><span class="fu"><a href="reference/SpaTopic_inference.html">SpaTopic_inference</a></span><span class="op">(</span><span class="va">lung5</span>, ntopics <span class="op">=</span> <span class="fl">7</span>, sigma <span class="op">=</span> <span class="fl">50</span>, region_radius <span class="op">=</span> <span class="fl">400</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gibbs.res</span><span class="op">)</span></span>
+<span><span class="co">#&gt; SpaTopic Results</span></span>
+<span><span class="co">#&gt; ----------------</span></span>
+<span><span class="co">#&gt; Number of topics: 7</span></span>
+<span><span class="co">#&gt; Perplexity: 11.31563</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; Topic Content(Topic distribution across cell types):</span></span>
+<span><span class="co">#&gt;                                 topic1       topic2       topic3      topic4</span></span>
+<span><span class="co">#&gt; Alveolar Epithelial Type 1 0.035870295 6.511503e-03 4.541367e-06 0.026643327</span></span>
+<span><span class="co">#&gt; Alveolar Epithelial Type 2 0.025386476 3.553900e-02 4.541367e-06 0.017427665</span></span>
+<span><span class="co">#&gt; Artery                     0.007545591 2.624548e-06 9.128148e-04 0.001856373</span></span>
+<span><span class="co">#&gt; B                          0.018581190 5.800251e-04 3.446035e-01 0.015203195</span></span>
+<span><span class="co">#&gt; Basal                      0.025846292 7.753466e-01 1.730261e-03 0.089193312</span></span>
+<span><span class="co">#&gt;                                  topic5       topic6      topic7</span></span>
+<span><span class="co">#&gt; Alveolar Epithelial Type 1 2.987411e-06 6.348481e-06 0.005341969</span></span>
+<span><span class="co">#&gt; Alveolar Epithelial Type 2 2.987411e-06 6.348481e-06 0.006994451</span></span>
+<span><span class="co">#&gt; Artery                     5.320579e-03 2.044846e-02 0.006041096</span></span>
+<span><span class="co">#&gt; B                          1.912242e-02 3.434528e-03 0.018434717</span></span>
+<span><span class="co">#&gt; Basal                      4.902342e-03 6.348481e-06 0.006549552</span></span>
+<span><span class="co">#&gt; ...</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; Use $Z.trace for posterior probabilities of topic assignments for each cell</span></span>
+<span><span class="co">#&gt; Use $cell_topics for final topic assignments for each cell</span></span>
+<span><span class="co">#&gt; Use $parameters for accessing model parameters</span></span></code></pre>
 <p>For detailed usage of SpaTopic, please check the <a href="https://xiyupeng.github.io/SpaTopic/" class="external-link">tutorial</a>.</p>
 </div>
 <div class="section level2">
