@@ -14,11 +14,15 @@ In the R package, we adapt an approach originally developed for image segmentati
 We further refined the approach to address unique challenges in cellular images and provide an efficient C++ implementation of the algorithm in this R package.
 
 Compared to other KNN-based methods (such as KNN-kmeans, the default neighborhood analysis in Seurat v5 R package), SpaTopic runs much faster on large-scale image dataset with minimal memory usage. 
-For example, when working on Nanostring CosMx NSCLC dataset, SpaTopic can spatially cluster **0.1 million** of cells on a single image within **1 min** on a regular Mac Air (See [tutorial](https://xiyupeng.github.io/SpaTopic/)).
+For example, when working on Nanostring CosMx NSCLC dataset, SpaTopic can spatially cluster **0.1 million** of cells on a single image within **1 min** on a regular Mac Air (See [tutorial](https://xiyupeng.github.io/SpaTopic/articles/SpaTopic.html)).
 
 **News: SpatialTopic now has been published in Nature Communications**:
 
 Peng, X., Smithy, J.W., Yosofvand, M. et al. Scalable topic modelling decodes spatial tissue architecture for large-scale multiplexed imaging analysis. Nat Commun 16, 6619 (2025). https://doi.org/10.1038/s41467-025-61821-y
+
+**Tutorial available to get start it**
+
+https://xiyupeng.github.io/SpaTopic/articles/SpaTopic.html
 
 
 ## Installation
