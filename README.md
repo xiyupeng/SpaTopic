@@ -101,7 +101,10 @@ print(gibbs.res)
 ```
 
 For detailed usage of SpaTopic,
-please check the [tutorial](https://xiyupeng.github.io/SpaTopic/).
+please check:
+
+- The home page for the tutorial is available [here](https://xiyupeng.github.io/SpaTopic/).
+- A step-by-step tutorial to reproduce the result on Cosmx lung cancer sample is available [here](https://xiyupeng.github.io/SpaTopic/articles/SpaTopic.html).
 
 ## Example Data
 
