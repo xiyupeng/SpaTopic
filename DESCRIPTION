@@ -8,12 +8,12 @@ Authors@R: person("Xiyu", "Peng", email = "pansypeng124@gmail.com",
 Description: Also called SpatialTopic. A novel spatial topic model to integrate both cell type and spatial information to identify the complex spatial tissue architecture on multiplexed tissue images without human intervention. The Package implements a collapsed Gibbs sampling algorithm for inference. 'SpaTopic' (SpatialTopic) is highly scalable to large-scale image datasets without extracting neighborhood information for every single cell. For more details on the methodology, see <https://xiyupeng.github.io/SpaTopic/>.
 License: GPL (>= 3)
 Depends: R (>= 3.5.0),
-Imports: Rcpp (>= 0.12.0),
-         RANN (>= 2.6.0),
-         sf (>= 1.0-12),
-         methods (>= 3.4),
-         foreach (>= 1.5.0),
-         iterators (>= 1.0),
+Imports:
+    foreach,
+    methods,
+    RANN,
+    sf,
+    stats
 LinkingTo: Rcpp, 
            RcppArmadillo,
            RcppProgress,
@@ -21,7 +21,8 @@ Suggests:
     knitr,
     rmarkdown,
     SeuratObject (>= 4.9.9.9086),
-    doParallel (>= 1.0),
+    doFuture (>= 1.0.0),
+    future (>= 1.32.0),
 VignetteBuilder: knitr
 RoxygenNote: 7.3.2
 Encoding: UTF-8

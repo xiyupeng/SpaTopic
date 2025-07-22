@@ -109,6 +109,9 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' 
 #' @import iterators
 #' 
+#' @importFrom future plan multisession sequential
+#' @importFrom doFuture registerDoFuture %dofuture%
+#' 
 #' @examples 
 #' 
 #' ## tissue is a data frame containing cellular information from one image or
@@ -205,181 +208,181 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   D_keep<-NULL
   neigh_centers_keep<-NULL
   neigh_dists_keep<-NULL
+  all_centers_keep<-NULL
   
   spatopic_message("INFO", paste("Number of Initializations:", ninit))
   
   ## if we could do parallel?
-  is_doparallel_available <- requireNamespace("doParallel", quietly = TRUE)
-  
-  if(!is_doparallel_available & do.parallel){
-    spatopic_message("WARNING", "Package 'doParallel' is not available. Running without parallel processing.")
-    do.parallel <- FALSE
-  }
-
   if(do.parallel){
-    ### register cores for parallel computing 
-    doParallel::registerDoParallel(n.cores)
+    doFuture::registerDoFuture()
+    future::plan(multisession, workers = n.cores)
+    spatopic_message("INFO", paste("Parallel computing with number of cores:", n.cores))
   }
   
-  for (ini in 1:ninit){ ### should chose the best one among random sample points
+  for (ini in 1:ninit){
     
-    #spatopic_message("INFO", paste("Initialization:", ini))
-
-    i_id<-NULL  ## set global variable
     if(do.parallel){
       
-      ### register cores for parallel computing 
-      ## doParallel::registerDoParallel(n.cores)
-
-      if(ini < 2){
-        spatopic_message("INFO", paste("Parallel computing with number of cores:", n.cores))
-      }
-      
-      results<-foreach::foreach(i_id = 1:num_images,.packages=c('sf','RANN'),
-                       .export = c("stratified_sampling_sf", "stratified_sampling_3D_via_2D")) %dopar% {
+        # Define required functions and variables for parallel execution
+        required_functions <- c(
+          # Core functions
+          "stratified_sampling_sf",
+          "stratified_sampling_3D_via_2D",
+          "spatopic_message"
+        )
         
-        ## set seed for each core in parallel computing
-        set.seed(seed+i_id)
+        # Variables needed for computation
+        required_vars <- c(
+          # Data
+          "coords",
+          # Parameters
+          "seed",
+          "region_radius",
+          "z_cellsize",
+          "npoints_selected",
+          "kneigh",
+          "axis"
+        )
         
-        ## get coords
-        coords_selected<-coords[[i_id]]
-       
-        if(axis == "3D" & "Z" %in% colnames(coords_selected)){
-          ### 3D tissue image
-          center_idx<-stratified_sampling_3D_via_2D(coords_selected, cellsize = c(region_radius*2,region_radius*2), z_cellsize = z_cellsize, num_samples_per_stratum = npoints_selected)
-        }else{
-          center_idx<-stratified_sampling_sf(coords_selected, cellsize = c(region_radius*2,region_radius*2), num_samples_per_stratum = npoints_selected)
+        results <- foreach::foreach(i_id = 1:num_images,
+                                 .options.future = list(
+                                   # Required R packages
+                                   packages = c('sf', 'RANN'),
+                                   # Export functions and variables
+                                   globals = structure(
+                                     c(required_functions, required_vars),
+                                     add = TRUE
+                                   ),
+                                   # Enable parallel-safe RNG
+                                   seed = TRUE
+                                 )) %dofuture% {
+        # Local variables to reduce memory pressure
+        coords_selected <- coords[[i_id]]
+        local_seed <- seed + i_id
+        set.seed(local_seed)
+        
+        # Pre-compute constants
+        cell_size <- c(region_radius*2, region_radius*2)
+        
+        # Process centers
+        if(axis == "3D" & "Z" %in% colnames(coords_selected)) {
+            center_idx <- stratified_sampling_3D_via_2D(coords_selected,
+                                                      cellsize = cell_size,
+                                                      z_cellsize = z_cellsize,
+                                                      num_samples_per_stratum = npoints_selected)
+        } else {
+            center_idx <- stratified_sampling_sf(coords_selected,
+                                               cellsize = cell_size,
+                                               num_samples_per_stratum = npoints_selected)
         }
         
-        ncenters<-length(center_idx)
+        coords_centers <- coords_selected[center_idx,]
         
-        ### visualize selected centers
-        coords_centers<-coords_selected[center_idx,]
+        # KNN search
+        knn_results <- nn2(coords_centers, coords_selected, 
+                          k = kneigh, 
+                          treetype = "kd",
+                          searchtype = "priority")
         
-        ### Find Knearest centers
-        ##  Compute the kneigh nearest neighbors of each point in A with respect to B
-        k_neighbor_centers <- nn2(coords_centers, coords_selected, k=kneigh, treetype = "kd",
-                                  searchtype = "priority")
-        neigh_centers<-k_neighbor_centers$nn.idx
-        neigh_dists<-k_neighbor_centers$nn.dists
+        # Clean up to reduce memory pressure
+        rm(coords_selected)
+        gc()
         
-        return(list(neigh_centers = neigh_centers, neigh_dists = neigh_dists, 
-                    coords_centers = coords_centers))
+        # Return results
+        list(neigh_centers = knn_results$nn.idx,
+             neigh_dists = knn_results$nn.dists,
+             coords_centers = coords_centers)
       }
-    }else{
-      
-      results<-foreach(i_id = 1:num_images,.packages=c('RANN','sf')) %do% {
+    } else {
+      results <- foreach(i_id = 1:num_images,.packages=c('RANN','sf')) %do% {
+        coords_selected <- coords[[i_id]]
         
-        ## get coords
-        coords_selected<-coords[[i_id]]
-    
-        if(axis == "3D" & "Z" %in% colnames(coords_selected)){
-          center_idx<-stratified_sampling_3D_via_2D(coords_selected, cellsize = c(region_radius*2,region_radius*2), z_cellsize = z_cellsize, num_samples_per_stratum = npoints_selected)
-        }else{
-          center_idx<-stratified_sampling_sf(coords_selected, cellsize = c(region_radius*2,region_radius*2), num_samples_per_stratum = npoints_selected)
+        if(axis == "3D" & "Z" %in% colnames(coords_selected)) {
+          center_idx <- stratified_sampling_3D_via_2D(coords_selected,
+                                                    cellsize = c(region_radius*2,region_radius*2),
+                                                    z_cellsize = z_cellsize,
+                                                    num_samples_per_stratum = npoints_selected)
+        } else {
+          center_idx <- stratified_sampling_sf(coords_selected,
+                                             cellsize = c(region_radius*2,region_radius*2),
+                                             num_samples_per_stratum = npoints_selected)
         }
         
-        ncenters<-length(center_idx)
-        #print("number of centers selected:\n")
-        #print(ncenters)
+        coords_centers <- coords_selected[center_idx,]
+        knn_results <- nn2(coords_centers, coords_selected,
+                          k = kneigh,
+                          treetype = "kd",
+                          searchtype = "priority")
         
-        ### visualize selected centers 
-        ### [TODO] SAVE THE SELECTED CENTERS FOR EACH IMAGE
-        ### [TODO] ADD OPTION TO MANUALLY SELECT CENTERS
-        coords_centers<-coords_selected[center_idx,]
-        
-        ### Find Knearest centers
-        ##  Compute the kneigh nearest neighbors of each point in A with respect to B
-        k_neighbor_centers <- nn2(coords_centers, coords_selected, k=kneigh, treetype = "kd",
-                                  searchtype = "priority")
-        neigh_centers<-k_neighbor_centers$nn.idx
-        neigh_dists<-k_neighbor_centers$nn.dists
-        
-        return(list(neigh_centers = neigh_centers, neigh_dists = neigh_dists, 
-                    coords_centers = coords_centers))
+        list(neigh_centers = knn_results$nn.idx,
+             neigh_dists = knn_results$nn.dists,
+             coords_centers = coords_centers)
       }
     }
-  
-  ## number of selected centers per image
-  ncenters<-unlist(lapply(results, function(x) nrow(x$coords_centers)))
-  all_centers <- do.call(rbind, lapply(results, function(x) x$coords_centers))
-  #print("number of centers selected:")
-  #print(ncenters)
-  
-  ## The nearest neighbor centers of each cells
-  neigh_centers<-lapply(results, function(x) x$neigh_centers)
-  neigh_centers<-do.call(rbind,neigh_centers)
-  
-  ### relabel centers if multiple images
-  if(num_images > 1){
-    add<-c(0,unlist(lapply(1:(length(ncenters)-1),function(x) sum(ncenters[1:x]))))
-    neigh_centers<-neigh_centers+rep(add,times = ncells)
+
+  if(do.parallel){
+    future::plan(sequential)
   }
     
-  ## Distance of cells to their closest centers 
-  neigh_dists<-lapply(results, function(x) x$neigh_dists)
-  neigh_dists<-do.call(rbind,neigh_dists)
-  
-  ############ randomly sample Z and D ---------------------------------------------------
-  
-  ## Initialize Z, D for spatial Topic model
-  neigh_centers <- neigh_centers - 1L
-  D<-as.integer(neigh_centers[,1])  ### The closest region centers
-  C<-as.integer(itr_df$type)-1L
-  
-  ### other parameters 
-  ## number of topics
-  K<-as.integer(ntopics)
-  ## number of celltypes
-  V<-length(unique((C)))
-  ## number of regions
-  M<-max(D)+1
-  ## number of words
-  N<-length(C)
-  
-  ######-----------------------------------------------------------------------------
-  ## Both D and Z are changes over time
-  
-  ### additional input
-  ## list of images and cells  
-  docs<-as.matrix(cbind(as.integer(itr_df$image),C))
-  ## list of different docs/regions
-  doc_list<-as.integer(1:M)-1L
-  ## list of different words
-  word_list<-as.integer(1:V)-1L
-  
+    ## Continue with existing perplexity calculation and result keeping
+    ncenters <- unlist(lapply(results, function(x) nrow(x$coords_centers)))
+    neigh_centers <- lapply(results, function(x) x$neigh_centers)
+    neigh_centers <- do.call(rbind,neigh_centers)
+    
+    # Combine all center coordinates
+    all_centers <- do.call(rbind, lapply(results, function(x) x$coords_centers))
+    
+    if(num_images > 1){
+      add <- c(0,unlist(lapply(1:(length(ncenters)-1),function(x) sum(ncenters[1:x]))))
+      neigh_centers <- neigh_centers+rep(add,times = ncells)
+    }
+    
+    neigh_dists <- lapply(results, function(x) x$neigh_dists)
+    neigh_dists <- do.call(rbind,neigh_dists)
+    
+    ## Initialize Z, D for spatial Topic model
+    neigh_centers <- neigh_centers - 1L
+    D <- as.integer(neigh_centers[,1])  ### The closest region centers
+    C <- as.integer(itr_df$type)-1L
+    
+    ### other parameters 
+    K <- as.integer(ntopics)
+    V <- length(unique((C)))
+    M <- max(D)+1
+    N <- length(C)
+    
+    ### additional input
+    docs <- as.matrix(cbind(as.integer(itr_df$image),C))
+    doc_list <- as.integer(1:M)-1L
+    word_list <- as.integer(1:V)-1L
+    
     Z <- sample(1:ntopics,replace = TRUE, size = length(C))
     Z <- Z-1L
     
-    Ndk <- table_2d_fast(D, Z, M, K) ## number of cells per topic per region (image specific)
-    Nwk <- table_2d_fast(C, Z, V, K) ## number of cells per topic per celltype
-    Nk <- table_1d_fast(Z, K)  ## number of cells in each topic 
-    Nd <- table_1d_fast(D, M) ## number of cells in each region (image specific)
-   
+    Ndk <- table_2d_fast(D, Z, M, K)
+    Nwk <- table_2d_fast(C, Z, V, K)
+    Nk <- table_1d_fast(Z, K)
+    Nd <- table_1d_fast(D, M)
     
     ### initialization (warm start)
     if(ini_LDA){
-    
-      system.time(gibbs.res <-gibbs_sampler_c(docs, Ndk, Nwk, Nk, Nd, Z, D, neigh_dists, 
-                                          neigh_centers, doc_list, word_list, 
-                                          K, beta, alpha, sigma, thin, niter_init, 0,
-                                          0, 0))
-      perplexity<-gibbs.res$Perplexity
-      
-    }else{
-      perplexity<-0
+      system.time(gibbs.res <- gibbs_sampler_c(docs, Ndk, Nwk, Nk, Nd, Z, D, neigh_dists, 
+                                            neigh_centers, doc_list, word_list, 
+                                            K, beta, alpha, sigma, thin, niter_init, 0,
+                                            0, 0))
+      perplexity <- gibbs.res$Perplexity
+    } else {
+      perplexity <- 0
     }
     
     if(perplexity_min > perplexity){
-      Z_keep<-Z
+      Z_keep <- Z
       perplexity_min <- perplexity
-      D_keep<-D
-      neigh_centers_keep<-neigh_centers
-      neigh_dists_keep<-neigh_dists
-      all_centers_keep<-all_centers
+      D_keep <- D
+      neigh_centers_keep <- neigh_centers
+      neigh_dists_keep <- neigh_dists
+      all_centers_keep <- all_centers
     }
-    ## within each iteration, release memory for the untouched objects
-    ##gc()
   }
   
   ###  release memory for large items
