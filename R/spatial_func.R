@@ -179,3 +179,36 @@ stratified_sampling_3D_via_2D <- function(points, cellsize = c(600,600), z_cells
   return(sampled_idx)
 }
 
+#' Extract centers for each image from SpaTopic results
+#' 
+#' @param selected_centers Data frame containing all center coordinates
+#' @param ncenters Vector of number of centers per image
+#' @param image_names Optional vector of image names. If NULL, will use numbers
+#' 
+#' @return A list of data frames, each containing centers for one image
+#' 
+#' @examples
+#' # After running SpaTopic_inference:
+#' # centers_by_image <- extract_centers_by_image(gibbs.res$selected_centers, gibbs.res$ncenters)
+#' 
+#' @export
+extract_centers_by_image <- function(selected_centers, ncenters, image_names = NULL) {
+  # Calculate start and end indices for each image
+  end_idx <- cumsum(ncenters)
+  start_idx <- c(1, end_idx[-length(end_idx)] + 1)
+  
+  # Create list of centers for each image
+  centers_list <- lapply(seq_along(ncenters), function(i) {
+    selected_centers[start_idx[i]:end_idx[i], , drop = FALSE]
+  })
+  
+  # Name the list elements
+  if (is.null(image_names)) {
+    names(centers_list) <- paste0("image", seq_along(ncenters))
+  } else {
+    names(centers_list) <- image_names
+  }
+  
+  return(centers_list)
+}
+
