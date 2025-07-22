@@ -97,6 +97,16 @@ gibbs_spatial_LDA_multiple<-function(...){
 #' Z-dimension binning resolution for region center selection in 3D tissue images.
 #' Need to be adjusted based on the tissue thickness and Z-resolution.
 #' 
+#' @param coords_centers_input (Optional). A list of data frames, one for each image,
+#' containing the coordinates of the region centers to be used. If provided,
+#' the function will skip the region center selection process and use these
+#' centers directly for k-nearest neighbor search.
+#' 
+#' @param topic_content_input (Optional). A matrix of topic content probabilities,
+#' where rows correspond to cell types and columns correspond to topics.
+#' If provided, the function will use these probabilities to sample the initial
+#' topic assignments for each cell.
+#' 
 #' @return Return a \code{\link{SpaTopic-class}} object. A list of outputs from Gibbs sampling. 
 #' 
 #' @seealso \code{\link{SpaTopic-class}}
@@ -137,14 +147,21 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
                                      niter_init = 100, beta = .05, alpha = .01,
                                      trace = FALSE, seed = 123, thin = 20, burnin = 1000,
                                      niter = 200, display_progress = TRUE, z_cellsize = region_radius*2,
-                                     do.parallel = FALSE, n.cores = 1, axis = "2D"){
+                                     do.parallel = FALSE, n.cores = 1, axis = "2D",
+                                     coords_centers_input = NULL, topic_content_input = NULL, debug = FALSE) {
   
   set.seed(seed)
    
   if(is.data.frame(tissue)) tissue<-list(tissue)
+  name_image<-names(tissue)
   num_images<-length(tissue)
   
   if(num_images == 1) do.parallel<- 0 ## no need parallel computing if only one image
+
+  if(ninit < 1){
+    spatopic_message("WARNING", "ninit must be at least 1, set to 1")
+    ninit<-1
+  }
   
   ### combine multiple image into a single data frame
   itr_df<-do.call(rbind, tissue)
@@ -199,7 +216,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   ### coords for each sample
   coords<-lapply(tissue,GetCoords,axis = axis)
-  rm(list= c("tissue"))
+  rm(list= c("tissue"))  ## remove the tissue data frame to reduce memory pressure
 
   spatopic_message("INFO", "Start initialization...")
   
@@ -209,18 +226,162 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   neigh_centers_keep<-NULL
   neigh_dists_keep<-NULL
   all_centers_keep<-NULL
-  
-  spatopic_message("INFO", paste("Number of Initializations:", ninit))
-  
-  ## if we could do parallel?
-  if(do.parallel){
-    doFuture::registerDoFuture()
-    future::plan(multisession, workers = n.cores)
-    spatopic_message("INFO", paste("Parallel computing with number of cores:", n.cores))
+  ncenters_keep<-NULL
+
+  ## if topic_content_input is provided, we need to validate it
+  if(!is.null(topic_content_input)){
+    
+        # Validate topic content input
+      if (nrow(topic_content_input) != length(levels(itr_df$type)) || ncol(topic_content_input) != ntopics) {
+        spatopic_message("ERROR", paste0("topic_content_input dimensions (", 
+          nrow(topic_content_input), "x", ncol(topic_content_input),
+          ") must match number of cell types (", length(levels(itr_df$type)), ") and topics (", ntopics, ")"))
+        return(NULL)
+      }
+
+      # also need to check the if word_list, rownames(topic_content_input) matches
+      if (!all(levels(itr_df$type) == rownames(topic_content_input))) {
+        spatopic_message("ERROR", "word_list and rownames(topic_content_input) must match")
+        spatopic_message("ERROR", paste("celltype_list:", paste(levels(itr_df$type), collapse = ", ")))
+        return(NULL)
+      }
+      
+      # Check for non-negative values
+      if (any(topic_content_input < 0)) {
+        spatopic_message("ERROR", "topic_content_input must contain non-negative values")
+        return(NULL)
+      }
+
+      if(any(is.na(topic_content_input)| topic_content_input == 0)){
+        spatopic_message("WARNING", "topic_content_input must not contain NA or 0, set to 0.001")
+        topic_content_input[is.na(topic_content_input)] <- 0.001
+        topic_content_input[topic_content_input == 0] <- 0.001
+      }
   }
   
-  for (ini in 1:ninit){
+  
+  ### BEGIN BLOCK 1: Custom vs Original ###
+  if (!is.null(coords_centers_input)) {
+
+    spatopic_message("INFO", "Using provided region centers")
     
+    ## for one image
+     if(is.data.frame(coords_centers_input)) coords_centers_input<-list(coords_centers_input)
+    
+    # Validate input format for multiple images
+    if (!is.list(coords_centers_input) || length(coords_centers_input) != num_images) {
+      spatopic_message("ERROR", "coords_centers_input must be a list with length equal to number of images")
+      return(NULL)
+    }
+    
+    # Process each image with provided centers
+    results <- foreach(i_id = 1:num_images,
+                  .packages = c('RANN'),
+                  .combine = 'list',
+                  .multicombine = TRUE,
+                  .errorhandling = 'stop') %do% {
+                    
+      coords_selected <- coords[[i_id]]
+      coords_centers <- coords_centers_input[[i_id]]
+      
+      # Validate center coordinates
+      required_cols <- if(axis == "3D") c("X", "Y", "Z") else c("X", "Y")
+      if (!all(required_cols %in% colnames(coords_centers))) {
+        spatopic_message("ERROR", paste("coords_centers must contain columns:", paste(required_cols, collapse = ", ")))
+        return(NULL)
+      }
+      
+      # Find k-nearest neighbors
+      knn_results <- nn2(coords_centers, coords_selected, 
+                        k = kneigh, 
+                        treetype = "kd",
+                        searchtype = "priority")
+      
+      list(neigh_centers = knn_results$nn.idx,
+          neigh_dists = knn_results$nn.dists,
+          coords_centers = coords_centers)
+    }
+        
+    # Skip initialization loop
+    ini_LDA <- FALSE
+    ninit <- 1
+
+    ## Continue with existing perplexity calculation and result keeping
+    ncenters <- unlist(lapply(results, function(x) nrow(x$coords_centers)))
+    neigh_centers <- lapply(results, function(x) x$neigh_centers)
+    neigh_centers <- do.call(rbind,neigh_centers)
+    
+    # Combine all center coordinates
+    all_centers <- do.call(rbind, lapply(results, function(x) x$coords_centers))
+    
+    if(num_images > 1){
+      add <- c(0,unlist(lapply(1:(length(ncenters)-1),function(x) sum(ncenters[1:x]))))
+      neigh_centers <- neigh_centers+rep(add,times = ncells)
+    }
+    
+    neigh_dists <- lapply(results, function(x) x$neigh_dists)
+    neigh_dists <- do.call(rbind,neigh_dists)
+
+    spatopic_message("INFO", "start preparing input for Gibbs sampling")
+    
+    ## Initialize Z, D for spatial Topic model
+    neigh_centers <- neigh_centers - 1L
+    D <- as.integer(neigh_centers[,1])  ### The closest region centers
+    C <- as.integer(itr_df$type)-1L
+    
+    ### other parameters 
+    K <- as.integer(ntopics)
+    V <- length(unique((C)))
+    M <- max(D)+1
+    N <- length(C)
+    
+    ### additional input
+    docs <- as.matrix(cbind(as.integer(itr_df$image),C))
+    doc_list <- as.integer(1:M)-1L
+    word_list <- as.integer(1:V)-1L
+    
+    # Sample Z based on topic content if provided
+    if (!is.null(topic_content_input)) {
+      spatopic_message("INFO", "Using provided topic content for initialization")
+      
+      # Use C++ function to sample Z efficiently
+      Z <- sample_Z(C, as.matrix(topic_content_input), K, N)
+      
+      #spatopic_message("INFO", "Z:")  
+      #spatopic_message("INFO", paste("Z:", paste(table(Z), collapse = ", ")))
+      
+    } else {
+      # Random initialization
+      Z <- sample(1:ntopics, replace = TRUE, size = N)
+      Z <- Z-1L
+    }
+    
+    Ndk <- table_2d_fast(D, Z, M, K)
+    Nwk <- table_2d_fast(C, Z, V, K)
+    Nk <- table_1d_fast(Z, K)
+    Nd <- table_1d_fast(D, M)
+    
+  } else {
+
+    spatopic_message("INFO", paste("Number of Initializations:", ninit))
+  
+    ## if we could do parallel?
+    if(do.parallel){
+      doFuture::registerDoFuture()
+      future::plan(multisession, workers = n.cores)
+      spatopic_message("INFO", paste("Parallel computing with number of cores:", n.cores))
+    }
+  
+    if(debug) spatopic_message("INFO", "Selecting region centers")
+
+    ### BEGIN BLOCK 2: Initialization loop ###
+    for (ini in 1:ninit){
+
+    spatopic_message("INFO", paste("Start Initializations:", ini))
+
+    if(debug) spatopic_message("INFO", "start selecting region centers")
+
+    ### BEGIN BLOCK 3: Parallel/Sequential processing ###
     if(do.parallel){
       
         # Define required functions and variables for parallel execution
@@ -244,16 +405,14 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
           "axis"
         )
         
+        
         results <- foreach::foreach(i_id = 1:num_images,
                                  .options.future = list(
-                                   # Required R packages
                                    packages = c('sf', 'RANN'),
-                                   # Export functions and variables
                                    globals = structure(
-                                     c(required_functions, required_vars),
+                                     c(required_functions, required_vars, "image_names"),
                                      add = TRUE
                                    ),
-                                   # Enable parallel-safe RNG
                                    seed = TRUE
                                  )) %dofuture% {
         # Local variables to reduce memory pressure
@@ -284,16 +443,16 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
                           treetype = "kd",
                           searchtype = "priority")
         
-        # Clean up to reduce memory pressure
-        rm(coords_selected)
-        gc()
         
-        # Return results
-        list(neigh_centers = knn_results$nn.idx,
-             neigh_dists = knn_results$nn.dists,
-             coords_centers = coords_centers)
+        list(
+          neigh_centers = knn_results$nn.idx,
+          neigh_dists = knn_results$nn.dists,
+          coords_centers = coords_centers
+        )
       }
+        
     } else {
+
       results <- foreach(i_id = 1:num_images,.packages=c('RANN','sf')) %do% {
         coords_selected <- coords[[i_id]]
         
@@ -314,12 +473,17 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
                           treetype = "kd",
                           searchtype = "priority")
         
-        list(neigh_centers = knn_results$nn.idx,
-             neigh_dists = knn_results$nn.dists,
-             coords_centers = coords_centers)
+        list(
+          neigh_centers = knn_results$nn.idx,
+          neigh_dists = knn_results$nn.dists,
+          coords_centers = coords_centers
+        )
       }
     }
 
+  if(debug) spatopic_message("INFO", "finish selecting region centers")
+
+  ### BEGIN BLOCK 4: Results processing ###
   if(do.parallel){
     future::plan(sequential)
   }
@@ -339,6 +503,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     
     neigh_dists <- lapply(results, function(x) x$neigh_dists)
     neigh_dists <- do.call(rbind,neigh_dists)
+
+  if(debug) spatopic_message("INFO", "start preparing input for Gibbs sampling")
     
     ## Initialize Z, D for spatial Topic model
     neigh_centers <- neigh_centers - 1L
@@ -356,13 +522,28 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     doc_list <- as.integer(1:M)-1L
     word_list <- as.integer(1:V)-1L
     
-    Z <- sample(1:ntopics,replace = TRUE, size = length(C))
-    Z <- Z-1L
+    # Sample Z based on topic content if provided
+    if (!is.null(topic_content_input)) {
+      spatopic_message("INFO", "Using provided topic content for initialization")
+      
+      # Use C++ function to sample Z efficiently
+      Z <- sample_Z(C, as.matrix(topic_content_input), K, length(C))
+      
+      #spatopic_message("INFO", "Z:")  
+      #spatopic_message("INFO", paste("Z:", paste(table(Z), collapse = ", ")))
+      
+    } else {
+      # Random initialization
+      Z <- sample(1:ntopics, replace = TRUE, size = length(C))
+      Z <- Z-1L
+    }
     
     Ndk <- table_2d_fast(D, Z, M, K)
     Nwk <- table_2d_fast(C, Z, V, K)
     Nk <- table_1d_fast(Z, K)
     Nd <- table_1d_fast(D, M)
+
+    if(debug) spatopic_message("INFO", "finish preparing input for Gibbs sampling")
     
     ### initialization (warm start)
     if(ini_LDA){
@@ -376,41 +557,57 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
     }
     
     if(perplexity_min > perplexity){
+
+      if(debug) spatopic_message("INFO", "the current result is better than the previous one, update the result")
+      
       Z_keep <- Z
       perplexity_min <- perplexity
       D_keep <- D
       neigh_centers_keep <- neigh_centers
       neigh_dists_keep <- neigh_dists
       all_centers_keep <- all_centers
+      ncenters_keep <- ncenters
+
+      }
+    } # END: Initialization loop ###
+
+    if(debug) spatopic_message("INFO", "finish all initializations, choose the best one")
+
+     ### BEGIN FINAL PROCESSING: Apply best results and finish ###
+
+    ### Keep the best results during initialization
+    if(ini_LDA){
+      spatopic_message("RESULT", paste("Min perplexity during initialization:", round(perplexity_min, 4)))
     }
-  }
-  
+
+    Z<-Z_keep
+    D<-D_keep
+    neigh_centers<-neigh_centers_keep
+    neigh_dists<-neigh_dists_keep
+    all_centers<-all_centers_keep
+    ncenters<-ncenters_keep
+
+    reg_info <- paste("Number of region centers selected:", paste(ncenters, collapse = ", "))
+    spatopic_message("INFO", reg_info)
+    
+    spatopic_message("INFO", paste("Average number of cells per region:", round(mean(table(D)), 2)))
+    
+
+  } 
+  ### END BLOCK 1: Custom vs Original ###
+
   ###  release memory for large items
   celltype<-levels(itr_df$type)
   cellname<-rownames(itr_df)
   rm(list= c("itr_df"))
   gc()
   
-  ### Keep the best results during initialization
-  if(ini_LDA){
-    spatopic_message("RESULT", paste("Min perplexity during initialization:", round(perplexity_min, 4)))
-  }
-  Z<-Z_keep
-  D<-D_keep
-  neigh_centers<-neigh_centers_keep
-  neigh_dists<-neigh_dists_keep
-  all_centers<-all_centers_keep
-  reg_info <- paste("Number of region centers selected:", paste(ncenters, collapse = ", "))
-  spatopic_message("INFO", reg_info)
-  
-
-  spatopic_message("INFO", paste("Average number of cells per region:", round(mean(table(D)), 2)))
-  
   
   if(ninit > 1){ ## need update only when several initialization
      
       ## number of regions
-    M<-max(D)+1  ## M might be changed since D changed 
+    M <- as.integer(sum(ncenters)) ## better and more robust
+    #M<-max(D)+1  ## M might be changed since D changed 
     # A potential bug (what if the max(D) has been changed after gibbs sampling)
     
     Ndk <- table_2d_fast(D, Z, M, K) ## number of cells per topic per region (image specific)
@@ -438,7 +635,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
                                           neigh_centers, doc_list, word_list, 
                                           K, beta, alpha, sigma, thin, burnin, niter,
                                           trace, display_progress)
-  
+  ## free unused memory                                
   gc()
   
   ## [TODO] make the output better and readable
@@ -484,6 +681,8 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
 
   ## save the selected centers
   gibbs.res$selected_centers<-all_centers
+  gibbs.res$ncenters<-ncenters
+  names(gibbs.res$ncenters)<-name_image
   
   ## Beta: Topic Content
   gibbs.res$ntopics<-K
@@ -594,5 +793,5 @@ spatopic_message <- function(type = "INFO", message, timestamp = TRUE) {
   } else {
     message(prefix, " ", message)
   }
-}
+}  # End of spatopic_message function
 

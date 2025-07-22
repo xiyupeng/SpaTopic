@@ -37,6 +37,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sample_Z
+IntegerVector sample_Z(IntegerVector C, NumericMatrix topic_content, int K, int N);
+RcppExport SEXP _SpaTopic_sample_Z(SEXP CSEXP, SEXP topic_contentSEXP, SEXP KSEXP, SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type C(CSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type topic_content(topic_contentSEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_Z(C, topic_content, K, N));
+    return rcpp_result_gen;
+END_RCPP
+}
 // compute_loglike
 double compute_loglike(arma::mat m_theta, arma::mat m_beta, IntegerMatrix docs, IntegerMatrix neighbors, NumericMatrix Kernel, size_t M, size_t n_words, size_t K, double beta, double alpha, double sigma);
 RcppExport SEXP _SpaTopic_compute_loglike(SEXP m_thetaSEXP, SEXP m_betaSEXP, SEXP docsSEXP, SEXP neighborsSEXP, SEXP KernelSEXP, SEXP MSEXP, SEXP n_wordsSEXP, SEXP KSEXP, SEXP betaSEXP, SEXP alphaSEXP, SEXP sigmaSEXP) {
@@ -114,6 +128,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_SpaTopic_table_1d_fast", (DL_FUNC) &_SpaTopic_table_1d_fast, 2},
     {"_SpaTopic_table_2d_fast", (DL_FUNC) &_SpaTopic_table_2d_fast, 4},
+    {"_SpaTopic_sample_Z", (DL_FUNC) &_SpaTopic_sample_Z, 4},
     {"_SpaTopic_compute_loglike", (DL_FUNC) &_SpaTopic_compute_loglike, 11},
     {"_SpaTopic_gibbs_lda_c", (DL_FUNC) &_SpaTopic_gibbs_lda_c, 12},
     {"_SpaTopic_gibbs_sampler_c", (DL_FUNC) &_SpaTopic_gibbs_sampler_c, 20},

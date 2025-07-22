@@ -9,6 +9,10 @@ table_2d_fast <- function(lhs, rhs, n_lhs, n_rhs) {
     .Call('_SpaTopic_table_2d_fast', PACKAGE = 'SpaTopic', lhs, rhs, n_lhs, n_rhs)
 }
 
+sample_Z <- function(C, topic_content, K, N) {
+    .Call('_SpaTopic_sample_Z', PACKAGE = 'SpaTopic', C, topic_content, K, N)
+}
+
 compute_loglike <- function(m_theta, m_beta, docs, neighbors, Kernel, M, n_words, K, beta = .05, alpha = .01, sigma = 50) {
     .Call('_SpaTopic_compute_loglike', PACKAGE = 'SpaTopic', m_theta, m_beta, docs, neighbors, Kernel, M, n_words, K, beta, alpha, sigma)
 }

@@ -74,6 +74,27 @@ arma::uvec gen_uvec(IntegerVector src)
 }
 
 // [[Rcpp::export]]
+IntegerVector sample_Z(IntegerVector C, NumericMatrix topic_content, int K, int N) {
+  // C is the cell type index, 0-based from R
+  // topic_content is the topic content probabilities
+  // K is the number of topics
+  // N is the number of cells
+  IntegerVector Z_new(N);
+  double *P = new double[K];
+  
+  for (int i = 0; i < N; i++) {
+    for (int k = 0; k < K; k++) {
+      P[k] = topic_content(C[i], k);  // C is already 0-based from R
+    }
+    int topic = discrete_sample(P, K);
+    Z_new[i] = topic;
+  }
+  delete [] P;
+  return Z_new;
+}
+
+
+// [[Rcpp::export]]
 double compute_loglike(arma::mat m_theta, arma::mat m_beta, IntegerMatrix docs, IntegerMatrix neighbors, NumericMatrix Kernel, size_t M, 
 size_t n_words, size_t K, double beta = .05, double alpha = .01, double sigma = 50)
 {
