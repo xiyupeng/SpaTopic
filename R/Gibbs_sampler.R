@@ -201,9 +201,17 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   if(axis == "3D" & ("Z" %in% colnames(itr_df) | "Y2" %in% colnames(itr_df))){
     if("Z" %in% colnames(itr_df)){
       itr_df$Z<-as.numeric(itr_df$Z)
+      Z_range = max(itr_df$Z) - min(itr_df$Z)
     } else if("Y2" %in% colnames(itr_df)){
       itr_df$Y2<-as.numeric(itr_df$Y2)
+      Z_range = max(itr_df$Y2) - min(itr_df$Y2)
     }
+
+    if(Z_range < z_cellsize){
+      spatopic_message("WARNING", "z_cellsize is larger than max(Z) - min(Z). We will treat it as 2D image.")
+      axis = "2D"
+    }
+
   }else if(axis == "3D"){
     spatopic_message("WARNING", "No extra column with colname Z or Y2 available for 3D image. 
                      Will just treat it as 2D image." )
