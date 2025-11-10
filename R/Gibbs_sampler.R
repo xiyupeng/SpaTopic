@@ -152,6 +152,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   set.seed(seed)
    
+  ## check the input data
   if(is.data.frame(tissue)) tissue<-list(tissue)
   name_image<-names(tissue)
   num_images<-length(tissue)
@@ -192,7 +193,7 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
   
   if(length(levels(itr_df$image))>num_images){
     spatopic_message("ERROR", "Multiple images should be input as a list of data frames 
-                     or please check multiple image IDs in a single image")
+                     or please check multiple image IDs in a single image!")
     return(NULL)
   }
   
@@ -208,25 +209,6 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
                      Will just treat it as 2D image." )
     axis = "2D"
   }
-
-  ## number of cells per image
-  ncells<-table(itr_df$image)
-  spatopic_message("INFO", paste("Number of cells per image:", paste(ncells, collapse = "\t")))
-  
-  
-  ### coords for each sample
-  coords<-lapply(tissue,GetCoords,axis = axis)
-  rm(list= c("tissue"))  ## remove the tissue data frame to reduce memory pressure
-
-  spatopic_message("INFO", "Start initialization...")
-  
-  perplexity_min<-Inf
-  Z_keep<-NULL
-  D_keep<-NULL
-  neigh_centers_keep<-NULL
-  neigh_dists_keep<-NULL
-  all_centers_keep<-NULL
-  ncenters_keep<-NULL
 
   ## if topic_content_input is provided, we need to validate it
   if(!is.null(topic_content_input)){
@@ -258,21 +240,62 @@ SpaTopic_inference<-function(tissue, ntopics, sigma = 50, region_radius = 400, k
         topic_content_input[topic_content_input == 0] <- 0.001
       }
   }
-  
-  
-  ### BEGIN BLOCK 1: Custom vs Original ###
-  if (!is.null(coords_centers_input)) {
 
-    spatopic_message("INFO", "Using provided region centers")
+  ## if coords_centers_input is provided, we need to validate it
+  if(!is.null(coords_centers_input)){
     
+    spatopic_message("INFO", "Using provided region centers")
     ## for one image
-     if(is.data.frame(coords_centers_input)) coords_centers_input<-list(coords_centers_input)
+    if(is.data.frame(coords_centers_input)) coords_centers_input<-list(coords_centers_input)
     
     # Validate input format for multiple images
     if (!is.list(coords_centers_input) || length(coords_centers_input) != num_images) {
       spatopic_message("ERROR", "coords_centers_input must be a list with length equal to number of images")
       return(NULL)
     }
+
+    # Validate center coordinates
+    required_cols <- if(axis == "3D") c("X", "Y", "Z") else c("X", "Y")
+    if (!all(required_cols %in% colnames(coords_centers_input))) {
+      spatopic_message("ERROR", paste("coords_centers must contain columns:", paste(required_cols, collapse = ", ")))
+      return(NULL)
+    }
+    
+    # check if the names of the data frames are the same as the image names
+    if(!all(names(coords_centers_input) == name_image)){
+      spatopic_message("ERROR", "names of the data frames in coords_centers_input must be the same as the image names")
+      return(NULL)
+    }
+  }
+
+
+  ## prepare for the initialization
+  if(debug) spatopic_message("INFO", "Preparing for initialization...")
+
+  ## number of cells per image
+  ncells<-table(itr_df$image)
+  spatopic_message("INFO", paste("Number of cells per image:", paste(ncells, collapse = "\t")))
+  
+  
+  ### coords for each sample
+  coords<-lapply(tissue,GetCoords,axis = axis)
+  rm(list= c("tissue"))  ## remove the tissue data frame to reduce memory pressure
+
+  spatopic_message("INFO", "Start initialization...")
+  
+  perplexity_min<-Inf
+  Z_keep<-NULL
+  D_keep<-NULL
+  neigh_centers_keep<-NULL
+  neigh_dists_keep<-NULL
+  all_centers_keep<-NULL
+  ncenters_keep<-NULL
+  
+  
+  ### BEGIN BLOCK 1: Custom vs Original ###
+  if (!is.null(coords_centers_input)) {
+
+    ## spatopic_message("INFO", "Using provided region centers")
     
     # Process each image with provided centers
     results <- foreach(i_id = 1:num_images,
