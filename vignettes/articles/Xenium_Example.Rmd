@@ -185,22 +185,3 @@ m <- as.data.frame(spatopic.res$Beta)
 heatmap.plot <- pheatmap::pheatmap(t(m))
 heatmap.plot
 ```
-
-## scRNA-seq(Chromium)
-
-In addition to spatial transcriptomics data using Xenium, we also analyze a [10x Chromium scRNA-seq dataset](https://drive.google.com/drive/folders/1oN5lkoUG_MgLm90qG1Ei9wgYTsX3kol-) to identify cell-type composition. We first create a Seurat object using `CreateSeuratObject` function.
-
-```{r, eval=FALSE}
-scRNAseq_data<-Read10X("/Users/nikkixiaomengqi/Documents/research/scRNA-seq2/sample_filtered_feature_bc_matrix")
-scRNAseq <- CreateSeuratObject(counts = scRNAseq_data, project = "scRNAseq", min.cells = 3, min.features = 200)
-```
-
-We can load the [cell-type labels file](https://drive.google.com/drive/folders/1wjc0-0cCAKZtEQqYFBi1OCk969AXNPNb) and attach it to the Seurat object as metadata, using the barcode to match the annotation. The result is showing how many cells belong to each annotated cell type.
-
-```{r, eval=FALSE}
-label<-read.csv(file = "/Users/nikkixiaomengqi/Documents/research/scRNAseq_labels.csv")
-rownames(label)<-label$Barcode
-scRNAseq<-AddMetaData(scRNAseq,label)
-scRNAseq$Annotation<-factor(scRNAseq$Annotation)
-table(scRNAseq$Annotation)
-```
