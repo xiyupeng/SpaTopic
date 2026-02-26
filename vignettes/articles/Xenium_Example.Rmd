@@ -68,7 +68,7 @@ fov <- "Rep1"
 breastCa.Rep1.obj[[fov]] <- coords
 ```
 
-We load cell type annotations for this dataset from a previously curated reference and loaded here for visualization and interpretation. You can download the file from [here](https://drive.google.com/drive/folders/1wjc0-0cCAKZtEQqYFBi1OCk969AXNPNb).
+We load cell type annotations for this dataset from a previously curated reference and loaded here for visualization and interpretation. You can download the file from [here](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD).
 
 ```{r}
 ## cell type
@@ -76,7 +76,7 @@ anno.R1<-read.csv(file = "/Users/nikkixiaomengqi/Documents/research/GSM7780153_X
 breastCa.Rep1.obj[["Celltype"]]<-anno.R1$Cluster
 ```
 
-Load the [file](https://drive.google.com/drive/folders/1wjc0-0cCAKZtEQqYFBi1OCk969AXNPNb) below to skip the data preparation steps above.
+Load the [file](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD) below to skip the data preparation steps above.
 
 ```{r}
 load(file = "/Users/nikkixiaomengqi/Documents/research/breastCa.Rep1.obj.Rdata")
@@ -134,7 +134,7 @@ molecule_coord.plot <- ImageDimPlot(breastCa.Rep1.obj, fov = "zoom1", group.by =
 molecule_coord.plot
 ```
 
-You can also download the updated object [here](https://drive.google.com/drive/folders/1wjc0-0cCAKZtEQqYFBi1OCk969AXNPNb) and load it to skip these preprocessing steps.
+You can also download the updated object [here](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD) and load it to skip these preprocessing steps.
 
 ```{r}
 save(breastCa.Rep1.obj, file = "breastCa.Rep1.obj.Rdata")
@@ -142,7 +142,7 @@ save(breastCa.Rep1.obj, file = "breastCa.Rep1.obj.Rdata")
 
 ## SpaTopic
 
-In this section, we apply **SpaTopic** to the Xenium breast cancer spatial transcriptomics dataset to infer spatial topics that capture recurrent cellular neighborhood patterns. The data object here can be download from [here](https://cf.10xgenomics.com/samples/xenium/1.0.1/Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip). We load the preprocessed Seurat object that contains cell segmentation, cell-type annotations, and spatial coordinates, you can download the file from [here](https://drive.google.com/drive/folders/1wjc0-0cCAKZtEQqYFBi1OCk969AXNPNb).This object will be our input for SpaTopic analysis.
+In this section, we apply **SpaTopic** to the Xenium breast cancer spatial transcriptomics dataset to infer spatial topics that capture recurrent cellular neighborhood patterns. The data object here can be download from [here](https://cf.10xgenomics.com/samples/xenium/1.0.1/Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip). We load the preprocessed Seurat object that contains cell segmentation, cell-type annotations, and spatial coordinates, you can download the file from [here](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD).This object will be our input for SpaTopic analysis.
 
 ```{r, eval=FALSE}
 load(file = "/Users/nikkixiaomengqi/Documents/research/breastCa.Rep1.obj.Rdata")
@@ -156,7 +156,7 @@ dataset<-Seurat5obj_to_SpaTopic(object = breastCa.Rep1.obj, group.by = "Celltype
 head(dataset)
 ```
 
-We then apply SpaTopic to infer spatial topics across the tissue using `SpaTopic_inference()`. Each topic represents a recurring spatial pattern of cell-type composition. You can download the results from [here](https://drive.google.com/drive/folders/1wjc0-0cCAKZtEQqYFBi1OCk969AXNPNb).
+We then apply SpaTopic to infer spatial topics across the tissue using `SpaTopic_inference()`. Each topic represents a recurring spatial pattern of cell-type composition.
 
 ```{r}
 spatopic.res<-SpaTopic_inference(dataset, ntopics = 9, sigma = 10, region_radius = 80)
