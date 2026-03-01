@@ -1,0 +1,187 @@
+---
+title: "Breast cancer 10x Xenium data analysis"
+author: "Nikki Xiao"
+date: "2026-01-30"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Xenium Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+You can jump to **SpaTopic** section to skip the data preprocessing.
+
+## Set up
+
+We use Seurat package and ggplot2 to visualize the results. For large datasets, we also increase the global memory limit to avoid errors.
+
+```{r}
+library(Seurat)
+library(ggplot2)
+options(future.globals.maxSize = 2 * 1024^3)
+```
+
+We use a 10x Genomics Xenium breast cancer dataset to illustrate how to use `SpaTopic`. The data object here can be download from [here](https://cf.10xgenomics.com/samples/xenium/1.0.1/Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip), with original public resources available on the [10x Genomics website](https://www.10xgenomics.com/products/xenium-in-situ/preview-dataset-human-breast). We use the Seurat function `ReadXenium()` to load both **centroid** and **segmentation** spatial information from Xenium in-situ data, which will later be used for spatial visualization and topic inference.
+
+```{r}
+#### Sample 1 ####
+path <- "/Users/nikkixiaomengqi/Documents/research/outs/"
+breastCa.Rep1 <- ReadXenium(
+  data.dir = path,
+  type = c("centroids", "segmentations"),
+)
+```
+
+We build spatial coordinate objects using both cell centroids and segmentation boundaries provided by the Xenium output. Centroids represent the cell locations, and segmentation boundaries capture detailed cell shapes. These spatial components are combined into a single **Field of View (FOV)** object using `CreateFOV()` function, ensures that gene expression, cell identity, and spatial coordinates are consistently aligned within the Seurat object.
+
+We then create a Seurat object using the Xenium gene expression matrix. In addition to the gene expression assay, we also store blank codewords and negative controls as separate assays.
+
+```{r}
+assay <- "Xenium"
+segmentations.data <- list(
+  "centroids" = CreateCentroids(breastCa.Rep1$centroids),
+  "segmentation" = CreateSegmentation(breastCa.Rep1$segmentations)
+)
+coords <- CreateFOV(
+  coords = segmentations.data,
+  type = c("segmentation", "centroids"),
+  molecules = breastCa.Rep1$microns,
+  assay = assay
+)
+
+breastCa.Rep1.obj <- CreateSeuratObject(counts = breastCa.Rep1$matrix[["Gene Expression"]], assay = assay)
+breastCa.Rep1.obj[["BlankCodeword"]] <- CreateAssayObject(counts = breastCa.Rep1$matrix[["Blank Codeword"]])
+breastCa.Rep1.obj[["ControlCodeword"]] <- CreateAssayObject(counts = breastCa.Rep1$matrix[["Negative Control Codeword"]])
+breastCa.Rep1.obj[["ControlProbe"]] <- CreateAssayObject(counts = breastCa.Rep1$matrix[["Negative Control Probe"]])
+
+## We add the spatial coordinate information to the Seurat object under the corresponding FOV for later spatial visualization.
+fov <- "Rep1"
+breastCa.Rep1.obj[[fov]] <- coords
+```
+
+We load cell type annotations for this dataset from a previously curated reference and loaded here for visualization and interpretation. You can download the file from [here](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD).
+
+```{r}
+## cell type
+anno.R1<-read.csv(file = "/Users/nikkixiaomengqi/Documents/research/GSM7780153_Xenium_R1_Fig1-5_supervised.csv")
+breastCa.Rep1.obj[["Celltype"]]<-anno.R1$Cluster
+```
+
+Load the [file](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD) below to skip the data preparation steps above.
+
+```{r}
+load(file = "/Users/nikkixiaomengqi/Documents/research/breastCa.Rep1.obj.Rdata")
+```
+
+We first visualize the spatial distribution of annotated cell types using `ImageDimPlot()`. This provides an overview of tissue organization, and generates a baseline for comparison with SpaTopic-derived spatial topics. In this plot, each point represents a cell, colored by its annotated cell type, overlaid on the spatial coordinates of the tissue section.
+
+```{r, fig.width=8,fig.height=6}
+breastCa.Rep1.obj$Celltype<-as.factor(breastCa.Rep1.obj$Celltype)
+celltype.plot <-ImageDimPlot(breastCa.Rep1.obj, group.by = "Celltype", fov = "Rep1", axes = TRUE, cols = "glasbey",dark.background = F,flip_xy = FALSE)+ ggtitle("Cell type")+theme_bw()
+celltype.plot
+```
+
+## Zoom in
+
+We need to redefine the crop function because the `Crop()` function behaves as if the x and y coordinates are swapped. To be consistent, we define a small wrapper function that internally switches the x and y inputs.
+
+```{r}
+### Redefine the crop function
+### x and y seems be swapped in this function x = y, y = x
+### need switch x and y to be consistent
+#tumor.crop <- Crop(breastCa.Rep1.obj[["Rep1"]], x =  c(2000,4000), y = c(1000,2000))
+Crop_custom<-function(objects,x, y){
+  Crop(objects, x =  y, y = x)
+}
+```
+
+We then use this function to define multiple zoomed-in regions from the original image, and then store them as a new FOV within the Seurat object, uses cell segmentation boundaries for visualization.
+
+```{r}
+library(SeuratObject)
+breastCa.Rep1.obj <- UpdateSeuratObject(breastCa.Rep1.obj)
+tumor.crop<-Crop_custom(breastCa.Rep1.obj[["Rep1"]], x = c(1000,2000), y =  c(2000,4000))
+breastCa.Rep1.obj[["zoom2"]] <- tumor.crop
+DefaultBoundary(breastCa.Rep1.obj[["zoom2"]]) <- "segmentation"
+```
+
+```{r}
+LN.crop<-Crop_custom(breastCa.Rep1.obj[["Rep1"]], x = c(1500,2500), y =  c(2000,4000))
+breastCa.Rep1.obj[["zoom1"]] <- LN.crop
+DefaultBoundary(breastCa.Rep1.obj[["zoom1"]]) <- "segmentation"
+```
+
+Now we visualize the spatial distribution of annotated cell types within the zoom-in region using the function `ImageDimPlot`. This plot shows the spatial patterns that are difficult to observe at the full-image scale.
+
+```{r, fig.width=6,fig.height=7}
+celltype_distribution.plot <- ImageDimPlot(breastCa.Rep1.obj, group.by = "Celltype", fov = "zoom1", axes = TRUE, cols = "glasbey", dark.background = F,flip_xy = FALSE)+ ggtitle("Cell type")+theme_bw()
+celltype_distribution.plot
+```
+
+Also the molecule coordinates for selected marker genes within the same zoomed region.
+
+```{r, fig.width=5,fig.height=7}
+molecule_coord.plot <- ImageDimPlot(breastCa.Rep1.obj, fov = "zoom1", group.by = NA,molecules = c("IL7R", "MS4A1"),dark.background = F, nmols = 20000, alpha = 0.1,mols.size = 0.3,mols.alpha = 1,axes = FALSE,flip_xy = FALSE)
+molecule_coord.plot
+```
+
+You can also download the updated object [here](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD) and load it to skip these preprocessing steps.
+
+```{r}
+save(breastCa.Rep1.obj, file = "breastCa.Rep1.obj.Rdata")
+```
+
+## SpaTopic
+
+In this section, we apply **SpaTopic** to the Xenium breast cancer spatial transcriptomics dataset to infer spatial topics that capture recurrent cellular neighborhood patterns. The data object here can be download from [here](https://cf.10xgenomics.com/samples/xenium/1.0.1/Xenium_FFPE_Human_Breast_Cancer_Rep1/Xenium_FFPE_Human_Breast_Cancer_Rep1_outs.zip). We load the preprocessed Seurat object that contains cell segmentation, cell-type annotations, and spatial coordinates, you can download the file from [here](https://drive.google.com/drive/folders/1_mJUjzQXWgUZlwUaLq0HKxX-aqgiQ8eD).This object will be our input for SpaTopic analysis.
+
+```{r, eval=FALSE}
+load(file = "/Users/nikkixiaomengqi/Documents/research/breastCa.Rep1.obj.Rdata")
+```
+
+We first convert the Seurat object into a SpaTopic compatible dataset using the function `Seurat5obj_to_SpaTopic()`. We specifies celltypes, which will be used to define cellular categories. The resulting `dataset` contains the spatial coordinates and cell-type labels required for SpaTopic modeling.
+
+```{r}
+library(SpaTopic)
+dataset<-Seurat5obj_to_SpaTopic(object = breastCa.Rep1.obj, group.by = "Celltype",image = "Rep1")
+head(dataset)
+```
+
+We then apply SpaTopic to infer spatial topics across the tissue using `SpaTopic_inference()`. Each topic represents a recurring spatial pattern of cell-type composition.
+
+```{r}
+spatopic.res<-SpaTopic_inference(dataset, ntopics = 9, sigma = 10, region_radius = 80)
+save(spatopic.res,file = "sample1.spatopic_result_topics9.rdata")
+```
+
+```{r, eval=FALSE}
+load(file = "/Users/nikkixiaomengqi/Documents/research/sample1.spatopic_result_topics9.rdata")
+```
+
+We store the inferred topic labels back onto the original Seurat object to visualize SpaTopic results in the spatial context, each cell is now assigned a topic label. Finally, we visualize the inferred spatial topics across the tissue using `ImageDimPlot`. The plot shows spatially coherent regions corresponding to each topics.
+
+```{r, fig.width=8,fig.height=6}
+breastCa.Rep1.obj$topic<-factor(spatopic.res$cell_topics)
+#palatte<- c("#009FFFFF","#0000FFFF","#FF0000FF","#FFD300FF","#00FF00FF","#FF00B6FF","#005300FF")
+#names(palatte)<-1:7
+topic.plot <-ImageDimPlot(breastCa.Rep1.obj, group.by = "topic",fov = "Rep1", axes = TRUE, cols = "glasbey", dark.background = F,flip_xy = FALSE)+ ggtitle("topics")
+topic.plot
+```
+
+We also visualize the results as a heatmap, showing the distribution of the cell-type composition of each distinct topic.
+
+```{r, fig.width=6,fig.height=4}
+library(pheatmap)
+m <- as.data.frame(spatopic.res$Beta)
+heatmap.plot <- pheatmap::pheatmap(t(m))
+heatmap.plot
+```
