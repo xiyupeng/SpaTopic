@@ -1,0 +1,24 @@
+* installing *source* package 'SpaTopic' ...
+** using staged installation
+** libs
+using C++ compiler: 'Apple clang version 14.0.3 (clang-1403.0.22.14.1)'
+using SDK: 'MacOSX13.3.sdk'
+clang++ -arch arm64 -std=gnu++17 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/Rcpp/include' -I'/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppArmadillo/include' -I'/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppProgress/include' -I/opt/R/arm64/include    -Ilibsrc  -fPIC  -falign-functions=64 -Wall -g -O2   -c Gibbs.cpp -o Gibbs.o
+clang++ -arch arm64 -std=gnu++17 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/Rcpp/include' -I'/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppArmadillo/include' -I'/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppProgress/include' -I/opt/R/arm64/include    -Ilibsrc  -fPIC  -falign-functions=64 -Wall -g -O2   -c RcppExports.cpp -o RcppExports.o
+clang++ -arch arm64 -std=gnu++17 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -L/Library/Frameworks/R.framework/Resources/lib -L/opt/R/arm64/lib -o SpaTopic.so Gibbs.o RcppExports.o -L/Library/Frameworks/R.framework/Resources/lib -lRlapack -L/Library/Frameworks/R.framework/Resources/lib -lRblas -L/opt/homebrew/lib -lgfortran -lquadmath -lm -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
+ld: warning: dylib (/opt/homebrew/lib/libquadmath.dylib) was built for newer macOS version (14.0) than being linked (13.3)
+ld: warning: dylib (/opt/homebrew/lib/libgfortran.dylib) was built for newer macOS version (14.0) than being linked (13.3)
+installing to /Users/nikkixiaomengqi/Desktop/SpaTopic/SpaTopic.Rcheck/00LOCK-SpaTopic/00new/SpaTopic/libs
+** R
+** data
+*** moving datasets to lazyload DB
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (SpaTopic)
