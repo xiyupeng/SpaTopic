@@ -156,24 +156,61 @@ dataset<-Seurat5obj_to_SpaTopic(object = breastCa.Rep1.obj, group.by = "Celltype
 head(dataset)
 ```
 
+Then we will use DIC to select number of spatial topics. We fit SpaTopic model under different number of topics (K = 2 to 9 in this case), each collecting 100 posterior samples after 2000 burnin iterations.
+
+```{r}
+result<-list()
+for (topic in 2:9) {
+  cat("Running SpaTopic with K =", topic, "\n")
+  res<-SpaTopic_inference(dataset, ntopics = topic, sigma = 50, region_radius = 400, trace = TRUE, thin = 20, burnin = 2000, niter = 100)
+  result[[topic]]<- res
+}
+
+```
+
+Here, we plot DIC for each selected number of topics.
+
+```{r DIC,fig.height=3,fig.width=5}
+DICs <- unlist(lapply(result, function(x) x$DIC))
+DIC_df <- data.frame(
+  Topics = 2:9,
+  DIC = DICs
+)
+ggplot(DIC_df, aes(x = Topics, y = DIC))+ geom_line()+theme_minimal()+geom_vline(xintercept  = 6, color = "blue")
+
+```
+
+In addition to DIC, we assess model performance using perplexity, which measures how well the model predicts the observed data. Lower perplexity indicates better predictive performance.
+
+```{r perplexity, fig.height=3,fig.width=5}
+Perplexity <- unlist(lapply(result, function(x) x$Perplexity))
+perx_df <- data.frame(
+  Topics = 2:9,
+  Perplexity = Perplexity
+)
+ggplot(perx_df, aes(x = Topics, y = Perplexity))+ geom_line()+theme_minimal()+geom_vline(xintercept  = 6, color = "blue")
+
+```
+
+Both DIC and perplexity suggest selecting **K = 6** as the optimal number of topics, balancing model complexity and interpretability.
+
 We then apply SpaTopic to infer spatial topics across the tissue using `SpaTopic_inference()`. Each topic represents a recurring spatial pattern of cell-type composition.
 
 ```{r}
-spatopic.res<-SpaTopic_inference(dataset, ntopics = 9, sigma = 10, region_radius = 80)
-save(spatopic.res,file = "sample1.spatopic_result_topics9.rdata")
+spatopic.res<-SpaTopic_inference(dataset, ntopics = 6, sigma = 10, region_radius = 80)
+save(spatopic.res,file = "sample1.spatopic_result_topics6.rdata")
 ```
 
 ```{r, eval=FALSE}
-load(file = "/Users/nikkixiaomengqi/Documents/research/sample1.spatopic_result_topics9.rdata")
+load(file = "/Users/nikkixiaomengqi/Documents/research/sample1.spatopic_result_topics6.rdata")
 ```
 
 We store the inferred topic labels back onto the original Seurat object to visualize SpaTopic results in the spatial context, each cell is now assigned a topic label. Finally, we visualize the inferred spatial topics across the tissue using `ImageDimPlot`. The plot shows spatially coherent regions corresponding to each topics.
 
 ```{r, fig.width=8,fig.height=6}
 breastCa.Rep1.obj$topic<-factor(spatopic.res$cell_topics)
-#palatte<- c("#009FFFFF","#0000FFFF","#FF0000FF","#FFD300FF","#00FF00FF","#FF00B6FF","#005300FF")
-#names(palatte)<-1:7
-topic.plot <-ImageDimPlot(breastCa.Rep1.obj, group.by = "topic",fov = "Rep1", axes = TRUE, cols = "glasbey", dark.background = F,flip_xy = FALSE)+ ggtitle("topics")
+palatte<- c("#0000FFFF","#FFD300FF","#00FF00FF","#009FFFFF","#ff00b7fa","#005300FF","#FF0000FF")
+topic.plot <-ImageDimPlot(breastCa.Rep1.obj, group.by = "topic",fov = "Rep1", axes = TRUE, cols = palatte, dark.background = T,flip_xy = FALSE)+ ggtitle("topics")
 topic.plot
 ```
 
@@ -183,5 +220,4 @@ We also visualize the results as a heatmap, showing the distribution of the cell
 library(pheatmap)
 m <- as.data.frame(spatopic.res$Beta)
 heatmap.plot <- pheatmap::pheatmap(t(m))
-heatmap.plot
 ```
