@@ -1,4 +1,6 @@
-# SpaTopic (development version)
+# SpaTopic 1.3.0
+
+* Add functions to help to interpret topics
 
 # SpaTopic 1.2.0
 

@@ -1,5 +1,15 @@
 ## R CMD check results
 
+0 errors ✔ | 0 warnings ✔ | 1 note x
+
+* checking for future file timestamps ... NOTE
+  unable to verify current time
+
+This appears to be an environment-related issue during local checking. 
+The package files have current timestamps on the local system.
+
+## R CMD check results
+
 0 errors | 0 warnings | 1 note
    
 * Note about HTML validation is due to the standard R documentation conversion process.
