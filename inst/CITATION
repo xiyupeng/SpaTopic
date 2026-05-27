@@ -1,0 +1,31 @@
+bibentry(
+  bibtype = "Article",
+  title = "Scalable topic modelling decodes spatial tissue architecture for large-scale multiplexed imaging analysis",
+  author = c(
+    person("Xiyu", "Peng"),
+    person("James W.", "Smithy"),
+    person("Mohammad", "Yosofvand"),
+    person("Caroline E.", "Kostrzewa"),
+    person("MaryLena", "Bleile"),
+    person("Fiona D.", "Ehrich"),
+    person("Jasme", "Lee"),
+    person("Michael A.", "Postow"),
+    person("Margaret K.", "Callahan"),
+    person("Katherine S.", "Panageas"),
+    person("Ronglai", "Shen")
+  ),
+  journal = "Nature Communications",
+  year = "2025",
+  volume = "16",
+  number = "1",
+  pages = "6619",
+  doi = "10.1038/s41467-025-61821-y",
+  url = "https://doi.org/10.1038/s41467-025-61821-y",
+  textVersion = paste(
+    "Peng X, Smithy JW, Yosofvand M, Kostrzewa CE, Bleile M, Ehrich FD,",
+    "Lee J, Postow MA, Callahan MK, Panageas KS, Shen R.",
+    "Scalable topic modelling decodes spatial tissue architecture for large-scale multiplexed imaging analysis.",
+    "Nature Communications. 2025;16:6619.",
+    "doi:10.1038/s41467-025-61821-y"
+  )
+)

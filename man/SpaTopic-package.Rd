@@ -31,7 +31,9 @@ The main functions in the 'SpaTopic' package
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://xiyupeng.github.io/SpaTopic/}
   \item \url{https://github.com/xiyupeng/SpaTopic}
+  \item \doi{10.1038/s41467-025-61821-y}
   \item Report bugs at \url{https://github.com/xiyupeng/SpaTopic/issues}
 }
 
