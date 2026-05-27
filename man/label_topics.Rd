@@ -34,17 +34,20 @@ the top n vocabulary terms according to each metric.
 Highest Probability:
    For each topic, words are ranked by their probability within that topic.
    The top n words with the largest probabilities are selected.
+   
 FREX:
    FREX is calculated by combining frequency and exclusivity for each word in each topic.
    Frequency is the word probabilities ranked and scaled to values between 0 and 1.
-   Each word’s probability is divided by its total probability to calculate how exclusive
+   Each word's probability is divided by its total probability to calculate how exclusive
    the word is to each topic. Then the exclusivity values are ranked within each topic and
    scaled to values between 0 and 1. The FREX score is the weighted harmonic mean of frequency
    rank and exclusivity rank, according to this formula frex<- 1 / (w / freq_rank + (1 - w) / ex_rank).
+   
 Lift:
    We first calculate the overall frequency of each word by dividing its total count
-   by the total count of all words in the dataset. Then each word’s probability is divided by
+   by the total count of all words in the dataset. Then each word's probability is divided by
    its overall frequency.
+   
 Score:
    The score is computed by first taking the logarithm of the topic-word probabilities.
    Then calculate the average log probability across all topics for each word to represent
