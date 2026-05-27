@@ -3,8 +3,12 @@
 <url><loc>https://github.com/xiyupeng/SpaTopic/LICENSE.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/articles/Analysis_for_3Dimage.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/articles/Intro_SpaTopic.html</loc></url>
+<url><loc>https://github.com/xiyupeng/SpaTopic/articles/Label_Topics_Xenium.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/articles/Model_Selection.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/articles/SpaTopic.html</loc></url>
+<url><loc>https://github.com/xiyupeng/SpaTopic/articles/Xenium_Example.html</loc></url>
+<url><loc>https://github.com/xiyupeng/SpaTopic/articles/articles/Label_Topics_Xenium.html</loc></url>
+<url><loc>https://github.com/xiyupeng/SpaTopic/articles/articles/Xenium_Example.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/articles/index.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/articles/spleen_analysis.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/authors.html</loc></url>
@@ -14,9 +18,14 @@
 <url><loc>https://github.com/xiyupeng/SpaTopic/reference/SpaTopic-Package.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/reference/SpaTopic-class.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/reference/SpaTopic_inference.html</loc></url>
+<url><loc>https://github.com/xiyupeng/SpaTopic/reference/frex_topic.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/reference/index.html</loc></url>
+<url><loc>https://github.com/xiyupeng/SpaTopic/reference/label_topics.html</loc></url>
+<url><loc>https://github.com/xiyupeng/SpaTopic/reference/lift_topic.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/reference/lung5.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/reference/print.SpaTopic.html</loc></url>
+<url><loc>https://github.com/xiyupeng/SpaTopic/reference/prob_topic.html</loc></url>
+<url><loc>https://github.com/xiyupeng/SpaTopic/reference/score_topic.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/reference/spatopic_message.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/reference/stratified_sampling_3D_via_2D.html</loc></url>
 <url><loc>https://github.com/xiyupeng/SpaTopic/reference/stratified_sampling_sf.html</loc></url>
