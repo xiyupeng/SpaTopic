@@ -1,3 +1,5 @@
+# SpaTopic 1.3.1
+
 # SpaTopic 1.3.0
 
 * Add functions to help to interpret topics
