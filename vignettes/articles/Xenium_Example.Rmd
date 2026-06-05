@@ -84,7 +84,7 @@ load(file = "/Users/nikkixiaomengqi/Documents/research/breastCa.Rep1.obj.Rdata")
 
 We first visualize the spatial distribution of annotated cell types using `ImageDimPlot()`. This provides an overview of tissue organization, and generates a baseline for comparison with SpaTopic-derived spatial topics. In this plot, each point represents a cell, colored by its annotated cell type, overlaid on the spatial coordinates of the tissue section.
 
-```{r, fig.width=8,fig.height=6}
+```{r celltype, fig.width=8,fig.height=6}
 breastCa.Rep1.obj$Celltype<-as.factor(breastCa.Rep1.obj$Celltype)
 celltype.plot <-ImageDimPlot(breastCa.Rep1.obj, group.by = "Celltype", fov = "Rep1", axes = TRUE, cols = "glasbey",dark.background = F,flip_xy = FALSE)+ ggtitle("Cell type")+theme_bw()
 celltype.plot
@@ -122,14 +122,14 @@ DefaultBoundary(breastCa.Rep1.obj[["zoom1"]]) <- "segmentation"
 
 Now we visualize the spatial distribution of annotated cell types within the zoom-in region using the function `ImageDimPlot`. This plot shows the spatial patterns that are difficult to observe at the full-image scale.
 
-```{r, fig.width=6,fig.height=7}
+```{r celltype_distribution, fig.width=6,fig.height=7}
 celltype_distribution.plot <- ImageDimPlot(breastCa.Rep1.obj, group.by = "Celltype", fov = "zoom1", axes = TRUE, cols = "glasbey", dark.background = F,flip_xy = FALSE)+ ggtitle("Cell type")+theme_bw()
 celltype_distribution.plot
 ```
 
 Also the molecule coordinates for selected marker genes within the same zoomed region.
 
-```{r, fig.width=5,fig.height=7}
+```{r molecule_coord, fig.width=5,fig.height=7}
 molecule_coord.plot <- ImageDimPlot(breastCa.Rep1.obj, fov = "zoom1", group.by = NA,molecules = c("IL7R", "MS4A1"),dark.background = F, nmols = 20000, alpha = 0.1,mols.size = 0.3,mols.alpha = 1,axes = FALSE,flip_xy = FALSE)
 molecule_coord.plot
 ```
@@ -207,7 +207,7 @@ load(file = "/Users/nikkixiaomengqi/Documents/research/sample1.spatopic_result_t
 
 We store the inferred topic labels back onto the original Seurat object to visualize SpaTopic results in the spatial context, each cell is now assigned a topic label. Finally, we visualize the inferred spatial topics across the tissue using `ImageDimPlot`. The plot shows spatially coherent regions corresponding to each topics.
 
-```{r, fig.width=8,fig.height=6}
+```{r topic, fig.width=8,fig.height=6}
 breastCa.Rep1.obj$topic<-factor(spatopic.res$cell_topics)
 palatte<- c("#0000FFFF","#FFD300FF","#00FF00FF","#009FFFFF","#ff00b7fa","#005300FF","#FF0000FF")
 topic.plot <-ImageDimPlot(breastCa.Rep1.obj, group.by = "topic",fov = "Rep1", axes = TRUE, cols = palatte, dark.background = T,flip_xy = FALSE)+ ggtitle("topics")
@@ -216,7 +216,7 @@ topic.plot
 
 We also visualize the results as a heatmap, showing the distribution of the cell-type composition of each distinct topic.
 
-```{r, fig.width=6,fig.height=4}
+```{r heatmap, fig.width=6,fig.height=4}
 library(pheatmap)
 m <- as.data.frame(spatopic.res$Beta)
 heatmap.plot <- pheatmap::pheatmap(t(m))
